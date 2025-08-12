@@ -5,16 +5,16 @@ const deleteProperty = async (req, res) => {
 
         let id=req.params.id;
         let userId=req.user._id;
-        let ExistJob=await PropertyModel.findById({_id:id});
-        if(!ExistJob){
+        let ExistProperty=await PropertyModel.findById({_id:id});
+        if(!ExistProperty){
             return res.status(400).json({message: 'not specific user exist'});
         }
-        if(ExistJob.userId!=userId){
+        if(ExistProperty.userId!=userId){
             return res.status(400).json({message: 'not specific user exist'});
         }
 
         const result = await PropertyModel.findByIdAndDelete({_id:id});
-        res.json({message: 'Job created successfully', status: 200, data: result, success: true, error: false});
+        res.json({message: 'Property created successfully', status: 200, data: result, success: true, error: false});
 
     }
     catch (e) {

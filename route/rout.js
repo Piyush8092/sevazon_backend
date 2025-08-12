@@ -5,8 +5,7 @@ const  authGuard  = require('../middleware/auth');
 const connectDB=require('../DB/connection');
 const cookie=require('cookie-parser');
 const { CreateAdd,GetAllAdds,GetSpecificAdd,UpdateSpecificAdd,DeleteSpecificAdd,queryAdds } = require('../controllers/Adds');
-  const { createOffer } = require('../controllers/offersAndDiscount');
-const { CreateAllServices} = require('../controllers/AllServicesRegistration/createAllService');
+ const { CreateAllServices} = require('../controllers/AllServicesRegistration/createAllService');
 const { UpdateSpecificServices } = require('../controllers/AllServicesRegistration/UpdateSpecificServices');
 const { GetSpecificServices } = require('../controllers/AllServicesRegistration/GetSpecificServices');
 const { DeleteSpecsificServices } = require('../controllers/AllServicesRegistration/DeleteSpecificServices');
@@ -36,12 +35,33 @@ const { getSpecificqueryProperty } = require('../controllers/Property/getSpecifi
 const { updateProperty } = require('../controllers/Property/updateMatrimony');
 const { deleteProperty } = require('../controllers/Property/deleteMatrimony');
 const { queryProperty } = require('../controllers/Property/queryMatrimony');
+const { createOffer } = require('../controllers/offersAndDiscount');
+const { GetAllOffer } = require('../controllers/offersAndDiscount');
+const { GetSpecificOffer } = require('../controllers/offersAndDiscount');
+const { UpdateSpecificOffer } = require('../controllers/offersAndDiscount');
+const { DeleteSpecificOffer } = require('../controllers/offersAndDiscount');
+const { queryOffer } = require('../controllers/offersAndDiscount');
+const { createEditor } = require('../controllers/newsEditor/createEditor');
+const { getAllEditor } = require('../controllers/newsEditor/getAllEditor');
+const { getSpecificEditor } = require('../controllers/newsEditor/getSpecificEditor');
+const { updateEditor } = require('../controllers/newsEditor/updateEditor');
+const { deleteEditor } = require('../controllers/newsEditor/deleteEditor');
+const { queryEditors } = require('../controllers/newsEditor/queryEditor');
+const { createNews } = require('../controllers/NewsPost/createNews');
+const { getAllNews } = require('../controllers/NewsPost/getAllNews');
+const { getSpecificNews } = require('../controllers/NewsPost/getSpecificNews');
+const { updateNews } = require('../controllers/NewsPost/updateNews');
+const { deleteNews } = require('../controllers/NewsPost/deleteNews');
+const {  queryNews } = require('../controllers/NewsPost/queryNews');
+
 
 cookie();
 router.get('/', (req, res) => {
     res.send('Hello savazon!');
 });
 
+
+// auth of signup and login
 router.post('/signup',SignupRout);
 router.post('/login',LoginRout);
 
@@ -88,7 +108,12 @@ router.get('/get-query-property',queryProperty);
 
 
 // for Offers post
-router.post('/create-offer',authGuard, createOffer);
+router.post('/create-offer',authGuard,createOffer);
+router.get('/get-all-offer',GetAllOffer);
+router.get('/get-specific-offer/:id',GetSpecificOffer);
+router.put('/update-specific-offer/:id',authGuard,UpdateSpecificOffer);
+router.delete('/delete-specific-offer/:id',authGuard,DeleteSpecificOffer);
+router.get('/get-query-offer',queryOffer);
 
 // for adds post
 router.post('/create-ad',authGuard,CreateAdd);
@@ -98,6 +123,22 @@ router.put('/update-specific-add/:id',authGuard,UpdateSpecificAdd);
 router.delete('/delete-specific-add/:id',authGuard,DeleteSpecificAdd);
 router.get('/get-query-add',queryAdds);
 
+
+// editor post
+router.post('/create-editor',authGuard,createEditor);
+router.get('/get-all-editor',getAllEditor);
+router.get('/get-specific-editor/:id',getSpecificEditor);
+  router.put('/update-specific-editor/:id',authGuard,updateEditor);
+  router.delete('/delete-specific-editor/:id',authGuard,deleteEditor);
+  router.get('/get-query-editor',queryEditors);
+
+// new post
+router.post('/create-news',authGuard,createNews);
+router.get('/get-all-news',getAllNews);
+router.get('/get-specific-news/:id',getSpecificNews);
+router.put('/update-specific-news/:id',authGuard,updateNews);
+router.delete('/delete-specific-news/:id',authGuard,deleteNews);
+router.get('/get-query-news',queryNews);
 
 
 module.exports=router;

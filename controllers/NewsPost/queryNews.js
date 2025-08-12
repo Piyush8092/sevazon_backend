@@ -1,6 +1,6 @@
-let PropertyModel = require('../../model/property');
+let NewsPostModel = require('../../model/NewsPost');
 
-const queryProperty = async (req, res) => {
+const queryNews = async (req, res) => {
         try {       
             let payload = req.body;
             let query = req.query.query;
@@ -12,8 +12,8 @@ const queryProperty = async (req, res) => {
             let page = req.query.page || 1;
                 let limit = req.query.limit || 10;
                 const skip = (page - 1) * limit;
-                const result = await PropertyModel.find({title:regexQuery}).skip(skip).limit(limit);
-                const total = await PropertyModel.countDocuments({title:regexQuery});
+                const result = await NewsPostModel.find({title:regexQuery}).skip(skip).limit(limit);
+                const total = await NewsPostModel.countDocuments({title:regexQuery});
                 const totalPages = Math.ceil(total / limit);
                  if(!result){
                     return res.status(400).json({message: 'No data found'});
@@ -27,7 +27,7 @@ const queryProperty = async (req, res) => {
                 if(totalPages<page){
                     return res.status(400).json({message: 'No data found'});
                 }
-            res.json({message: 'Property created successfully', status: 200, data: result, success: true, error: false});
+            res.json({message: 'News created successfully', status: 200, data: result, success: true, error: false});
         }
         catch (e) {
             res.json({message: 'Something went wrong', status: 500, data: e, success: false, error: true});
@@ -35,4 +35,4 @@ const queryProperty = async (req, res) => {
             }
 };
 
-module.exports = { queryProperty };
+module.exports = { queryNews };

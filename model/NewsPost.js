@@ -1,0 +1,58 @@
+let mongoose = require('mongoose');
+
+let NewsSchame=new mongoose.Schema({
+     
+         userId:{
+            type:mongoose.Schema.Types.ObjectId,
+            ref:'user',
+            required:[true,'User is required'],
+        },
+        title:{
+            type:String,
+            required:[true,'Title is required'],
+        }, 
+        isActive:{
+            type:Boolean,
+            default:true
+        },
+        isVerified:{
+            type:Boolean,
+            default:false
+        },
+        content:{
+            type:String,
+            required:[true,'Content is required'],
+        },
+       likes:[{
+            userId:{
+                type:String,
+            }
+        }],
+        dislikes:[{
+            userId:{
+                type:String,
+            }
+        }],
+        comments:[{
+            userId:{
+                type:String,
+            },
+            comment:{
+                type:String,
+            }
+        }],
+        shares:{
+            type:Number,
+            default:0
+        },
+
+
+        
+    }
+    
+    ,{timestamps:true});
+    
+    const NewsPostModel = mongoose.model('NewsPostModel', NewsSchame);
+    
+    module.exports = NewsPostModel;
+    

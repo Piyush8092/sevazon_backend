@@ -4,18 +4,18 @@ const updateProperty = async (req, res) => {
     try {       
         let id=req.params.id;
         let payload = req.body;
-let ExistJob=await PropertyModel.findById({_id:id});
-if(!ExistJob){
+let ExistProperty=await PropertyModel.findById({_id:id});
+if(!ExistProperty){
     return res.status(400).json({message: 'not specific user exist'});
 }
 
         let UserId=req.user._id;
-        if(ExistJob.userId!=UserId){
+        if(ExistProperty.userId!=UserId){
             return res.status(400).json({message: 'not specific user exist'});
         }
 
         const result = await PropertyModel.findByIdAndUpdate({_id:id}, payload, {new: true});
-        res.json({message: 'Job created successfully', status: 200, data: result, success: true, error: false});
+        res.json({message: 'Property created successfully', status: 200, data: result, success: true, error: false});
 
     }
     catch (e) {

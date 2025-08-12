@@ -1,6 +1,6 @@
-let PropertyModel = require('../../model/property');
+let editorModel = require('../../model/EditorModel');
 
-const createProperty = async (req, res) => {
+const createEditor = async (req, res) => {
     try {       
         let payload = req.body;
         if (!payload.title || !payload.salary) {
@@ -10,16 +10,16 @@ let userId=req.user._id;
 if(!userId){
     return res.status(400).json({message: 'not specific user exist'});
 }
-let existUser=await PropertyModel.findById({_id:userId});
+let existUser=await editorModel.findById({_id:userId});
 if(!existUser){
     return res.status(400).json({message: 'not specific user exist'});
 }
         payload.userId = userId;
 
-        const newProperty = new PropertyModel(payload);
-        const result = await newProperty.save();
+        const neweditor = new editorModel(payload);
+        const result = await neweditor.save();
 
-        res.json({message: 'Property created successfully', status: 200, data: result, success: true, error: false});
+        res.json({message: 'editor created successfully', status: 200, data: result, success: true, error: false});
 
     } catch (e) {
         res.json({message: 'Something went wrong', status: 500, data: e, success: false, error: true});
@@ -27,4 +27,4 @@ if(!existUser){
         }
     };
 
-module.exports = { createProperty };
+module.exports = { createEditor };
