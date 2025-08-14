@@ -11,7 +11,7 @@ if(!userId){
     return res.status(400).json({message: 'not specific user exist'});
 }
 let existUser=await NewsPostModel.findById({_id:userId});
-if(!existUser){
+if(!existUser && req.user.role!='EDITOR'){
     return res.status(400).json({message: 'not specific user exist'});
 }
         payload.userId = userId;

@@ -53,6 +53,11 @@ const { getSpecificNews } = require('../controllers/NewsPost/getSpecificNews');
 const { updateNews } = require('../controllers/NewsPost/updateNews');
 const { deleteNews } = require('../controllers/NewsPost/deleteNews');
 const {  queryNews } = require('../controllers/NewsPost/queryNews');
+const { updateFollower } = require('../controllers/newsEditor/updateFollower');
+const { createContact } = require('../controllers/contact/createContact');
+const { getContact } = require('../controllers/contact/getContactData');
+const { deleteContact } = require('../controllers/contact/DeleteContact');
+const { queryContact } = require('../controllers/contact/queryContact');
 
 
 cookie();
@@ -131,6 +136,8 @@ router.get('/get-specific-editor/:id',getSpecificEditor);
   router.put('/update-specific-editor/:id',authGuard,updateEditor);
   router.delete('/delete-specific-editor/:id',authGuard,deleteEditor);
   router.get('/get-query-editor',queryEditors);
+  // for followers and following 
+  router.put('/update-follower-detail/:id',authGuard,updateFollower);
 
 // new post
 router.post('/create-news',authGuard,createNews);
@@ -140,5 +147,11 @@ router.put('/update-specific-news/:id',authGuard,updateNews);
 router.delete('/delete-specific-news/:id',authGuard,deleteNews);
 router.get('/get-query-news',queryNews);
 
+
+// coontact us
+router.post('create-contact',createContact);
+router.get('/get-all-contact',getContact);
+router.delete('/delete-specific-contact/:id',deleteContact);
+router.get('/get-qurey-contact',queryContact);
 
 module.exports=router;

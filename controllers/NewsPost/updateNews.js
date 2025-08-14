@@ -6,7 +6,7 @@ const updateNews = async (req, res) => {
         let payload = req.body;
         
         let ExistNews = await NewsPostModel.findById({_id: id});
-        if (!ExistNews) {
+        if (!ExistNews && req.user.role!='EDITOR') {
             return res.status(400).json({message: 'News post not found'});
         }
 

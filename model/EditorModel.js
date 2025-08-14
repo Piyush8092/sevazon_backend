@@ -7,6 +7,7 @@ let EditorSchema=new mongoose.Schema({
             ref:'user',
             required:[true,'User is required'],
         },
+
         title:{
             type:String,
             required:[true,'Title is required'],
@@ -24,7 +25,7 @@ let EditorSchema=new mongoose.Schema({
             required:[true,'Content is required'],
         },
         followers:[{
-            userId:{
+            editor_Id:{
                 type:String,
             }
         }],

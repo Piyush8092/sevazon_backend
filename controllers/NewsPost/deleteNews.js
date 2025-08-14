@@ -6,7 +6,7 @@ const deleteNews = async (req, res) => {
         let id=req.params.id;
         let userId=req.user._id;
         let ExistNews=await NewsPostModel.findById({_id:id});
-        if(!ExistNews){
+if(!ExistNews && req.user.role!='EDITOR'){
             return res.status(400).json({message: 'not specific user exist'});
         }
         if(ExistNews.userId!=userId){

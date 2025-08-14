@@ -17,35 +17,7 @@ const updateEditor = async (req, res) => {
             return res.status(400).json({message: 'Unauthorized access'});
         }
 
-        // Handle followers array management
-        if (payload.action === 'add_follower' && payload.followerId) {
-            // Add new follower if not already exists
-            const isAlreadyFollowing = ExistEditor.followers.some(
-                follower => follower.userId === payload.followerId
-            );
-            
-            if (!isAlreadyFollowing) {
-                ExistEditor.followers.push({ userId: payload.followerId });
-            }
-            delete payload.action;
-            delete payload.followerId;
-        } 
-        else if (payload.action === 'remove_follower' && payload.followerId) {
-            // Remove follower
-            ExistEditor.followers = ExistEditor.followers.filter(
-                follower => follower.userId !== payload.followerId
-            );
-            delete payload.action;
-            delete payload.followerId;
-        }
-        else if (payload.followers) {
-            // Direct followers array update
-            payload.followers = payload.followers.map(followerId => ({ userId: followerId }));
-        }
-        else {
-            // Preserve existing followers if not updating them
-            payload.followers = ExistEditor.followers;
-        }
+       
         
         const result = await editorModel.findByIdAndUpdate({_id: id}, payload, {new: true});
         res.json({message: 'Editor updated successfully', status: 200, data: result, success: true, error: false});

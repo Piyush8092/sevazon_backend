@@ -14,7 +14,7 @@ type:{
 
     title:{
         type:String,
-        required:[true,'Title is required'],
+        required:[true,'Title is required']
     },salary:{
         type:Number,
         required:[true,'Salary is required'],
