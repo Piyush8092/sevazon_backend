@@ -58,7 +58,16 @@ const { createContact } = require('../controllers/contact/createContact');
 const { getContact } = require('../controllers/contact/getContactData');
 const { deleteContact } = require('../controllers/contact/DeleteContact');
 const { queryContact } = require('../controllers/contact/queryContact');
-
+const { JobApply, ApplyedJob } = require('../controllers/ApplyJob/applyJobs');
+const { getAllApplyJob } = require('../controllers/ApplyJob/getAllApplyUserJob');
+const { getSpecificApplyJob } = require('../controllers/ApplyJob/getSpecificApplyJob');
+const { getApplyedJob } = require('../controllers/ApplyJob/JobApplierView');
+const { jobCreaterView, getApplyedJobCreterView } = require('../controllers/ApplyJob/jobCreaterView');
+const { getJobCreaterView } = require('../controllers/JobPost/jobCreaterView');
+const { MatrimonyCreatorView } = require('../controllers/MatrimonyPost/matrimoneyCreatorView');
+const { NewsEditorView } = require('../controllers/NewsPost/NewsEditorView');
+const { PropertyEditorView } = require('../controllers/Property/propertyEditorView');
+const { updateApplyJob } = require('../controllers/ApplyJob/EditApplyJob');
 
 cookie();
 router.get('/', (req, res) => {
@@ -94,6 +103,7 @@ router.get('/get-specific-job/:id',getSpecificJob);
 router.put('/update-specific-job/:id',authGuard,updateJob);
 router.delete('/delete-specific-job/:id',authGuard,deleteJob);
 router.get('/get-query-job',queryJobs);
+router.get('/get-job-creator-view',authGuard,getJobCreaterView);
 
 // for matrimony post
 router.post('/create-matrimony',authGuard,createMatrimony);
@@ -102,6 +112,7 @@ router.get('/get-specific-matrimony/:id',getSpecificMatrimony);
 router.put('/update-specific-matrimony/:id',authGuard,updateMatrimony);
 router.delete('/delete-specific-matrimony/:id',authGuard,deleteMatrimony);
 router.get('/get-query-matrimony',queryMatrimony);
+router.get('/get-matrimony-creator-view',authGuard,MatrimonyCreatorView);
 
 // for propert post
 router.post('create-property',authGuard,createProperty);
@@ -110,6 +121,7 @@ router.get('/get-specific-property/:id',getSpecificqueryProperty);
 router.put('/update-specific-property/:id',authGuard,updateProperty);
 router.delete('/delete-specific-property/:id',authGuard,deleteProperty);
 router.get('/get-query-property',queryProperty);
+router.get('/get-property-editor-view',authGuard,PropertyEditorView);
 
 
 // for Offers post
@@ -139,6 +151,8 @@ router.get('/get-specific-editor/:id',getSpecificEditor);
   // for followers and following 
   router.put('/update-follower-detail/:id',authGuard,updateFollower);
 
+
+
 // new post
 router.post('/create-news',authGuard,createNews);
 router.get('/get-all-news',getAllNews);
@@ -146,6 +160,16 @@ router.get('/get-specific-news/:id',getSpecificNews);
 router.put('/update-specific-news/:id',authGuard,updateNews);
 router.delete('/delete-specific-news/:id',authGuard,deleteNews);
 router.get('/get-query-news',queryNews);
+router.get('/get-news-editor-view',authGuard,NewsEditorView);
+
+
+// job Apply
+router.post('/apply-job/:job_id',authGuard,ApplyedJob)
+router.get('/get-all-apply-job',authGuard,getAllApplyJob);
+router.get('/get-specific-apply-job/:apply_id',getSpecificApplyJob);
+router.get('/applier-view',authGuard,getApplyedJob);
+router.get('/job-creator-view',authGuard,getApplyedJobCreterView);
+router.put('/update-job-application/:apply_id',authGuard,updateApplyJob);
 
 
 // coontact us
@@ -153,5 +177,7 @@ router.post('create-contact',createContact);
 router.get('/get-all-contact',getContact);
 router.delete('/delete-specific-contact/:id',deleteContact);
 router.get('/get-qurey-contact',queryContact);
+
+
 
 module.exports=router;
