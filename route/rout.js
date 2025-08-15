@@ -124,8 +124,11 @@ router.get('/get-all-matrimony',getAllMatrimony);
 router.get('/get-specific-matrimony/:id',getSpecificMatrimony);
 router.put('/update-specific-matrimony/:id',authGuard,updateMatrimony);
 router.delete('/delete-specific-matrimony/:id',authGuard,deleteMatrimony);
-router.get('/get-query-matrimony',queryMatrimony);
 router.get('/get-matrimony-creator-view',authGuard,MatrimonyCreatorView);
+// api is =>. http://localhost:3000/api/get-query-matrimony?query=Brahmin
+router.get('/get-query-matrimony',queryMatrimony);
+
+
 
 // for propert post
 router.post('create-property',authGuard,createProperty);

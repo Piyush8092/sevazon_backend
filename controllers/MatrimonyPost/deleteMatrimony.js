@@ -2,25 +2,37 @@ let MatrimonyModel = require('../../model/Matrimony');
 
 const deleteMatrimony = async (req, res) => {
     try {       
-
-        let id=req.params.id;
-        let userId=req.user._id;
-        let ExistJob=await MatrimonyModel.findById({_id:id});
-        if(!ExistJob){
-            return res.status(400).json({message: 'not specific user exist'});
+        let id = req.params.id;
+        let userId = req.user._id;
+        
+        let ExistMatrimony = await MatrimonyModel.findById(id);
+        if (!ExistMatrimony) {
+            return res.status(404).json({message: 'Matrimony profile not found'});
         }
-        if(ExistJob.userId!=userId){
-            return res.status(400).json({message: 'not specific user exist'});
+        
+        if (ExistMatrimony.userId.toString() !== userId.toString()) {
+            return res.status(403).json({message: 'Unauthorized access'});
         }
 
-        const result = await MatrimonyModel.findByIdAndDelete({_id:id});
-        res.json({message: 'Job created successfully', status: 200, data: result, success: true, error: false});
+        const result = await MatrimonyModel.findByIdAndDelete(id);
+        
+        res.json({
+            message: 'Matrimony profile deleted successfully', 
+            status: 200, 
+            data: result, 
+            success: true, 
+            error: false
+        });
 
+    } catch (e) {
+        res.json({
+            message: 'Something went wrong', 
+            status: 500, 
+            data: e.message, 
+            success: false, 
+            error: true
+        });
     }
-    catch (e) {
-        res.json({message: 'Something went wrong', status: 500, data: e, success: false, error: true});
-
-        }
 };
 
 module.exports = { deleteMatrimony };
