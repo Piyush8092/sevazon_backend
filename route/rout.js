@@ -68,6 +68,7 @@ const { MatrimonyCreatorView } = require('../controllers/MatrimonyPost/matrimone
 const { NewsEditorView } = require('../controllers/NewsPost/NewsEditorView');
 const { PropertyEditorView } = require('../controllers/Property/propertyEditorView');
 const { updateApplyJob } = require('../controllers/ApplyJob/EditApplyJob');
+const { LogoutRout } = require('../controllers/logout');
 
 cookie();
 router.get('/', (req, res) => {
@@ -78,6 +79,21 @@ router.get('/', (req, res) => {
 // auth of signup and login
 router.post('/signup',SignupRout);
 router.post('/login',LoginRout);
+router.get('/logout',LogoutRout);
+
+
+// for display all services list items
+router.post('/create-service-list',authGuard,createVarityServiceList);
+router.get('/get-service-list',GetAllServiceList)
+router.put('/update-specific-service-list/:id',authGuard,updateServiceListDetail)
+router.delete('/delete-specific-service-list/:id',authGuard,deleteServiceListDetail)
+router.get('/get-specific-service-list/:id',GetSpecificServiceList)
+// api name of query service
+// http://localhost:3000/api/get-query-service-list?query=Plumbing
+router.get('/get-query-service-list',queryServiceList);
+
+
+
 
 // for craete all services
 router.post('/create-all-service',authGuard,CreateAllServices);
@@ -85,17 +101,11 @@ router.put('/update-specific-service/:id',authGuard,UpdateSpecificServices);
 router.get('/get-specific-service/:id',GetSpecificServices);
 router.delete('/delete-specific-service/:id',authGuard,DeleteSpecsificServices);
 router.get('/get-all-service',authGuard,GetAllServices);
-router.get('/get-query-service',queryServices);
+ router.get('/get-query-service',queryServices);
 
 
-// for display all services
-router.post('/create-service-list',authGuard,createVarityServiceList);
-router.get('/get-service-list',GetAllServiceList)
-router.put('/update-specific-service-list/:id',authGuard,updateServiceListDetail)
-router.delete('/delete-specific-service-list/:id',authGuard,deleteServiceListDetail)
-router.get('/get-specific-service-list/:id',GetSpecificServiceList)
-router.get('/get-query-service-list',queryServiceList);
 
+ 
 // for job post
 router.post('/create-job',authGuard,createJob);
 router.get('/get-all-job',getAllJob);

@@ -5,17 +5,57 @@ const updateServiceListDetail = async (req, res) => {
         const id = req.params.id;
         const payload = req.body;
         let userId = req.user._id;
-        let existUser = await serviceListModel.findById({_id: id});
+        let existService = await serviceListModel.findById(id);
         
-        if (!existUser) {
-            return res.status(400).json({message: 'not specific user exist'});
+        if (!existService) {
+            return res.status(400).json({message: 'Service not found'});
         }
 
-        if (userId != existUser.userId) {
-            return res.status(400).json({message: 'not specific user exist'});
+        if (userId.toString() !== existService.userId.toString()) {
+            return res.status(403).json({message: 'Unauthorized access'});
         }
 
-        const result = await serviceListModel.findByIdAndUpdate({_id: id}, payload, {new: true});
+        // Handle different subcategory operations
+        if (payload.operation === 'add_subcategory' && payload.newSubService) {
+            // Add new subcategory
+            const newSubService = {
+                name: payload.newSubService.name,
+                image: payload.newSubService.image
+            };
+            if (newSubService.name && newSubService.image) {
+                existService.subService.push(newSubService);
+                payload.subService = existService.subService;
+            }
+        } else if (payload.operation === 'remove_subcategory' && payload.subServiceIndex !== undefined) {
+            // Remove subcategory by index
+            existService.subService.splice(payload.subServiceIndex, 1);
+            payload.subService = existService.subService;
+        } else if (payload.operation === 'update_subcategory' && payload.subServiceIndex !== undefined && payload.updatedSubService) {
+            // Update specific subcategory
+            if (payload.updatedSubService.name && payload.updatedSubService.image) {
+                existService.subService[payload.subServiceIndex] = {
+                    name: payload.updatedSubService.name,
+                    image: payload.updatedSubService.image
+                };
+                payload.subService = existService.subService;
+            }
+        } else if (payload.subService && Array.isArray(payload.subService)) {
+            // Replace entire subService array
+            payload.subService = payload.subService
+                .map((item) => ({
+                    name: item.name,
+                    image: item.image,
+                }))
+                .filter((item) => item.name && item.image);
+        }
+
+        // Remove operation field before update
+        delete payload.operation;
+        delete payload.newSubService;
+        delete payload.subServiceIndex;
+        delete payload.updatedSubService;
+
+        const result = await serviceListModel.findByIdAndUpdate(id, payload, {new: true});
         res.json({message: 'Service List updated successfully', status: 200, data: result, success: true, error: false});
     }
     catch (e) {

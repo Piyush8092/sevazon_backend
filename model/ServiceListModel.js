@@ -13,14 +13,17 @@ const serviceListSchema = new mongoose.Schema({
         type:[{
             name:{
                 type:String,
-                required:[true,'Name is required'],
-            },
+             },
             image:{
                 type:String,
-                required:[true,'Image is required'],
-            }
+             }
         }],
      } ,
+     userId:{
+            type:mongoose.Schema.Types.ObjectId,
+            ref:'user',
+            required:[true,'User is required'],
+     }
 
 
 },{timestamps:true});

@@ -1,7 +1,7 @@
 const jwt=require('jsonwebtoken');
-const user = require('../model/userModel');
+const userModel = require('../model/userModel');
 
-  const authGuard= async(req,res,next)=>{
+const authGuard= async(req,res,next)=>{
     try{
         const token=req.cookies.jwt;
         if(!token){
@@ -11,9 +11,10 @@ const user = require('../model/userModel');
         if(!ExistUser){
             return res.status(401).json({message:'Unauthorized'});
         }
-        const user=await user.findById(ExistUser.id);
-        req.user=user;
-         next();
+        const user=await userModel.find({_id:ExistUser.id});
+        // console.log(user)
+        req.user=user[0];
+        next();
     }
     catch(e){
         res.status(401).json({message:'Unauthorized'});

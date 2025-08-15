@@ -4,14 +4,15 @@
 try{
     const id=req.params.id;
  let userId=req.user._id;
-let existUser=await serviceListModel.findById({_id:id});
-if(!existUser){
-    return res.status(400).json({message: 'not specific user exist'});
-}
+  let existService = await serviceListModel.findById(id);
+        
+        if (!existService) {
+            return res.status(400).json({message: 'Service not found'});
+        }
 
-if(userId!=existUser.userId){
-    return res.status(400).json({message: 'not specific user exist'});
-}
+        if (userId.toString() !== existService.userId.toString()) {
+            return res.status(403).json({message: 'Unauthorized access'});
+        }
 
     const result=await serviceListModel.findByIdAndDelete({_id:id});
     res.json({message: 'Service List created successfully', status: 200, data: result, success: true, error: false});
