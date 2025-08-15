@@ -1,5 +1,5 @@
 
-const createServiceModel = require("../../model/createAllServiceModel");
+const createServiceModel = require("../../model/createAllServiceProfileModel");
 
 // get all services
 const GetAllServices = async (req, res) => {

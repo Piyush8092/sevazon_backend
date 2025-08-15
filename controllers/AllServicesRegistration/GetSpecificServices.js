@@ -1,6 +1,6 @@
 
 
-const createServiceModel = require("../../model/createAllServiceModel");
+const createServiceModel = require("../../model/createAllServiceProfileModel");
 // get specific service
 const GetSpecificServices = async (req, res) => {
     try {       
