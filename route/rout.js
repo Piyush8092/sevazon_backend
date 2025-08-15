@@ -105,7 +105,6 @@ router.get('/get-all-service',authGuard,GetAllServices);
  router.get('/get-query-service',queryServices);
 
 
-
  
 // for job post
 router.post('/create-job',authGuard,createJob);
@@ -115,6 +114,9 @@ router.put('/update-specific-job/:id',authGuard,updateJob);
 router.delete('/delete-specific-job/:id',authGuard,deleteJob);
 router.get('/get-query-job',queryJobs);
 router.get('/get-job-creator-view',authGuard,getJobCreaterView);
+
+
+
 
 // for matrimony post
 router.post('/create-matrimony',authGuard,createMatrimony);
