@@ -29,12 +29,16 @@ const { getSpecificMatrimony } = require('../controllers/MatrimonyPost/getSpecif
 const { updateMatrimony } = require('../controllers/MatrimonyPost/updateMatrimony');
 const { deleteMatrimony } = require('../controllers/MatrimonyPost/deleteMatrimony');
 const { queryMatrimony } = require('../controllers/MatrimonyPost/queryMatrimony');
-const { createProperty } = require('../controllers/Property/createMatrimony');
-const { getAllProperty } = require('../controllers/Property/getAllMatrimony');
-const { getSpecificqueryProperty } = require('../controllers/Property/getSpecificMatrimony');
-const { updateProperty } = require('../controllers/Property/updateMatrimony');
-const { deleteProperty } = require('../controllers/Property/deleteMatrimony');
-const { queryProperty } = require('../controllers/Property/queryMatrimony');
+
+const { createProperty } = require('../controllers/Property/createProperty');
+const { getAllProperty } = require('../controllers/Property/getAllProperty');
+const { getSpecificqueryProperty } = require('../controllers/Property/getSpecificProperty');
+const { updateProperty } = require('../controllers/Property/updateProperty');
+const { deleteProperty } = require('../controllers/Property/deleteProperty');
+const { queryProperty } = require('../controllers/Property/queryProperty');
+
+
+
 const { createOffer } = require('../controllers/offersAndDiscount');
 const { GetAllOffer } = require('../controllers/offersAndDiscount');
 const { GetSpecificOffer } = require('../controllers/offersAndDiscount');
@@ -131,11 +135,12 @@ router.get('/get-query-matrimony',queryMatrimony);
 
 
 // for propert post
-router.post('create-property',authGuard,createProperty);
+router.post('/create-property',authGuard,createProperty);
 router.get('/get-all-property',getAllProperty);
 router.get('/get-specific-property/:id',getSpecificqueryProperty);
 router.put('/update-specific-property/:id',authGuard,updateProperty);
 router.delete('/delete-specific-property/:id',authGuard,deleteProperty);
+// api is => http://localhost:3000/api/get-query-property?query=Bengaluru
 router.get('/get-query-property',queryProperty);
 router.get('/get-property-editor-view',authGuard,PropertyEditorView);
 
