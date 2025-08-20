@@ -4,7 +4,7 @@ const { SignupRout } = require('../controllers/signup');
 const  authGuard  = require('../middleware/auth');
 const connectDB=require('../DB/connection');
 const cookie=require('cookie-parser');
-const { CreateAdd,GetAllAdds,GetSpecificAdd,UpdateSpecificAdd,DeleteSpecificAdd,queryAdds } = require('../controllers/Adds');
+const { CreateAdd,GetAllAdds,GetSpecificAdd,UpdateSpecificAdd,DeleteSpecificAdd,queryAdds, AddCreaterView } = require('../controllers/Adds');
  const { CreateAllServices} = require('../controllers/AllServicesRegistration/createAllService');
 const { UpdateSpecificServices } = require('../controllers/AllServicesRegistration/UpdateSpecificServices');
 const { GetSpecificServices } = require('../controllers/AllServicesRegistration/GetSpecificServices');
@@ -39,7 +39,7 @@ const { queryProperty } = require('../controllers/Property/queryProperty');
 
 
 
-const { createOffer } = require('../controllers/offersAndDiscount');
+const { createOffer, showCreateOfferView } = require('../controllers/offersAndDiscount');
 const { GetAllOffer } = require('../controllers/offersAndDiscount');
 const { GetSpecificOffer } = require('../controllers/offersAndDiscount');
 const { UpdateSpecificOffer } = require('../controllers/offersAndDiscount');
@@ -151,15 +151,20 @@ router.get('/get-all-offer',GetAllOffer);
 router.get('/get-specific-offer/:id',GetSpecificOffer);
 router.put('/update-specific-offer/:id',authGuard,UpdateSpecificOffer);
 router.delete('/delete-specific-offer/:id',authGuard,DeleteSpecificOffer);
+// api is => http://localhost:3000/api/get-query-offer?query=411001
 router.get('/get-query-offer',queryOffer);
+router.get('/show-create-offer-view',authGuard,showCreateOfferView);
+
 
 // for adds post
 router.post('/create-ad',authGuard,CreateAdd);
-router.get('/get-all-adds',GetAllAdds);
-router.get('/get-specific-add/:id',GetSpecificAdd);
-router.put('/update-specific-add/:id',authGuard,UpdateSpecificAdd);
-router.delete('/delete-specific-add/:id',authGuard,DeleteSpecificAdd);
-router.get('/get-query-add',queryAdds);
+router.get('/get-all-ad',GetAllAdds);
+router.get('/get-specific-ad/:id',GetSpecificAdd);
+router.put('/update-specific-ad/:id',authGuard,UpdateSpecificAdd);
+router.delete('/delete-specific-ad/:id',authGuard,DeleteSpecificAdd);
+// api is =>    http://localhost:3000/api/get-query-ad?query=Electronics
+router.get('/get-query-ad',queryAdds);
+router.get('/get-add-creator-view',authGuard,AddCreaterView);
 
 
 // editor post
@@ -174,7 +179,7 @@ router.get('/get-specific-editor/:id',getSpecificEditor);
 
 
 
-// new post
+// news post
 router.post('/create-news',authGuard,createNews);
 router.get('/get-all-news',getAllNews);
 router.get('/get-specific-news/:id',getSpecificNews);
