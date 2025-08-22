@@ -7,7 +7,7 @@ const authGuard= async(req,res,next)=>{
         if(!token){
             return res.status(401).json({message:'Unauthorized'});
         }
-        const ExistUser=jwt.verify(token,process.env.SECRET_KEY);
+        const ExistUser=jwt.verify(token,process.env.SECRET_KEY ||'me333enneffiimsqoqomcngfehdj3idss');
         if(!ExistUser){
             return res.status(401).json({message:'Unauthorized'});
         }

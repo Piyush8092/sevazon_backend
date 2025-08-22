@@ -75,6 +75,16 @@ const { updateApplyJob } = require('../controllers/ApplyJob/EditApplyJob');
 const { LogoutRout } = require('../controllers/logout');
 const { newsLikeDisLike } = require('../controllers/NewsPost/newsLikeDisLike');
 const { newsComment } = require('../controllers/NewsPost/newsComment');
+const { getUserDetail } = require('../controllers/user/getUserDetail');
+const { updateUser } = require('../controllers/user/updateUser');
+const { deleteUser } = require('../controllers/user/deleteUser');
+const { createVehicle } = require('../controllers/vehicles/createVehicals');
+const { getAllVehicle } = require('../controllers/vehicles/getAllVehicle');
+const { getSpecificVehicles } = require('../controllers/vehicles/getSpecificVehicles');
+const { updateVehicle } = require('../controllers/vehicles/updateVehicals');
+const { queryVehicles } = require('../controllers/vehicles/queryVehicles');
+const { getVehiclesCreaterView } = require('../controllers/vehicles/VehiclesCreaterView');
+const { deleteVehicles } = require('../controllers/vehicles/deleteVehicles');
 
 cookie();
 router.get('/', (req, res) => {
@@ -202,6 +212,26 @@ router.get('/get-specific-apply-job/:apply_id',getSpecificApplyJob);
 router.get('/applier-view',authGuard,getApplyedJob);
 router.get('/job-creator-view',authGuard,getApplyedJobCreterView);
 router.put('/update-job-application/:apply_id',authGuard,updateApplyJob);
+
+// user releted route
+router.get('/get-user-detail',authGuard,getUserDetail);
+router.put('/update-user/:id',authGuard,updateUser);
+router.delete('/delete-user/:id',authGuard,deleteUser);
+
+
+// vehicles post
+router.post('/create-vehicle',authGuard,createVehicle);
+router.get('/get-all-vehicle',getAllVehicle);
+router.get('/get-specific-vehicle/:id',getSpecificVehicles);
+router.put('/update-specific-vehicle/:id',authGuard,updateVehicle);
+// api is => http://localhost:3000/api/get-query-vehicle?query=2025
+router.get('/get-query-vehicle',queryVehicles);
+router.get('/get-vehicles-creator-view',authGuard,getVehiclesCreaterView);
+router.delete('/delete-specific-vehicle/:id',authGuard,deleteVehicles);
+
+
+// 
+
 
 
 // coontact us
