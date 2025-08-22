@@ -8,6 +8,51 @@ let EditorSchema=new mongoose.Schema({
             required:[true,'User is required'],
         },
 
+        // Profile Information
+        yourNameChannelMedia:{
+            type:String,
+            required:[true,'Your Name/Channel/Media is required'],
+        },
+        userName:{
+            type:String,
+            required:[true,'User Name is required'],
+            unique:true
+        },
+        yourBio:{
+            type:String,
+            required:[true,'Your Bio is required'],
+        },
+        yourEmail:{
+            type:String,
+            required:[true,'Your Email is required'],
+        },
+        pincode:{
+            type:String,
+            required:[true,'Pincode is required'],
+        },
+        
+        // Identity Verification
+        uploadAadhaarCard:{
+            type:String,
+            required:[true,'Aadhaar Card is required'],
+        },
+        verifyAadhaarOrPanId:{
+            type:String,
+            required:[true,'Aadhaar or PAN ID verification is required'],
+        },
+        aboutYourself:{
+            type:String,
+            required:[true,'About Yourself is required'],
+        },
+        
+        // Social Media
+        socialMediaIdLink:{
+            type:String,
+        },
+        referralUserId:{
+            type:String,
+        },
+
         title:{
             type:String,
             required:[true,'Title is required'],

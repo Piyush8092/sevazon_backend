@@ -73,6 +73,8 @@ const { NewsEditorView } = require('../controllers/NewsPost/NewsEditorView');
 const { PropertyEditorView } = require('../controllers/Property/propertyEditorView');
 const { updateApplyJob } = require('../controllers/ApplyJob/EditApplyJob');
 const { LogoutRout } = require('../controllers/logout');
+const { newsLikeDisLike } = require('../controllers/NewsPost/newsLikeDisLike');
+const { newsComment } = require('../controllers/NewsPost/newsComment');
 
 cookie();
 router.get('/', (req, res) => {
@@ -173,6 +175,7 @@ router.get('/get-all-editor',getAllEditor);
 router.get('/get-specific-editor/:id',getSpecificEditor);
   router.put('/update-specific-editor/:id',authGuard,updateEditor);
   router.delete('/delete-specific-editor/:id',authGuard,deleteEditor);
+  // api is =>http://localhost:3000/api/get-query-editor?query=foodie_vlogs123
   router.get('/get-query-editor',queryEditors);
   // for followers and following 
   router.put('/update-follower-detail/:id',authGuard,updateFollower);
@@ -185,8 +188,11 @@ router.get('/get-all-news',getAllNews);
 router.get('/get-specific-news/:id',getSpecificNews);
 router.put('/update-specific-news/:id',authGuard,updateNews);
 router.delete('/delete-specific-news/:id',authGuard,deleteNews);
+// api is =>. http://localhost:3000/api/get-query-news?query=AI Revolution in 2025
 router.get('/get-query-news',queryNews);
 router.get('/get-news-editor-view',authGuard,NewsEditorView);
+router.put('/news-comment/:news_id',authGuard,newsComment);
+router.put('/news-like/:news_id',authGuard,newsLikeDisLike);
 
 
 // job Apply

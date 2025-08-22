@@ -11,6 +11,29 @@ let NewsSchame=new mongoose.Schema({
             type:String,
             required:[true,'Title is required'],
         }, 
+        description:{
+            type:String,
+            required:[true,'Description is required'],
+        },
+        hashtag:{
+            type:String,
+            required:[true,'Hashtag is required'],
+        },
+        mentions:{
+            type:String,
+        },
+        newsImages:{
+            type:[String],
+            validate:{
+                validator: function(v) {
+                    return v && v.length >= 1 && v.length <= 5;
+                },
+                message: 'Minimum 1 and maximum 5 news images are required'
+            }
+        },
+        newsVideo:{
+            type:String,
+        },
         isActive:{
             type:Boolean,
             default:true
@@ -23,7 +46,7 @@ let NewsSchame=new mongoose.Schema({
             type:String,
             required:[true,'Content is required'],
         },
-       likes:[{
+        likes:[{
             userId:{
                 type:String,
             }
@@ -44,10 +67,7 @@ let NewsSchame=new mongoose.Schema({
         shares:{
             type:Number,
             default:0
-        },
-
-
-        
+        }
     }
     
     ,{timestamps:true});
@@ -55,4 +75,3 @@ let NewsSchame=new mongoose.Schema({
     const NewsPostModel = mongoose.model('NewsPostModel', NewsSchame);
     
     module.exports = NewsPostModel;
-    
