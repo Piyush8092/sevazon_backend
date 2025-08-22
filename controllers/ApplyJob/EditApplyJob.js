@@ -4,7 +4,7 @@ const updateApplyJob = async (req, res) => {
     try {       
          let apply_id=req.params.apply_id;
         let payload = req.body;
-let ExistApplicaton=await ApplyModel.findById({_id:apply_id});
+let ExistApplicaton=await ApplyModel.findById(apply_id);
 if(!ExistApplicaton){
     return res.status(400).json({message: 'not specific user exist'});
 }
