@@ -85,7 +85,13 @@ const { updateVehicle } = require('../controllers/vehicles/updateVehicals');
 const { queryVehicles } = require('../controllers/vehicles/queryVehicles');
 const { getVehiclesCreaterView } = require('../controllers/vehicles/VehiclesCreaterView');
 const { deleteVehicles } = require('../controllers/vehicles/deleteVehicles');
-
+const { createServicesRoute } = require('../controllers/localServices/createServices');
+const { getAllLocalServices } = require('../controllers/localServices/getAllLocalServives');
+const { getSpecificLocalServiceRoute } = require('../controllers/localServices/getSpecificLocalService');
+const { deleteLocalService } = require('../controllers/localServices/deleteLocalService');
+const { LocalServiceCreaterView } = require('../controllers/localServices/LocalServiceCreaterView');
+const { queryLocalServices } = require('../controllers/localServices/queryLocalService');
+const { updateLocalService } = require('../controllers/localServices/updateLocalService');
 cookie();
 router.get('/', (req, res) => {
     res.send('Hello savazon!');
@@ -230,7 +236,16 @@ router.get('/get-vehicles-creator-view',authGuard,getVehiclesCreaterView);
 router.delete('/delete-specific-vehicle/:id',authGuard,deleteVehicles);
 
 
-// 
+// local services
+router.post('/create-local-services',authGuard,createServicesRoute);
+router.get('/get-all-local-services',getAllLocalServices);
+router.get('/get-specific-local-services/:id',getSpecificLocalServiceRoute);
+router.delete('/delete-specific-local-services/:id',authGuard,deleteLocalService);
+router.get('/get-local-services-creator-view',authGuard,LocalServiceCreaterView);
+// api is => http://localhost:3000/api/get-query-local-services?query=local Service
+router.get('/get-query-local-services',queryLocalServices);
+router.put('/update-local-services/:id',authGuard,updateLocalService);
+
 
 
 
