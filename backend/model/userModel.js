@@ -1,47 +1,57 @@
-const mongoose=require('mongoose');
-const validator=require('validator');
+const mongoose = require('mongoose');
+const validator = require('validator');
 
-const userSchama=new mongoose.Schema({  
-    name:{
-        type:String,
-        required:[true,'Name is required'],
-      },
-    email:{
-        type:String,
-         unique:true,
-         sparse: true,
-        validate:[validator.isEmail,'Email is invalid'],
-        required:false
+const userSchema = new mongoose.Schema({
+    name: {
+        type: String,
+        required: [true, 'Name is required'],
     },
-    phone:{
-        type:Number,
-         unique:true,
-         sparse: true,
+    email: {
+        type: String,
+        unique: true,
+        sparse: true, // allow multiple null/missing values
+        validate: {
+            validator: function (v) {
+                return !v || validator.isEmail(v); // validate only if provided
+            },
+            message: 'Email is invalid'
+        },
     },
-    password:{
-        type:String,
-        required:[true,'Password is required'],
-        minlength:[6,'Password must be at least 6 characters']
+    phone: {
+        type: Number,
+        unique: true,
+        sparse: true, // allow multiple null/missing values
     },
-    role:{
-        type:String,
-        enum:['GENERAL','EDITOR','ADMIN'],
-        default:'GENERAL'
+    password: {
+        type: String,
+        required: [true, 'Password is required'],
+        minlength: [6, 'Password must be at least 6 characters']
     },
-verified:{
-    type:Boolean,
-    default:true
-},
- 
-subscriptions:[{
-    type:mongoose.Schema.Types.ObjectId,
- }],
- 
- 
+    role: {
+        type: String,
+        enum: ['GENERAL', 'EDITOR', 'ADMIN'],
+        default: 'GENERAL'
+    },
+    verified: {
+        type: Boolean,
+        default: true
+    },
+    subscriptions: [{
+        type: mongoose.Schema.Types.ObjectId,
+    }]
+}, { timestamps: true });
 
+/**
+ * Custom validation: require at least email or phone
+ */
+userSchema.pre('validate', function (next) {
+    if (!this.email && !this.phone) {
+        this.invalidate('email', 'Either email or phone is required');
+        this.invalidate('phone', 'Either email or phone is required');
+    }
+    next();
+});
 
-},{timestamps:true});
+const User = mongoose.model('user', userSchema);
 
-const user=mongoose.model('user',userSchama);
-
-module.exports=user;
+module.exports = User;
