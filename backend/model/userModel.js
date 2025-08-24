@@ -21,6 +21,8 @@ const userSchema = new mongoose.Schema({
         type: Number,
         unique: true,
         sparse: true, // allow multiple null/missing values
+      default: undefined, // prevents saving null
+
     },
     password: {
         type: String,
