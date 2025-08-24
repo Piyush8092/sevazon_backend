@@ -5,8 +5,8 @@ const jwt = require('jsonwebtoken');
 const SignupRout = async (req, res) => {
     try {
         let payload = req.body;
-        if (!payload.name || !payload.email || !payload.password || !payload.confirmPassword) {
-            return res.status(400).json({message: 'All fields are required'});
+        if (!payload.name || (!payload.email && !payload.phone) || !payload.password || !payload.confirmPassword) {
+            return res.status(400).json({message: 'Name, password, confirmPassword and at least one of email or phone are required'});
         }
         if (payload.password !== payload.confirmPassword) {
             return res.status(400).json({message: 'Password does not match'});
@@ -15,9 +15,32 @@ const SignupRout = async (req, res) => {
             return res.status(400).json({message: 'Password must be between 6 and 50 characters'});
         }
         
-        const ExistUser = await user.findOne({email: payload.email});
-        if (ExistUser) {
-            return res.status(400).json({message: 'User already exists'});
+        if(payload.email){  
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(payload.email)) {
+                return res.status(400).json({message: 'Invalid email format'});
+            }
+        }
+        if(payload.phone){  
+            const phoneRegex = /^\d{10}$/;
+            if (!phoneRegex.test(payload.phone)) {
+                return res.status(400).json({message: 'Invalid phone number format'});
+            }
+        }
+
+        let ExistUser = null;
+        
+        if(payload.email){
+            ExistUser = await user.findOne({email: payload.email});
+            if (ExistUser) {
+                return res.status(400).json({message: 'User with this email already exists'});
+            }
+        }
+        if(payload.phone){  
+            ExistUser = await user.findOne({phone: payload.phone});
+            if (ExistUser) {
+                return res.status(400).json({message: 'User with this phone number already exists'});
+            }
         }
 
         const hashedPassword = await bcrypt.hash(payload.password, 10);

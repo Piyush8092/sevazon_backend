@@ -9,12 +9,14 @@ const userSchama=new mongoose.Schema({
     email:{
         type:String,
          unique:true,
+         sparse: true,
         validate:[validator.isEmail,'Email is invalid'],
-        required:[true,'Email is required']
+        required:false
     },
     phone:{
         type:Number,
          unique:true,
+         sparse: true,
     },
     password:{
         type:String,
