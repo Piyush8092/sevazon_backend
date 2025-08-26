@@ -5,7 +5,7 @@ const jwt = require('jsonwebtoken');
 const SignupRout = async (req, res) => {
     try {
         let payload = req.body;
-        console.log(payload);
+        // console.log(payload);
 
         if (!payload.name || (!payload.email && !payload.phone) || !payload.password || !payload.confirmPassword) {
             return res.status(400).json({ message: 'All fields are required' });
@@ -53,7 +53,7 @@ const SignupRout = async (req, res) => {
         payload.role = 'GENERAL';
 
         const newUser = new user(payload);
-        console.log("kdkdk",newUser);
+        // console.log("kdkdk",newUser);
         const result = await newUser.save();
          res.json({ message: 'User registered successfully', status: 200, data: result, success: true, error: false });
 
