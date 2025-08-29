@@ -11,12 +11,11 @@ app.use(express.json());
 app.use(express.urlencoded({extended:true}));
 app.use(cookieParser());
 app.use(cors({
-  origin: "*", // allow all domains
+  origin: ["http://localhost:3000", "https://www.loklink.in","*"], 
   credentials: true,
-  methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"], // allow all HTTP methods
-  allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"], // allow common headers
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
 }));
-
 
 app.use('/api',router);
 
