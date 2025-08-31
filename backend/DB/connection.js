@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const connectDB = async () => {
     try {
-        await mongoose.connect(process.env.MONGO_URI || `mongodb+srv://arijchowdhury:Arij1234@cluster0.ypvv5cp.mongodb.net/save?retryWrites=true&w=majority&appName=ecommerce`, {
+        await mongoose.connect(process.env.MONGO_URI || `mongodb+srv://loklinkbusiness_db_user:loklink123@cluster0.pekx4am.mongodb.net/savazon?retryWrites=true&w=majority&appName=Cluster0`, {
             serverSelectionTimeoutMS: 5000
         });
         console.log('MongoDB connected');

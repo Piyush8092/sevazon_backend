@@ -1,14 +1,16 @@
 require('dotenv').config();
-const express=require('express');
-const app=express();
-const router=require('./route/rout');
-const connectDB=require('./DB/connection');
-const port=process.env.PORT || 3000;
+const express = require('express');
+const app = express();
+const router = require('./route/rout');
+const connectDB = require('./DB/connection');
+const port = process.env.PORT || 3000;
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
 
-app.use(express.json());
-app.use(express.urlencoded({extended:true}));
+// Increase payload size limit
+app.use(express.json({ limit: "50mb" })); 
+app.use(express.urlencoded({ limit: "50mb", extended: true }));
+
 app.use(cookieParser());
 app.use(cors({
   origin: ["https://www.loklink.in", "http://localhost:3000"], 
@@ -17,9 +19,9 @@ app.use(cors({
   allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
 }));
 
-app.use('/api',router);
+app.use('/api', router);
 
- connectDB();
-app.listen(port,()=>{
-    console.log(`Server is running on port ${port}`);
+connectDB();
+app.listen(port, () => {
+  console.log(`Server is running on port ${port}`);
 });
