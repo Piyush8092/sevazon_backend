@@ -93,6 +93,9 @@ const { LocalServiceCreaterView } = require('../controllers/localServices/LocalS
 const { queryLocalServices } = require('../controllers/localServices/queryLocalService');
 const { updateLocalService } = require('../controllers/localServices/updateLocalService');
 const { getAuthUserDetail } = require('../controllers/user/getAuthUserDetail');
+const { GetSubServiceList } = require('../controllers/CreateAllServices/GetSubServiceList');
+const { sendOTP } = require('../controllers/otp/sendOTP');
+const { verifyOTP } = require('../controllers/otp/verifyOTP');
 cookie();
 router.get('/', (req, res) => {
     res.send('Hello savazon!');
@@ -105,13 +108,17 @@ router.post('/login',LoginRout);
 router.get('/logout',LogoutRout);
 router.get('/auth-user',authGuard,getAuthUserDetail);
 
+// for otp verification
+router.post('/send-otp',sendOTP);
+router.post('/verify-otp',verifyOTP);
 
 // for display all services list items
 router.post('/create-service-list',authGuard,createVarityServiceList);
 router.get('/get-service-list',GetAllServiceList)
 router.put('/update-specific-service-list/:id',authGuard,updateServiceListDetail)
 router.delete('/delete-specific-service-list/:id',authGuard,deleteServiceListDetail)
-router.get('/get-specific-service-list/:id',GetSpecificServiceList)
+router.get('/get-specific-service-list/:id',GetSpecificServiceList);
+router.get('/get-sub-service-list/:id',GetSubServiceList);
 // api name of query service
 // http://localhost:3000/api/get-query-service-list?query=Plumbing
 router.get('/get-query-service-list',queryServiceList);
