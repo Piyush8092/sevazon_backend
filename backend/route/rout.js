@@ -96,6 +96,7 @@ const { getAuthUserDetail } = require('../controllers/user/getAuthUserDetail');
 const { GetSubServiceList } = require('../controllers/CreateAllServices/GetSubServiceList');
 const { sendOTP } = require('../controllers/otp/sendOTP');
 const { verifyOTP } = require('../controllers/otp/verifyOTP');
+const { getOtp } = require('../controllers/otp/getOtp');
 cookie();
 router.get('/', (req, res) => {
     res.send('Hello savazon!');
@@ -111,6 +112,8 @@ router.get('/auth-user',authGuard,getAuthUserDetail);
 // for otp verification
 router.post('/send-otp',sendOTP);
 router.post('/verify-otp',verifyOTP);
+router.get('/resend-otp/:phone',getOtp);
+
 
 // for display all services list items
 router.post('/create-service-list',authGuard,createVarityServiceList);

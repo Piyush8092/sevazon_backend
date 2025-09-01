@@ -1,80 +1,136 @@
 const createServiceModel = require("../../model/createAllServiceProfileModel");
-const user = require('../../model/userModel');
 
-// post req for create account
+// POST request to create account/profile
 const CreateAllServices = async (req, res) => {
-    try {       
-        let payload = req.body;
-        
-        // Basic required fields for both profile types
-        if (!payload.profileType || !payload.profileImage || !payload.yourName || !payload.gender || 
-            !payload.pincode || !payload.city || !payload.state || !payload.area || 
-            !payload.houseNumberBuilding || !payload.selectCategory || !payload.selectSubCategory || 
-            !payload.email || !payload.locationURL || 
-            payload.allowCallInApp === undefined || payload.allowCallViaPhone === undefined || 
-            payload.allowChat === undefined) {
-            return res.status(400).json({message: 'All required fields must be provided'});
-        }
+  try {
+    let payload = req.body;
 
-        // Profile type specific validation
-        if (payload.profileType === 'Business Profile') {
-            if (!payload.businessName || !payload.businessSummary || !payload.establishedInYear || 
-                !payload.timing || !payload.workBusinessImages || payload.workBusinessImages.length === 0) {
-                return res.status(400).json({message: 'All Business Profile fields are required'});
-            }
-        } else if (payload.profileType === 'Service Profile') {
-            if (!payload.description || !payload.experience || 
-                !payload.workServiceImages || payload.workServiceImages.length === 0) {
-                return res.status(400).json({message: 'All Service Profile fields are required'});
-            }
-        }
-
-        // Validate sub-category other field
-        if (payload.selectSubCategory === 'Other' && !payload.subCategoryOther) {
-            return res.status(400).json({message: 'Sub-category other field is required when Other is selected'});
-        }
-
-        // Validate phone number when call via phone is enabled
-        if (payload.allowCallViaPhone === true && !payload.phoneNumberForCalls) {
-            return res.status(400).json({message: 'Phone number is required when call via phone is enabled'});
-        }
-
-        // Set user ID and verification status
-        payload.userId = req.user._id;
-        payload.isVerified = true;
-        
-        const newService = new createServiceModel(payload);
-        const result = await newService.save();
-
-        res.json({
-            message: 'Service profile created successfully', 
-            status: 200, 
-            data: result, 
-            success: true, 
-            error: false
-        });
-
-    } catch (e) {
-        // Handle validation errors
-        if (e.name === 'ValidationError') {
-            const errors = Object.values(e.errors).map(err => err.message);
-            return res.status(400).json({
-                message: 'Validation failed', 
-                status: 400, 
-                data: errors, 
-                success: false, 
-                error: true
-            });
-        }
-        
-        res.json({
-            message: 'Something went wrong', 
-            status: 500, 
-            data: e.message, 
-            success: false, 
-            error: true
-        });
+    // --- Basic required fields (common for both profiles) ---
+    if (
+      !payload.profileType ||
+      !payload.profileImage ||
+      !payload.gender ||
+      !payload.pincode ||
+      !payload.city ||
+      !payload.state ||
+      !payload.area ||
+      !payload.houseNumberBuilding ||
+      !payload.selectCategory ||
+      !payload.selectSubCategory ||
+      !payload.locationURL ||
+      payload.allowCallInApp === undefined ||
+      payload.allowCallViaPhone === undefined ||
+      payload.allowChat === undefined
+    ) {
+      return res
+        .status(400)
+        .json({ message: "All required fields must be provided" });
     }
+
+    // --- Conditional validation based on profile type ---
+    if (payload.profileType === "Service Profile") {
+      
+      if (!payload.description) {
+        return res
+          .status(400)
+          .json({ message: "Description is required for Service Profile" });
+      }
+      if (!payload.experience) {
+        return res
+          .status(400)
+          .json({ message: "Experience is required for Service Profile" });
+      }
+      if (!payload.workServiceImages || payload.workServiceImages.length === 0) {
+        return res
+          .status(400)
+          .json({ message: "Work/Service images are required" });
+      }
+    }
+
+    if (payload.profileType === "Business Profile") {
+      if (!payload.businessName) {
+        return res
+          .status(400)
+          .json({ message: "Business name is required for Business Profile" });
+      }
+      if (!payload.businessSummary) {
+        return res
+          .status(400)
+          .json({ message: "Business summary is required" });
+      }
+      if (!payload.establishedInYear) {
+        return res
+          .status(400)
+          .json({ message: "Established in year is required" });
+      }
+      if (!payload.timing) {
+        return res
+          .status(400)
+          .json({ message: "Business timing is required" });
+      }
+      if (
+        !payload.workBusinessImages ||
+        payload.workBusinessImages.length === 0
+      ) {
+        return res
+          .status(400)
+          .json({ message: "Work/Business images are required" });
+      }
+    }
+
+    // --- Validate "Other" sub-category ---
+    if (payload.selectSubCategory === "Other" && !payload.subCategoryOther) {
+      return res.status(400).json({
+        message: "Sub-category other field is required when 'Other' is selected",
+      });
+    }
+
+    // --- Phone number is handled by authGuard ---
+    if (payload.allowCallViaPhone && !req.user.phone) {
+      return res.status(400).json({
+        message: "Phone number is required when call via phone is enabled",
+      });
+    }
+
+    // --- Attach user info from authGuard ---
+    payload.userId = req.user._id;
+    payload.email = req.user.email;
+    payload.phoneNumberForCalls = req.user.phone;
+    payload.yourName = req.user.name;
+    payload.isVerified = true;
+
+    // --- Save profile ---
+    const newService = new createServiceModel(payload);
+    const result = await newService.save();
+
+    res.json({
+      message: "Service profile created successfully",
+      status: 200,
+      data: result,
+      success: true,
+      error: false,
+    });
+  } catch (e) {
+    // Handle validation errors
+    if (e.name === "ValidationError") {
+      const errors = Object.values(e.errors).map((err) => err.message);
+      return res.status(400).json({
+        message: "Validation failed",
+        status: 400,
+        data: errors,
+        success: false,
+        error: true,
+      });
+    }
+
+    res.status(500).json({
+      message: "Something went wrong",
+      status: 500,
+      data: e.message,
+      success: false,
+      error: true,
+    });
+  }
 };
 
 module.exports = { CreateAllServices };
