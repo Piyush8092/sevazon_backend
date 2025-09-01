@@ -92,6 +92,7 @@ const { deleteLocalService } = require('../controllers/localServices/deleteLocal
 const { LocalServiceCreaterView } = require('../controllers/localServices/LocalServiceCreaterView');
 const { queryLocalServices } = require('../controllers/localServices/queryLocalService');
 const { updateLocalService } = require('../controllers/localServices/updateLocalService');
+const { getAuthUserDetail } = require('../controllers/user/getAuthUserDetail');
 cookie();
 router.get('/', (req, res) => {
     res.send('Hello savazon!');
@@ -102,6 +103,7 @@ router.get('/', (req, res) => {
 router.post('/signup',SignupRout);
 router.post('/login',LoginRout);
 router.get('/logout',LogoutRout);
+router.get('/auth-user',authGuard,getAuthUserDetail);
 
 
 // for display all services list items
