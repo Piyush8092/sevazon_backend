@@ -34,6 +34,9 @@ const userSchema = new mongoose.Schema({
         enum: ['GENERAL', 'EDITOR', 'ADMIN'],
         default: 'GENERAL'
     },
+    token: {
+        type: String,
+    },
     verified: {
         type: Boolean,
         default: true
