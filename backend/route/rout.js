@@ -134,7 +134,7 @@ router.post('/create-all-service',authGuard,CreateAllServices);
 router.put('/update-specific-service/:id',authGuard,UpdateSpecificServices);
 router.get('/get-specific-service/:id',GetSpecificServices);
 router.delete('/delete-specific-service/:id',authGuard,DeleteSpecsificServices);
-router.get('/get-all-service',authGuard,GetAllServices);
+router.get('/get-all-service',GetAllServices);
 // api route is http://localhost:3000/api/get-query-service?query=Bengaluru
  router.get('/get-query-service',queryServices);
 

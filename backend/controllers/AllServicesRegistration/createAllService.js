@@ -29,7 +29,6 @@ const CreateAllServices = async (req, res) => {
 
     // --- Conditional validation based on profile type ---
     if (payload.profileType === "Service Profile") {
-      
       if (!payload.description) {
         return res
           .status(400)
@@ -43,7 +42,12 @@ const CreateAllServices = async (req, res) => {
       if (!payload.workServiceImages || payload.workServiceImages.length === 0) {
         return res
           .status(400)
-          .json({ message: "Work/Service images are required" });
+          .json({ message: "Work/Service images are required for Service Profile" });
+      }
+      if (!payload.serviceImages || payload.serviceImages.length === 0) {
+        return res
+          .status(400)
+          .json({ message: "Service images are required for Service Profile" });
       }
     }
 
@@ -56,25 +60,22 @@ const CreateAllServices = async (req, res) => {
       if (!payload.businessSummary) {
         return res
           .status(400)
-          .json({ message: "Business summary is required" });
+          .json({ message: "Business summary is required for Business Profile" });
       }
       if (!payload.establishedInYear) {
         return res
           .status(400)
-          .json({ message: "Established in year is required" });
+          .json({ message: "Established in year is required for Business Profile" });
       }
       if (!payload.timing) {
         return res
           .status(400)
-          .json({ message: "Business timing is required" });
+          .json({ message: "Business timing is required for Business Profile" });
       }
-      if (
-        !payload.workBusinessImages ||
-        payload.workBusinessImages.length === 0
-      ) {
+      if (!payload.catalogImages || payload.catalogImages.length === 0) {
         return res
           .status(400)
-          .json({ message: "Work/Business images are required" });
+          .json({ message: "Catalog images are required for Business Profile" });
       }
     }
 
@@ -85,19 +86,11 @@ const CreateAllServices = async (req, res) => {
       });
     }
 
-    // --- Phone number is handled by authGuard ---
-    if (payload.allowCallViaPhone && !req.user.phone) {
-      return res.status(400).json({
-        message: "Phone number is required when call via phone is enabled",
-      });
-    }
-
     // --- Attach user info from authGuard ---
     payload.userId = req.user._id;
     payload.email = req.user.email;
-    payload.phoneNumberForCalls = req.user.phone;
     payload.yourName = req.user.name;
-    payload.isVerified = true;
+    payload.phoneNumberForCalls = req.user.phone;
 
     // --- Save profile ---
     const newService = new createServiceModel(payload);

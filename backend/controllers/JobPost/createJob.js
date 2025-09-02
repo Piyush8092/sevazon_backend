@@ -10,7 +10,7 @@ const createJob = async (req, res) => {
             !payload.pincode || !payload.description || !payload.salaryFrom || 
             !payload.salaryTo || !payload.salaryPer || !payload.requiredExperience || 
             !payload.workShift || !payload.workMode || !payload.workType ||
-            payload.allowCallInApp === undefined || payload.allowCallViaPhone === undefined || 
+            payload.allowCallInApp === undefined  || 
             payload.allowChat === undefined) {
             return res.status(400).json({message: 'All required fields must be provided'});
         }
@@ -31,10 +31,7 @@ const createJob = async (req, res) => {
             return res.status(400).json({message: 'Sub-category other field is required when Other is selected'});
         }
 
-        // Validate phone number when call via phone is enabled
-        if (payload.allowCallViaPhone === true && !payload.phoneNumberForCalls) {
-            return res.status(400).json({message: 'Phone number is required when call via phone is enabled'});
-        }
+       
 
         // Validate salary range
         if (payload.salaryFrom >= payload.salaryTo) {
@@ -68,6 +65,7 @@ const createJob = async (req, res) => {
         }
 
         payload.userId = userId;
+        payload.phoneNumberForCalls = req.user.phone;
         payload.isVerified = true;
 
         const newJob = new jobModel(payload);

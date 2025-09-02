@@ -9,25 +9,20 @@ const createProperty = async (req, res) => {
             !payload.propertyType || !payload.bhk || !payload.areaSqft || 
             !payload.facing || !payload.expectedPrice || !payload.description || 
             !payload.furnishing || !payload.possession || !payload.postedBy || 
-            !payload.fullName || !payload.pincode || !payload.address ||
-            payload.allowCallInApp === undefined || payload.allowCallViaPhone === undefined || 
+             !payload.pincode || !payload.address ||
+            payload.allowCallInApp === undefined ||  
             payload.allowChat === undefined) {
             return res.status(400).json({message: 'All required fields must be provided'});
         }
 
         // Validate array fields
-        if (!Array.isArray(payload.vehicleImages) || payload.vehicleImages.length === 0) {
+        if (!Array.isArray(payload.propertyImages) || payload.propertyImages.length === 0) {
             return res.status(400).json({message: 'At least one property image is required'});
         }
-        if (payload.vehicleImages.length > 6) {
+        if (payload.propertyImages.length > 6) {
             return res.status(400).json({message: 'Maximum 6 images are allowed'});
         }
-
-        // Validate phone number when call via phone is enabled
-        if (payload.allowCallViaPhone === true && !payload.phoneNumberForCalls) {
-            return res.status(400).json({message: 'Phone number is required when call via phone is enabled'});
-        }
-
+ 
         // Validate expected price
         if (payload.expectedPrice <= 0) {
             return res.status(400).json({message: 'Expected price must be greater than 0'});
@@ -78,6 +73,8 @@ const createProperty = async (req, res) => {
         }
 
         payload.userId = userId;
+        payload.phoneNumberForCalls = req.user.phone;
+        payload.fullName = req.user.name;
         payload.isVerified = true;
 
         const newProperty = new PropertyModel(payload);

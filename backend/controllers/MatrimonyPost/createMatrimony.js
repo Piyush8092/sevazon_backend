@@ -9,7 +9,7 @@ const createMatrimony = async (req, res) => {
             !payload.gender || !payload.motherTongue || !payload.maritalStatus || 
             !payload.height || !payload.religion || !payload.caste || 
             !payload.profession || !payload.highestQualification || !payload.employmentType || 
-            !payload.pincode || !payload.city || !payload.state || !payload.contactNumber ||
+            !payload.pincode || !payload.city || !payload.state  ||
             !payload.partnerAge || !payload.partnerHeight || !payload.partnerMaritalStatus ||
             !payload.partnerReligion || !payload.partnerMotherTongue) {
             return res.status(400).json({message: 'All required fields must be provided'});
@@ -92,6 +92,7 @@ const createMatrimony = async (req, res) => {
 
         payload.userId = userId;
         payload.isVerified = true;
+        payload.contactNumber = req.user.phone;
 
         const newMatrimony = new MatrimonyModel(payload);
         const result = await newMatrimony.save();

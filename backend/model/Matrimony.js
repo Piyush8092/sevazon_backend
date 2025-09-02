@@ -136,6 +136,19 @@ const MatrimonySchema = new mongoose.Schema({
         enum: ['Never Married', 'Divorced', 'Widowed', 'Separated'],
         required: [true, 'Partner marital status is required'],
     },
+    partnerCity: {
+        type: String,
+        required: [true, 'Partner city is required'],
+    },
+    partnerState: {
+        type: String,
+        required: [true, 'Partner state is required'],
+    },
+    partnerEmploymentType: {
+        type: String,
+        enum: ['Private Job', 'Government Job', 'Business', 'Self Employed', 'Student', 'Not Working'],
+        required: [true, 'Partner employment type is required'],
+    },
     partnerReligion: {
         type: String,
         required: [true, 'Partner religion is required'],

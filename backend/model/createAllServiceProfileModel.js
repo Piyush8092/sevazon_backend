@@ -23,9 +23,12 @@ const profileSchema = new mongoose.Schema({
         //     return this.profileType === 'Business Profile';
         // },
     },
-    
-    // Personal Details
-    gender: {
+   serviceType: {
+    type: String,
+    enum: ['premium', 'featured'],
+     default: 'featured'
+},
+     gender: {
         type: String,
         enum: ['Male', 'Female', 'Other'],
         required: [true, 'Gender is required'],
@@ -147,12 +150,13 @@ const profileSchema = new mongoose.Schema({
         },
         validate: {
             validator: function(v) {
-                return this.profileType !== 'Service Profile' || (v && v.length > 0);
+                return this.profileType !== 'Service Profile' || ( v.length > 0);
             },
             message: 'Work/Service images are required for Service Profile'
         }
     },
-    workBusinessImages: {
+ 
+    catalogImages: {
         type: [String],
         required: function() {
             return this.profileType === 'Business Profile';

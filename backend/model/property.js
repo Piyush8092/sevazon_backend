@@ -31,14 +31,14 @@ const PropertySchema = new mongoose.Schema({
         type: Number,
         required: [true, 'Area sqft is required'],
     },
-    floorInfo: {
-        floorNo: {
+     floorNo: {
             type: String,
         },
-        totalFloor: {
+
+            totalFloor: {
             type: String,
-        }
-    },
+        },
+    
     facing: {
         type: String,
         required: [true, 'Facing is required'],
@@ -105,7 +105,7 @@ const PropertySchema = new mongoose.Schema({
     },
     
     // Images
-    vehicleImages: {
+    propertyImages: {
         type: [String],
         validate: {
             validator: function(v) {
