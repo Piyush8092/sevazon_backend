@@ -97,6 +97,9 @@ const { GetSubServiceList } = require('../controllers/CreateAllServices/GetSubSe
 const { sendOTP } = require('../controllers/otp/sendOTP');
 const { verifyOTP } = require('../controllers/otp/verifyOTP');
 const { getOtp } = require('../controllers/otp/getOtp');
+const { updateLike } = require('../controllers/AllServicesRegistration/updatelike');
+const { updateDislike } = require('../controllers/AllServicesRegistration/updateDislike');
+const { UpdateReview } = require('../controllers/AllServicesRegistration/UpdateReview');
 cookie();
 router.get('/', (req, res) => {
     res.send('Hello savazon!');
@@ -137,9 +140,13 @@ router.delete('/delete-specific-service/:id',authGuard,DeleteSpecsificServices);
 router.get('/get-all-service',GetAllServices);
 // api route is http://localhost:3000/api/get-query-service?query=Bengaluru
  router.get('/get-query-service',queryServices);
-
+// for like comment 
+router.put('/update-specific-service-like/:id',authGuard,updateLike);
+router.put('/update-specific-service-dislike/:id',authGuard,updateDislike);
+router.put('/update-specific-service-review/:id',authGuard,UpdateReview);
 
  
+
 // for job post
 router.post('/create-job',authGuard,createJob);
 router.get('/get-all-job',getAllJob);

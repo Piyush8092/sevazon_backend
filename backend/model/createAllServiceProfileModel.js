@@ -169,6 +169,39 @@ const profileSchema = new mongoose.Schema({
         }
     },
     
+    likes:[{
+        userId:{
+            type:String,
+        },
+        like:{
+            type:Boolean,
+            default:true,
+        }
+        
+    }],
+    dislikes:[{
+        userId:{
+            type:String,
+        },
+        dislike:{
+            type:Boolean,
+            default:true,
+        }
+       
+    }],
+
+    comments:[{
+        userId:{
+            type:String,
+
+        },
+        review:{
+            type:String,
+        },
+        ratting:{
+            type:Number,
+        }
+    }],
     // User Reference
     userId: {
         type: mongoose.Schema.Types.ObjectId,
