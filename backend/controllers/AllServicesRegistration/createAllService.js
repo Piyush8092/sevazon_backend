@@ -44,11 +44,7 @@ const CreateAllServices = async (req, res) => {
           .status(400)
           .json({ message: "Work/Service images are required for Service Profile" });
       }
-      if (!payload.serviceImages || payload.serviceImages.length === 0) {
-        return res
-          .status(400)
-          .json({ message: "Service images are required for Service Profile" });
-      }
+   
     }
 
     if (payload.profileType === "Business Profile") {
