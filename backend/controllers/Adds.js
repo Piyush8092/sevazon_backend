@@ -5,10 +5,7 @@ const CreateAdd = async (req, res) => {
     try {       
         let payload = req.body;
         
-        if (!payload.title || !payload.description || !payload.category || !payload.location || !payload.validTill) {
-            return res.status(400).json({message: 'All required fields must be provided'});
-        }   
-
+     
         // Validate images array
         if (!payload.adImages || !Array.isArray(payload.adImages) || payload.adImages.length < 1 || payload.adImages.length > 5) {
             return res.status(400).json({message: 'Minimum 1 and maximum 5 ad images are required'});

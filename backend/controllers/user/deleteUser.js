@@ -11,7 +11,7 @@ const deleteUser = async (req, res) => {
         }
 
        let UserRole=req.user.role;
-       if(UserRole!=='ADMIN'){
+       if(UserRole !== 'ADMIN' && userId.toString() !== id.toString()){
         return res.status(403).json({message: 'Unauthorized access'});
        }
 

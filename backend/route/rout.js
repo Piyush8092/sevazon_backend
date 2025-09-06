@@ -100,6 +100,18 @@ const { getOtp } = require('../controllers/otp/getOtp');
 const { updateLike } = require('../controllers/AllServicesRegistration/updatelike');
 const { updateDislike } = require('../controllers/AllServicesRegistration/updateDislike');
 const { UpdateReview } = require('../controllers/AllServicesRegistration/UpdateReview');
+const { createAccountDeletePolicy } = require('../controllers/AccountDeletePolicy/AccountDeletePolicyCreate');
+const { getAccountDeletePolicy } = require('../controllers/AccountDeletePolicy/AccountDeletePolicyGet');
+const { editAccountDeletePolicy } = require('../controllers/AccountDeletePolicy/AccountDeletePolicyEdit');
+const { deleteAccountDeletePolicy } = require('../controllers/AccountDeletePolicy/AccountDeletePolicyDelete');
+const { createPrivacyPolicy } = require('../controllers/privacy/privacyCreate');
+const { getPrivacyPolicy } = require('../controllers/privacy/privacyGet');
+const { editPrivacyPolicy } = require('../controllers/privacy/privecyEdit');
+const { deletePrivacyPolicy } = require('../controllers/privacy/privecyDelete');
+const { createTermsAndConditions } = require('../controllers/term/termCreate');
+const { getTermsAndConditions } = require('../controllers/term/termGet');
+const { editTermsAndConditions } = require('../controllers/term/termEdit');
+const { deleteTermsAndConditions } = require('../controllers/term/termDelete');
 cookie();
 router.get('/', (req, res) => {
     res.send('Hello savazon!');
@@ -274,6 +286,23 @@ router.get('/get-all-contact',getContact);
 router.delete('/delete-specific-contact/:id',deleteContact);
 router.get('/get-qurey-contact',queryContact);
 
+// account delete policy
+router.post('/create-account-delete-policy',authGuard,createAccountDeletePolicy);
+router.get('/get-account-delete-policy',getAccountDeletePolicy);
+router.put('/edit-account-delete-policy/:id',authGuard,editAccountDeletePolicy);
+router.delete('/delete-account-delete-policy/:id',authGuard,deleteAccountDeletePolicy); 
 
+// privacy policy
+router.post('/create-privacy-policy',authGuard,createPrivacyPolicy);
+router.get('/get-privacy-policy',getPrivacyPolicy);
+router.put('/edit-privacy-policy/:id',authGuard,editPrivacyPolicy);
+router.delete('/delete-privacy-policy/:id',authGuard,deletePrivacyPolicy);
+
+
+// terms and conditions
+router.post('/create-terms-and-conditions',authGuard,createTermsAndConditions);
+router.get('/get-terms-and-conditions',getTermsAndConditions);
+router.put('/edit-terms-and-conditions/:id',authGuard,editTermsAndConditions);
+router.delete('/delete-terms-and-conditions/:id',authGuard,deleteTermsAndConditions);
 
 module.exports=router;

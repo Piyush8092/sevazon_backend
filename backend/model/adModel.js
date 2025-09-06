@@ -3,11 +3,11 @@ let mongoose = require('mongoose');
 const adSchema = new mongoose.Schema({   
     title: {
         type: String,
-        required: [true, 'Title is required'],
+        // required: [true, 'Title is required'],
     },  
     description: {
         type: String,
-        required: [true, 'Description is required'],
+        // required: [true, 'Description is required'],
     },
     userId: {
         type: mongoose.Schema.Types.ObjectId,
@@ -20,7 +20,7 @@ const adSchema = new mongoose.Schema({
     },
     category: {
         type: String,
-        required: [true, 'Category is required'],
+        // required: [true, 'Category is required'],
     },
     isActive: {
         type: Boolean,
@@ -28,11 +28,11 @@ const adSchema = new mongoose.Schema({
     },
     validTill: {
         type: Date,
-        required: [true, 'Valid till date is required'],
+        // required: [true, 'Valid till date is required'],
     },
     location: {
         type: String,
-        required: [true, 'Location is required'],
+        // required: [true, 'Location is required'],
     },
     adImages: {
         type: [String],
