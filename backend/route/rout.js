@@ -112,6 +112,9 @@ const { createTermsAndConditions } = require('../controllers/term/termCreate');
 const { getTermsAndConditions } = require('../controllers/term/termGet');
 const { editTermsAndConditions } = require('../controllers/term/termEdit');
 const { deleteTermsAndConditions } = require('../controllers/term/termDelete');
+const { getSpecificAccountDeletePolicy } = require('../controllers/AccountDeletePolicy/getSpecificAccountDeletion');
+const { getSpecificPrivacyPolicy } = require('../controllers/privacy/getSpecificPrivecy');
+const { getSpecificTermsAndConditions } = require('../controllers/term/getSpecificTerm');
 cookie();
 router.get('/', (req, res) => {
     res.send('Hello savazon!');
@@ -291,12 +294,14 @@ router.post('/create-account-delete-policy',authGuard,createAccountDeletePolicy)
 router.get('/get-account-delete-policy',getAccountDeletePolicy);
 router.put('/edit-account-delete-policy/:id',authGuard,editAccountDeletePolicy);
 router.delete('/delete-account-delete-policy/:id',authGuard,deleteAccountDeletePolicy); 
+router.get('/get-specific-account-delete-policy/:id',getSpecificAccountDeletePolicy);
 
 // privacy policy
 router.post('/create-privacy-policy',authGuard,createPrivacyPolicy);
 router.get('/get-privacy-policy',getPrivacyPolicy);
 router.put('/edit-privacy-policy/:id',authGuard,editPrivacyPolicy);
 router.delete('/delete-privacy-policy/:id',authGuard,deletePrivacyPolicy);
+router.get('/get-specific-privacy-policy/:id',getSpecificPrivacyPolicy);
 
 
 // terms and conditions
@@ -304,5 +309,6 @@ router.post('/create-terms-and-conditions',authGuard,createTermsAndConditions);
 router.get('/get-terms-and-conditions',getTermsAndConditions);
 router.put('/edit-terms-and-conditions/:id',authGuard,editTermsAndConditions);
 router.delete('/delete-terms-and-conditions/:id',authGuard,deleteTermsAndConditions);
+router.get('/get-specific-terms-and-conditions/:id',getSpecificTermsAndConditions);
 
 module.exports=router;
