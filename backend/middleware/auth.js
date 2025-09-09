@@ -7,14 +7,24 @@ const authGuard= async(req,res,next)=>{
         if(!token){
             return res.status(401).json({message:'Unauthorized'});
         }
-        const ExistUser=jwt.verify(token,process.env.SECRET_KEY ||'me333enneffiimsqoqomcngfehdj3idss');
-        // console.log(ExistUser)
-        if(!ExistUser.id){
-            return res.status(401).json({message:'Unauthorized'});
-        }
-        const user=await userModel.findOne({_id:ExistUser.id});
-        //  console.log(user)
-        req.user=user;
+      // ✅ Decode token
+    const decoded = jwt.verify(
+      token,
+      process.env.SECRET_KEY || 'me333enneffiimsqoqomcngfehdj3idss'
+    );
+
+    if (!decoded || !decoded.id) {
+      return res.status(401).json({ message: 'Unauthorized - Invalid Token' });
+    }
+
+    // ✅ Find user
+    const user = await userModel.findById(decoded.id);
+    if (!user) {
+      return res.status(401).json({ message: 'Unauthorized - User Not Found' });
+    }
+
+    // ✅ Attach user to request
+    req.user = user;
         next();
     }
     catch(e){
