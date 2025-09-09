@@ -12,7 +12,7 @@ if(!ExistApplicaton){
  let Created_userId=ExistApplicaton.job_creatorId;
  
 const userId=req.user._id;
-if(Created_userId!=userId){
+if(Created_userId!=userId && req.user.role !== 'ADMIN')   {
     return res.status(400).json({message: 'not specific user exist'});
 }
 

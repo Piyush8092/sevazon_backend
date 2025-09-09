@@ -126,7 +126,7 @@ const UpdateSpecificAdd = async (req, res) => {
         }
         
         let UserId = req.user._id;
-        if (ExistAd.userId.toString() !== UserId.toString() || req.user.role !== 'ADMIN') {
+        if (ExistAd.userId.toString() !== UserId.toString() && req.user.role !== 'ADMIN') {
             return res.status(403).json({message: 'Unauthorized access'});
         }
 
@@ -180,7 +180,7 @@ const DeleteSpecificAdd = async (req, res) => {
             return res.status(404).json({message: 'Ad not found'});
         }
         
-        if (ExistAd.userId.toString() !== userId.toString() || req.user.role !== 'ADMIN') {
+        if (ExistAd.userId.toString() !== userId.toString() && req.user.role !== 'ADMIN') {
             return res.status(403).json({message: 'Unauthorized access'});
         }
         

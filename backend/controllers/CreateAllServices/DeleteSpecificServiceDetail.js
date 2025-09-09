@@ -10,7 +10,7 @@ try{
             return res.status(400).json({message: 'Service not found'});
         }
 
-        if (userId.toString() !== existService.userId.toString()) {
+        if (userId.toString() !== existService.userId.toString() && req.user.role !== 'ADMIN') {
             return res.status(403).json({message: 'Unauthorized access'});
         }
 

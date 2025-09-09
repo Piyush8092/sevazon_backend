@@ -24,7 +24,7 @@ const UpdateSpecificServices = async (req, res) => {
         }
         
         // Check ownership
-        if (ExistUser.userId.toString() !== userId.toString()) {
+        if (ExistUser.userId.toString() !== userId.toString() && req.user.role !== 'ADMIN') {
             return res.status(403).json({message: 'Unauthorized access'});
         }
         

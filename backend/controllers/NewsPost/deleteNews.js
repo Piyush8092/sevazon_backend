@@ -9,7 +9,7 @@ const deleteNews = async (req, res) => {
 if(!ExistNews && req.user.role!='EDITOR'){
             return res.status(400).json({message: 'not specific user exist'});
         }
-        if(ExistNews.userId!=userId){
+        if(ExistNews.userId!=userId && req.user.role !== 'ADMIN'){
             return res.status(400).json({message: 'not specific user exist'});
         }
 

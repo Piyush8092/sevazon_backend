@@ -8,6 +8,9 @@ const deleteContact=async(req,res)=>{
         if(!existContact){
             return res.status(404).json({message: 'Contact not found', status: 404, success: false, error: true});
         }
+        if(req.user.role !== 'ADMIN'){
+            return res.status(403).json({message: 'Unauthorized access', status: 403, success: false, error: true});
+        }
         
         await contactModel.findByIdAndDelete(id);
         

@@ -10,7 +10,7 @@ const deleteJob = async (req, res) => {
             return res.status(404).json({message: 'Job not found'});
         }
         
-        if (ExistJob.userId.toString() !== userId.toString()) {
+        if (ExistJob.userId.toString() !== userId.toString() && req.user.role !== 'ADMIN') {
             return res.status(403).json({message: 'Unauthorized access'});
         }
 

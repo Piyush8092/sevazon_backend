@@ -73,7 +73,7 @@ const { NewsEditorView } = require('../controllers/NewsPost/NewsEditorView');
 const { PropertyEditorView } = require('../controllers/Property/propertyEditorView');
 const { updateApplyJob } = require('../controllers/ApplyJob/EditApplyJob');
 const { LogoutRout } = require('../controllers/logout');
-const { newsLikeDisLike } = require('../controllers/NewsPost/newsLikeDisLike');
+const { newsLike } = require('../controllers/NewsPost/newsLike');
 const { newsComment } = require('../controllers/NewsPost/newsComment');
 const { getUserDetail } = require('../controllers/user/getUserDetail');
 const { updateUser } = require('../controllers/user/updateUser');
@@ -115,6 +115,10 @@ const { deleteTermsAndConditions } = require('../controllers/term/termDelete');
 const { getSpecificAccountDeletePolicy } = require('../controllers/AccountDeletePolicy/getSpecificAccountDeletion');
 const { getSpecificPrivacyPolicy } = require('../controllers/privacy/getSpecificPrivecy');
 const { getSpecificTermsAndConditions } = require('../controllers/term/getSpecificTerm');
+const { deleteApplyJob } = require('../controllers/ApplyJob/deleteJobs');
+const { updateContact } = require('../controllers/contact/updateContact');
+const { getSpecificContact } = require('../controllers/contact/getSpecificContact');
+const { newsDislike } = require('../controllers/NewsPost/newsDisLike');
 cookie();
 router.get('/', (req, res) => {
     res.send('Hello savazon!');
@@ -242,7 +246,8 @@ router.delete('/delete-specific-news/:id',authGuard,deleteNews);
 router.get('/get-query-news',queryNews);
 router.get('/get-news-editor-view',authGuard,NewsEditorView);
 router.put('/news-comment/:news_id',authGuard,newsComment);
-router.put('/news-like/:news_id',authGuard,newsLikeDisLike);
+router.put('/news-like/:news_id',authGuard,newsLike);
+router.put('/news-dislike/:news_id',authGuard,newsDislike);
 
 
 // job Apply
@@ -252,6 +257,8 @@ router.get('/get-specific-apply-job/:apply_id',getSpecificApplyJob);
 router.get('/applier-view',authGuard,getApplyedJob);
 router.get('/job-creator-view',authGuard,getApplyedJobCreterView);
 router.put('/update-job-application/:apply_id',authGuard,updateApplyJob);
+router.delete('/delete-job-application/:apply_id',authGuard,deleteApplyJob);
+  
 
 // user releted route
 router.get('/get-user-detail',authGuard,getUserDetail);
@@ -288,6 +295,10 @@ router.post('create-contact',createContact);
 router.get('/get-all-contact',getContact);
 router.delete('/delete-specific-contact/:id',deleteContact);
 router.get('/get-qurey-contact',queryContact);
+router.get('/get-specific-contact/:id',getSpecificContact);
+router.put('/update-specific-contact/:id',authGuard,updateContact);
+
+
 
 // account delete policy
 router.post('/create-account-delete-policy',authGuard,createAccountDeletePolicy);

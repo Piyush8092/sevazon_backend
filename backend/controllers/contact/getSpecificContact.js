@@ -1,6 +1,6 @@
 let contactModel=require('../../model/contactModel');
 
-const getContact=async(req,res)=>{
+const getSpecificContact=async(req,res)=>{
     try{
        let id=req.params.id;
         let result=await contactModel.findById({_id:id});   
@@ -22,4 +22,4 @@ const getContact=async(req,res)=>{
     }
 }
 
-module.exports={getContact};
+module.exports={getSpecificContact};

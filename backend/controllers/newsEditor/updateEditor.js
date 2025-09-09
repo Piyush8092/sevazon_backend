@@ -13,7 +13,7 @@ const updateEditor = async (req, res) => {
         }
 
         let UserId = req.user._id;
-        if (ExistEditor.userId.toString() !== UserId.toString()) {
+        if (ExistEditor.userId.toString() !== UserId.toString() && req.user.role !== 'ADMIN') {
             return res.status(403).json({message: 'Unauthorized access'});
         }
 

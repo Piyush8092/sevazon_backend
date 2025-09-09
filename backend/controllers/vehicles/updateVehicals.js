@@ -12,7 +12,7 @@ const updateVehicle = async (req, res) => {
         }
 
         let UserId = req.user._id;
-        if (ExistVehicle.userId.toString() !== UserId.toString()) {
+        if (ExistVehicle.userId.toString() !== UserId.toString() && req.user.role !== 'ADMIN') {
             return res.status(403).json({message: 'Unauthorized access'});
         }
 

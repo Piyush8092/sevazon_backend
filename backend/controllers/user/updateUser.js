@@ -10,7 +10,7 @@ const updateUser = async (req, res) => {
         }
 
         let UserRole   = req.user.role;
-         if (UserRole !== 'ADMIN') {
+         if (UserRole !== 'ADMIN' && req.user._id.toString() !== id.toString()) {
             return res.status(403).json({message: 'Unauthorized access'});
         }
 

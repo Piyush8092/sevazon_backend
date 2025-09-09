@@ -12,8 +12,7 @@ const updateNews = async (req, res) => {
 
         // Authorization check - only owner or EDITOR/ADMIN can update
         let UserId = req.user._id;
-        if (ExistNews.userId.toString() !== UserId.toString() && 
-            req.user.role !== 'EDITOR' && req.user.role !== 'ADMIN') {
+        if (ExistNews.userId.toString() !== UserId.toString() && req.user.role !== 'ADMIN') {
             return res.status(403).json({message: 'Unauthorized access'});
         }
 

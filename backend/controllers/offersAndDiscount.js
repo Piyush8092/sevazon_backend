@@ -143,7 +143,7 @@ const UpdateSpecificOffer = async (req, res) => {
         }
         
         let UserId = req.user._id;
-        if (Existoffer.userId.toString() !== UserId.toString() || req.user.role !== 'ADMIN') {
+        if (Existoffer.userId.toString() !== UserId.toString() && req.user.role !== 'ADMIN') {
             return res.status(403).json({message: 'Unauthorized access'});
         }
 
@@ -215,7 +215,7 @@ const DeleteSpecificOffer = async (req, res) => {
             return res.status(404).json({message: 'Offer not found'});
         }
         
-        if (Existoffer.userId.toString() !== userId.toString() || req.user.role !== 'ADMIN') {
+        if (Existoffer.userId.toString() !== userId.toString() && req.user.role !== 'ADMIN') {
             return res.status(403).json({message: 'Unauthorized access'});
         }
         
