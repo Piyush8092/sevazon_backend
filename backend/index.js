@@ -13,11 +13,29 @@ app.use(express.urlencoded({ limit: "50mb", extended: true }));
 
 app.use(cookieParser());
 app.use(cors({
-  origin: ["https://www.loklink.in","https://loklink-adminportal.vercel.app", "http://localhost:3000","https://localhost:3000"], 
+  origin: [
+    "https://www.loklink.in",
+    "https://loklink-adminportal.vercel.app", 
+    "http://localhost:3000",
+    "http://localhost:3001", // Add this if needed
+    "https://localhost:3000"
+  ], 
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
+  allowedHeaders: [
+    "Content-Type", 
+    "Authorization", 
+    "X-Requested-With",
+    "Accept",
+    "Origin",
+    "Cache-Control"
+  ],
+  exposedHeaders: ["Set-Cookie"],
+  optionsSuccessStatus: 200
 }));
+
+// Add this line to handle preflight requests
+app.options('*', cors());
 
 app.use('/api', router);
 
