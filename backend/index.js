@@ -13,7 +13,7 @@ app.use(express.urlencoded({ limit: "50mb", extended: true }));
 
 app.use(cookieParser());
 app.use(cors({
-  origin: ["https://www.loklink.in","https://loklink-adminportal.vercel.app", "http://localhost:3000"], 
+  origin: ["https://www.loklink.in","https://loklink-adminportal.vercel.app", "http://localhost:3000","https://localhost:3000"], 
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
