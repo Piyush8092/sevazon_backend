@@ -34,14 +34,24 @@ const LoginRout = async (req, res) => {
             return res.status(400).json({ message: 'Invalid credentials' });
         }
         
-        let token = jwt.sign({id: existingUser._id}, process.env.SECRET_KEY ||'me333enneffiimsqoqomcngfehdj3idss', {expiresIn: '1d'});
-       
-        res.cookie('jwt', token, {httpOnly: true, maxAge: 365*1000*60*60*24});
+        let token = jwt.sign(
+            { id: existingUser._id },
+            process.env.SECRET_KEY || 'me333enneffiimsqoqomcngfehdj3idss',
+            { expiresIn: '1d' }
+        );
 
-existingUser.token = token;
+        // ✅ Fix here
+        res.cookie('jwt', token, {
+            httpOnly: true,
+            secure: true,          // Render pe hamesha https hota hai → true rakho
+            sameSite: "none",      // Cross-origin ke liye zaruri
+            maxAge: 365*24*60*60*1000 // 1 saal (ms me)
+        });
+
+        existingUser.token = token;
         res.json({ message: 'Login successful', status: 200, data: existingUser, success: true, error: false });
     } catch (e) {
-        res.json({message: 'Something went wrong', status: 500, data: e, success: false, error: true});
+        res.json({ message: 'Something went wrong', status: 500, data: e, success: false, error: true });
     }
 };
 
