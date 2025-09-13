@@ -119,6 +119,10 @@ const { deleteApplyJob } = require('../controllers/ApplyJob/deleteJobs');
 const { updateContact } = require('../controllers/contact/updateContact');
 const { getSpecificContact } = require('../controllers/contact/getSpecificContact');
 const { newsDislike } = require('../controllers/NewsPost/newsDisLike');
+
+// Import FCM routes
+const fcmRoutes = require('./fcmRoutes');
+
 cookie();
 router.get('/', (req, res) => {
     res.send('Hello savazon!');
@@ -321,5 +325,8 @@ router.get('/get-terms-and-conditions',getTermsAndConditions);
 router.put('/edit-terms-and-conditions/:id',authGuard,editTermsAndConditions);
 router.delete('/delete-terms-and-conditions/:id',authGuard,deleteTermsAndConditions);
 router.get('/get-specific-terms-and-conditions/:id',getSpecificTermsAndConditions);
+
+// FCM notification routes
+router.use('/fcm', fcmRoutes);
 
 module.exports=router;
