@@ -62,6 +62,44 @@ const historyQueryLimit = rateLimit({
     }
 });
 
+// Rate limiter for Agora call operations
+const agoraCallLimit = rateLimit({
+    windowMs: 60 * 1000, // 1 minute
+    max: 30, // Limit to 30 call operations per minute
+    message: {
+        message: 'Too many call requests, please try again later',
+        status: 429,
+        success: false,
+        error: true
+    }
+});
+
+// Rate limiter for Agora token generation
+const agoraTokenLimit = rateLimit({
+    windowMs: 60 * 1000, // 1 minute
+    max: 50, // Limit to 50 token generations per minute
+    message: {
+        message: 'Too many token generation requests, please try again later',
+        status: 429,
+        success: false,
+        error: true
+    }
+});
+
+// General rate limiter for all Agora endpoints
+const generalAgoraLimit = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 200, // Limit each IP to 200 requests per windowMs
+    message: {
+        message: 'Too many Agora requests from this IP, please try again later',
+        status: 429,
+        success: false,
+        error: true
+    },
+    standardHeaders: true,
+    legacyHeaders: false
+});
+
 // Spam prevention middleware
 const spamPrevention = async (req, res, next) => {
     try {
@@ -224,6 +262,9 @@ module.exports = {
     manualNotificationLimit,
     preferencesUpdateLimit,
     historyQueryLimit,
+    agoraCallLimit,
+    agoraTokenLimit,
+    generalAgoraLimit,
     spamPrevention,
     notificationSpamDetection,
     duplicateNotificationPrevention

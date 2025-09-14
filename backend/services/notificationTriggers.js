@@ -92,7 +92,7 @@ class NotificationTriggers {
     async onMissedCall(callData) {
         try {
             const { recipientId, callerId, callerName, callType = 'voice' } = callData;
-            
+
             const title = `Missed ${callType} call`;
             const body = `You missed a call from ${callerName}`;
 
@@ -114,6 +114,102 @@ class NotificationTriggers {
 
         } catch (error) {
             console.error('Error sending missed call notification:', error);
+            return { success: false, error: error.message };
+        }
+    }
+
+    // Call answered notifications
+    async onCallAnswered(callData) {
+        try {
+            const { callerId, calleeId, calleeName, callType = 'voice' } = callData;
+
+            const title = 'Call Answered';
+            const body = `${calleeName} answered your ${callType} call`;
+
+            const data = {
+                type: 'call_answered',
+                calleeId: calleeId.toString(),
+                calleeName,
+                callType,
+                callId: callData.callId?.toString()
+            };
+
+            const options = {
+                category: 'calls',
+                type: 'callAnswered',
+                priority: 'high',
+                senderId: calleeId
+            };
+
+            return await notificationService.sendToUser(callerId, title, body, data, options);
+
+        } catch (error) {
+            console.error('Error sending call answered notification:', error);
+            return { success: false, error: error.message };
+        }
+    }
+
+    // Call declined notifications
+    async onCallDeclined(callData) {
+        try {
+            const { callerId, calleeId, calleeName, callType = 'voice' } = callData;
+
+            const title = 'Call Declined';
+            const body = `${calleeName} declined your ${callType} call`;
+
+            const data = {
+                type: 'call_declined',
+                calleeId: calleeId.toString(),
+                calleeName,
+                callType,
+                callId: callData.callId?.toString()
+            };
+
+            const options = {
+                category: 'calls',
+                type: 'callDeclined',
+                priority: 'normal',
+                senderId: calleeId
+            };
+
+            return await notificationService.sendToUser(callerId, title, body, data, options);
+
+        } catch (error) {
+            console.error('Error sending call declined notification:', error);
+            return { success: false, error: error.message };
+        }
+    }
+
+    // Call ended notifications
+    async onCallEnded(callData) {
+        try {
+            const { recipientId, endedByUserId, endedByName, callType = 'voice', duration = 0 } = callData;
+
+            const title = 'Call Ended';
+            const body = duration > 0
+                ? `Call ended after ${Math.floor(duration / 60)}:${(duration % 60).toString().padStart(2, '0')}`
+                : 'Call ended';
+
+            const data = {
+                type: 'call_ended',
+                endedByUserId: endedByUserId.toString(),
+                endedByName,
+                callType,
+                duration: duration.toString(),
+                callId: callData.callId?.toString()
+            };
+
+            const options = {
+                category: 'calls',
+                type: 'callEnded',
+                priority: 'normal',
+                senderId: endedByUserId
+            };
+
+            return await notificationService.sendToUser(recipientId, title, body, data, options);
+
+        } catch (error) {
+            console.error('Error sending call ended notification:', error);
             return { success: false, error: error.message };
         }
     }

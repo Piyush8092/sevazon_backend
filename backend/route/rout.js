@@ -123,6 +123,11 @@ const { newsDislike } = require('../controllers/NewsPost/newsDisLike');
 // Import FCM routes
 const fcmRoutes = require('./fcmRoutes');
 
+// Import Agora controller and validation
+const agoraController = require('../controllers/agora/agoraController');
+const { body, param } = require('express-validator');
+const { agoraCallLimit, agoraTokenLimit, generalAgoraLimit } = require('../middleware/rateLimiter');
+
 cookie();
 router.get('/', (req, res) => {
     res.send('Hello savazon!');
@@ -325,6 +330,134 @@ router.get('/get-terms-and-conditions',getTermsAndConditions);
 router.put('/edit-terms-and-conditions/:id',authGuard,editTermsAndConditions);
 router.delete('/delete-terms-and-conditions/:id',authGuard,deleteTermsAndConditions);
 router.get('/get-specific-terms-and-conditions/:id',getSpecificTermsAndConditions);
+
+// Agora video/voice call routes
+router.post('/generate-call-token', [
+  generalAgoraLimit,
+  agoraTokenLimit,
+  body('channelName')
+    .notEmpty()
+    .withMessage('Channel name is required')
+    .isLength({ min: 1, max: 64 })
+    .withMessage('Channel name must be between 1 and 64 characters')
+    .matches(/^[a-zA-Z0-9_-]+$/)
+    .withMessage('Channel name can only contain letters, numbers, underscores, and hyphens'),
+
+  body('userId')
+    .notEmpty()
+    .withMessage('User ID is required')
+    .isLength({ min: 1, max: 255 })
+    .withMessage('User ID must be between 1 and 255 characters'),
+
+  body('role')
+    .optional()
+    .isIn(['publisher', 'subscriber'])
+    .withMessage('Role must be either "publisher" or "subscriber"')
+], agoraController.generateToken);
+
+router.post('/initiate-call', [
+  authGuard,
+  generalAgoraLimit,
+  agoraCallLimit,
+  body('calleeId')
+    .notEmpty()
+    .withMessage('Callee ID is required')
+    .isLength({ min: 1, max: 255 })
+    .withMessage('Callee ID must be between 1 and 255 characters'),
+
+  body('callType')
+    .optional()
+    .isIn(['voice', 'video'])
+    .withMessage('Call type must be either "voice" or "video"'),
+
+  body('callerId')
+    .optional() // Can come from auth middleware
+    .isLength({ min: 1, max: 255 })
+    .withMessage('Caller ID must be between 1 and 255 characters')
+], agoraController.initiateCall);
+
+router.post('/answer-call/:callId', [
+  authGuard,
+  generalAgoraLimit,
+  agoraCallLimit,
+  param('callId')
+    .notEmpty()
+    .withMessage('Call ID is required')
+    .isUUID()
+    .withMessage('Call ID must be a valid UUID'),
+
+  body('userId')
+    .optional() // Can come from auth middleware
+    .isLength({ min: 1, max: 255 })
+    .withMessage('User ID must be between 1 and 255 characters')
+], agoraController.answerCall);
+
+router.post('/decline-call/:callId', [
+  authGuard,
+  generalAgoraLimit,
+  agoraCallLimit,
+  param('callId')
+    .notEmpty()
+    .withMessage('Call ID is required')
+    .isUUID()
+    .withMessage('Call ID must be a valid UUID'),
+
+  body('userId')
+    .optional() // Can come from auth middleware
+    .isLength({ min: 1, max: 255 })
+    .withMessage('User ID must be between 1 and 255 characters')
+], agoraController.declineCall);
+
+router.post('/end-call/:callId', [
+  authGuard,
+  generalAgoraLimit,
+  agoraCallLimit,
+  param('callId')
+    .notEmpty()
+    .withMessage('Call ID is required')
+    .isUUID()
+    .withMessage('Call ID must be a valid UUID'),
+
+  body('userId')
+    .optional() // Can come from auth middleware
+    .isLength({ min: 1, max: 255 })
+    .withMessage('User ID must be between 1 and 255 characters')
+], agoraController.endCall);
+
+router.get('/call/:callId', [
+  authGuard,
+  generalAgoraLimit,
+  param('callId')
+    .notEmpty()
+    .withMessage('Call ID is required')
+    .isUUID()
+    .withMessage('Call ID must be a valid UUID')
+], agoraController.getCall);
+
+router.get('/call-history/:userId', [
+  authGuard,
+  generalAgoraLimit,
+  param('userId')
+    .notEmpty()
+    .withMessage('User ID is required')
+    .isLength({ min: 1, max: 255 })
+    .withMessage('User ID must be between 1 and 255 characters')
+], agoraController.getCallHistory);
+
+router.get('/agora/status', [
+  generalAgoraLimit
+], agoraController.getStatus);
+
+// Certificate management routes (admin only)
+router.post('/agora/reset-certificate', [
+  authGuard,
+  generalAgoraLimit
+], agoraController.resetToPrimaryCertificate);
+
+router.post('/agora/switch-certificate', [
+  authGuard,
+  generalAgoraLimit
+], agoraController.switchToBackupCertificate);
 
 // FCM notification routes
 router.use('/fcm', fcmRoutes);
