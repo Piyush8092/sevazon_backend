@@ -11,6 +11,15 @@ class AgoraService {
     this.appId = process.env.AGORA_APP_ID || '400bb82ebad34539aebcb6de61e5a976';
     this.appCertificate = process.env.AGORA_APP_CERTIFICATE;
     this.appCertificateBackup = process.env.AGORA_APP_CERTIFICATE_BACKUP;
+
+    // For development, provide a fallback certificate if not set
+    if (!this.appCertificate && process.env.NODE_ENV === 'development') {
+      // This is a placeholder certificate for development only
+      // In production, you MUST set the AGORA_APP_CERTIFICATE environment variable
+      console.warn('⚠️ Using development fallback certificate. Set AGORA_APP_CERTIFICATE for production!');
+      this.appCertificate = 'development_certificate_placeholder';
+    }
+
     this.currentCertificate = this.appCertificate; // Track which certificate is currently being used
 
     // Token expiration time (24 hours)
@@ -21,9 +30,10 @@ class AgoraService {
 
     console.log('🎥 AgoraService initialized');
     console.log(`📱 App ID: ${this.appId}`);
-    console.log(`🔐 Primary Certificate: ${this.appCertificate ? 'Configured' : 'Not configured'}`);
+    console.log(`🔐 App Certificate: ${this.appCertificate ? 'Configured' : 'Not configured'}`);
     console.log(`🔐 Backup Certificate: ${this.appCertificateBackup ? 'Available' : 'Not available'}`);
     console.log(`🔐 Current Certificate: ${this.currentCertificate ? 'Active' : 'None'}`);
+    console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
   }
 
   /**
@@ -35,21 +45,23 @@ class AgoraService {
    */
   generateToken(channelName, userId, role = 'publisher') {
     try {
-      if (!this.currentCertificate) {
-        console.warn('⚠️ No App Certificate configured, returning null token for development');
+      // Convert string userId to numeric UID
+      const uid = this.generateUid();
+
+      // For development mode without proper certificate
+      if (!this.currentCertificate || this.currentCertificate === 'development_certificate_placeholder') {
+        console.warn('⚠️ Development mode: Using null token (certificate not properly configured)');
         return {
           token: null,
           channelName,
           userId,
-          uid: this.generateUid(),
+          uid,
           expiresAt: Date.now() + (this.tokenExpirationInSeconds * 1000),
           appId: this.appId,
-          certificateStatus: 'not_configured'
+          certificateStatus: 'not_configured',
+          developmentMode: true
         };
       }
-
-      // Convert string userId to numeric UID
-      const uid = this.generateUid();
 
       // Determine Agora role
       const agoraRole = role === 'publisher' ? RtcRole.PUBLISHER : RtcRole.SUBSCRIBER;
@@ -100,9 +112,42 @@ class AgoraService {
 
           } catch (backupError) {
             console.error('❌ Backup certificate also failed:', backupError);
+
+            // Fallback for development
+            if (process.env.NODE_ENV === 'development') {
+              console.warn('⚠️ Falling back to null token for development');
+              return {
+                token: null,
+                channelName,
+                userId,
+                uid,
+                expiresAt: Date.now() + (this.tokenExpirationInSeconds * 1000),
+                appId: this.appId,
+                certificateStatus: 'error',
+                developmentMode: true,
+                error: `Both certificates failed. Primary: ${tokenError.message}, Backup: ${backupError.message}`
+              };
+            }
+
             throw new Error(`Both primary and backup certificates failed. Primary: ${tokenError.message}, Backup: ${backupError.message}`);
           }
         } else {
+          // Fallback for development
+          if (process.env.NODE_ENV === 'development') {
+            console.warn('⚠️ Falling back to null token for development');
+            return {
+              token: null,
+              channelName,
+              userId,
+              uid,
+              expiresAt: Date.now() + (this.tokenExpirationInSeconds * 1000),
+              appId: this.appId,
+              certificateStatus: 'error',
+              developmentMode: true,
+              error: tokenError.message
+            };
+          }
+
           throw tokenError;
         }
       }
@@ -117,10 +162,28 @@ class AgoraService {
         expiresAt: privilegeExpiredTs * 1000,
         appId: this.appId,
         certificateUsed,
-        certificateStatus: 'active'
+        certificateStatus: 'configured',
+        developmentMode: false
       };
     } catch (error) {
       console.error('❌ Error generating Agora token:', error);
+
+      // Fallback for development
+      if (process.env.NODE_ENV === 'development') {
+        console.warn('⚠️ Falling back to null token for development');
+        return {
+          token: null,
+          channelName,
+          userId,
+          uid: this.generateUid(),
+          expiresAt: Date.now() + (this.tokenExpirationInSeconds * 1000),
+          appId: this.appId,
+          certificateStatus: 'error',
+          developmentMode: true,
+          error: error.message
+        };
+      }
+
       throw new Error(`Failed to generate token: ${error.message}`);
     }
   }
@@ -333,20 +396,33 @@ class AgoraService {
    * @returns {Object} Service status
    */
   getStatus() {
+    const isDevelopmentMode = process.env.NODE_ENV === 'development';
+    const isUsingPlaceholder = this.currentCertificate === 'development_certificate_placeholder';
+
     return {
       status: 'healthy',
       appId: this.appId,
+      environment: process.env.NODE_ENV || 'development',
+      developmentMode: isDevelopmentMode,
       certificates: {
         primary: {
-          configured: !!this.appCertificate,
-          value: this.appCertificate ? `${this.appCertificate.substring(0, 8)}...` : null
+          configured: !!this.appCertificate && this.appCertificate !== 'development_certificate_placeholder',
+          value: this.appCertificate && this.appCertificate !== 'development_certificate_placeholder' ?
+                 `${this.appCertificate.substring(0, 8)}...` : null,
+          isPlaceholder: this.appCertificate === 'development_certificate_placeholder'
         },
         backup: {
           configured: !!this.appCertificateBackup,
           value: this.appCertificateBackup ? `${this.appCertificateBackup.substring(0, 8)}...` : null
         },
         currentlyUsing: this.currentCertificate === this.appCertificate ? 'primary' :
-                       this.currentCertificate === this.appCertificateBackup ? 'backup' : 'none'
+                       this.currentCertificate === this.appCertificateBackup ? 'backup' : 'none',
+        usingPlaceholder: isUsingPlaceholder
+      },
+      tokenGeneration: {
+        willGenerateNullTokens: !this.currentCertificate || isUsingPlaceholder,
+        reason: !this.currentCertificate ? 'No certificate configured' :
+                isUsingPlaceholder ? 'Using development placeholder certificate' : 'Certificates properly configured'
       },
       activeCalls: this.activeCalls.size,
       timestamp: new Date()

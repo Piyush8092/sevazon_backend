@@ -3,7 +3,11 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node index.js",
+    "dev": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "test:agora": "node scripts/testAgoraService.js",
+    "test:agora:dev": "node scripts/testAgoraDevMode.js"
   },
   "repository": {
     "type": "git",
@@ -18,6 +22,7 @@
   "homepage": "https://github.com/Piyush8092/sevazon_backend#readme",
   "description": "",
   "dependencies": {
+    "agora-access-token": "^2.0.4",
     "agora-token": "^2.0.5",
     "bcryptjs": "^3.0.2",
     "compression": "^1.8.1",
