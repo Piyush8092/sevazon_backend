@@ -1,6 +1,6 @@
-let userModel = require('../../model/createAllServiceProfileModel');
+let userModel = require('../../model/userModel');
 
-const updateUser = async (req, res) => {
+const AdminUpdate = async (req, res) => {
     try {           
         let id = req.params.id;
         let payload = req.body;
@@ -8,12 +8,10 @@ const updateUser = async (req, res) => {
         if (!ExistUser) {
             return res.status(404).json({message: 'User not found'});
         }
-
         let UserRole   = req.user.role;
-         if (UserRole !== 'ADMIN' && req.user._id.toString() !== id.toString()) {
+         if (UserRole !== 'ADMIN') {
             return res.status(403).json({message: 'Unauthorized access'});
         }
-
         const result = await userModel.findByIdAndUpdate(id, payload, {
             new: true,
             runValidators: true
@@ -28,7 +26,6 @@ const updateUser = async (req, res) => {
         });
 
     }
-
     catch (e) {
         res.json({
             message: 'Something went wrong', 
@@ -40,5 +37,6 @@ const updateUser = async (req, res) => {
     }
 };
 
-module.exports = { updateUser };
+module.exports = { AdminUpdate };
+
 

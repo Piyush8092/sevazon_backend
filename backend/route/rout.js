@@ -119,6 +119,10 @@ const { deleteApplyJob } = require('../controllers/ApplyJob/deleteJobs');
 const { updateContact } = require('../controllers/contact/updateContact');
 const { getSpecificContact } = require('../controllers/contact/getSpecificContact');
 const { newsDislike } = require('../controllers/NewsPost/newsDisLike');
+const { AdminUpdate } = require('../controllers/user/AdminUpdate');
+const { getSpecificUser } = require('../controllers/user/getSpecificUser');
+const { adminAllUserView } = require('../controllers/user/adminAllUserView');
+const { AdminSpecificUserView } = require('../controllers/user/AdminSpecificUserView');
 cookie();
 router.get('/', (req, res) => {
     res.send('Hello savazon!');
@@ -260,10 +264,22 @@ router.put('/update-job-application/:apply_id',authGuard,updateApplyJob);
 router.delete('/delete-job-application/:apply_id',authGuard,deleteApplyJob);
   
 
+
 // user releted route
 router.get('/get-user-detail',authGuard,getUserDetail);
-router.put('/update-user/:id',authGuard,updateUser);
+router.get('/get-all-user',authGuard,getAuthUserDetail);
+router.get('/get-specific-user/:id',authGuard,getSpecificUser);
 router.delete('/delete-user/:id',authGuard,deleteUser);
+// update service profile => normal user
+router.put('/update-user/:id',authGuard,updateUser);
+
+// admin Access For Main UserModel Role change ['admin','user']
+router.put('/update-admin-role/:id',authGuard,AdminUpdate);
+router.get('/admin-all-user-view',authGuard,adminAllUserView);
+router.get('/admin-get-specific-user/:id',authGuard,AdminSpecificUserView);
+ 
+
+
 
 
 // vehicles post
