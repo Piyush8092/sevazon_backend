@@ -265,7 +265,7 @@ router.delete('/delete-job-application/:apply_id',authGuard,deleteApplyJob);
   
 
 
-// user releted route
+// user releted route =>service profile releretd route
 router.get('/get-user-detail',authGuard,getUserDetail);
 router.get('/get-all-user',authGuard,getAuthUserDetail);
 router.get('/get-specific-user/:id',authGuard,getSpecificUser);
@@ -273,9 +273,13 @@ router.delete('/delete-user/:id',authGuard,deleteUser);
 // update service profile => normal user
 router.put('/update-user/:id',authGuard,updateUser);
 
-// admin Access For Main UserModel Role change ['admin','user']
+
+
+// usermodel releted route 
+// admin Access For Main UserModel Role change ['admin','user'] =>at the time of login user 
 router.put('/update-admin-role/:id',authGuard,AdminUpdate);
-router.get('/admin-all-user-view',authGuard,adminAllUserView);
+// usermodel under route
+router.get('/login-user-view',authGuard,adminAllUserView);
 router.get('/admin-get-specific-user/:id',authGuard,AdminSpecificUserView);
  
 
@@ -307,10 +311,10 @@ router.put('/update-local-services/:id',authGuard,updateLocalService);
 
 
 // coontact us
-router.post('create-contact',createContact);
+router.post('/create-contact',createContact);
 router.get('/get-all-contact',getContact);
 router.delete('/delete-specific-contact/:id',deleteContact);
-router.get('/get-qurey-contact',queryContact);
+router.get('/get-query-contact',queryContact);
 router.get('/get-specific-contact/:id',getSpecificContact);
 router.put('/update-specific-contact/:id',authGuard,updateContact);
 
