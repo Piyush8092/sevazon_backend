@@ -123,7 +123,9 @@ const { AdminUpdate } = require('../controllers/user/AdminUpdate');
 const { getSpecificUser } = require('../controllers/user/getSpecificUser');
 const { adminAllUserView } = require('../controllers/user/adminAllUserView');
 const { AdminSpecificUserView } = require('../controllers/user/AdminSpecificUserView');
-cookie();
+const { queryAdminUser } = require('../controllers/user/queryUserModel');
+const { queryServiceUser } = require('../controllers/user/queryServiceUser');
+ cookie();
 router.get('/', (req, res) => {
     res.send('Hello savazon!');
 });
@@ -272,7 +274,7 @@ router.get('/get-specific-user/:id',authGuard,getSpecificUser);
 router.delete('/delete-user/:id',authGuard,deleteUser);
 // update service profile => normal user
 router.put('/update-user/:id',authGuard,updateUser);
-
+router.get('/get-service-query-user',queryServiceUser);
 
 
 // usermodel releted route 
@@ -281,6 +283,7 @@ router.put('/update-admin-role/:id',authGuard,AdminUpdate);
 // usermodel under route
 router.get('/login-user-view',authGuard,adminAllUserView);
 router.get('/admin-get-specific-user/:id',authGuard,AdminSpecificUserView);
+router.get('/admin-get-query-user',queryAdminUser);
  
 
 
