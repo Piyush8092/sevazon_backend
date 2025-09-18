@@ -1,4 +1,4 @@
-let userModel = require('../../model/userModel');
+let userModel = require('../../model/createAllServiceProfileModel');
 
 const getUserDetail = async (req, res) => {
 
