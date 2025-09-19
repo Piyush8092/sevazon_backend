@@ -125,6 +125,8 @@ const { adminAllUserView } = require('../controllers/user/adminAllUserView');
 const { AdminSpecificUserView } = require('../controllers/user/AdminSpecificUserView');
 const { queryAdminUser } = require('../controllers/user/queryUserModel');
 const { queryServiceUser } = require('../controllers/user/queryServiceUser');
+const { getNotVerifiedUser } = require('../controllers/newsEditor/getNotVerifiedEditor');
+const { getVerifiedUser } = require('../controllers/newsEditor/getVerifiedUser');
  cookie();
 router.get('/', (req, res) => {
     res.send('Hello savazon!');
@@ -239,6 +241,9 @@ router.get('/get-specific-editor/:id',getSpecificEditor);
   router.get('/get-query-editor',queryEditors);
   // for followers and following 
   router.put('/update-follower-detail/:id',authGuard,updateFollower);
+router.get('/verified-editor',authGuard,getVerifiedUser);
+router.get('/not-verified-editor',authGuard,getNotVerifiedUser);
+
 
 
 
