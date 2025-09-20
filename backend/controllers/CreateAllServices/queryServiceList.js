@@ -16,7 +16,8 @@ const queryServiceList = async (req, res) => {
         const searchQuery = {
             $or: [
                 { name: regexQuery },
-                { 'subService.name': regexQuery }
+                { 'subService.name': regexQuery },
+                
             ]
         };
         
