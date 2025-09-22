@@ -5,7 +5,7 @@ const getAllApplyJob = async (req, res) => {
          let page = req.query.page || 1;
         let limit = req.query.limit || 10;
         const skip = (page - 1) * limit;
-        let role=req.user._id;
+        let role=req.user.role;
         if(role!=='ADMIN'){
                     res.json({message: 'not auth,somethin went wrong went wrong', status: 500,  success: false, error: true});
 
