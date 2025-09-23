@@ -27,14 +27,7 @@ const CreateAllServices = async (req, res) => {
         .json({ message: "All required fields must be provided" });
     }
 
-let existUser = await createServiceModel.findOne({userId: req.user._id});
-if(existUser.profileType === 'Service Profile' && payload.profileType === 'Service Profile'){
-    return res.status(400).json({message: 'Service already exists'});
-}
-
-if(existUser.profileType === 'Business Profile' && payload.profileType === 'Business Profile'){
-    return res.status(400).json({message: 'Business already exists'});
-}
+ 
     // --- Conditional validation based on profile type ---
     if (payload.profileType === "Service Profile") {
       if (!payload.description) {
