@@ -127,6 +127,7 @@ const { queryAdminUser } = require('../controllers/user/queryUserModel');
 const { queryServiceUser } = require('../controllers/user/queryServiceUser');
 const { getNotVerifiedUser } = require('../controllers/newsEditor/getNotVerifiedEditor');
 const { getVerifiedUser } = require('../controllers/newsEditor/getVerifiedUser');
+const { getServiceCreaterView } = require('../controllers/AllServicesRegistration/getServiceCreaterView');
  cookie();
 router.get('/', (req, res) => {
     res.send('Hello savazon!');
@@ -171,6 +172,8 @@ router.get('/get-all-service',GetAllServices);
 router.put('/update-specific-service-like/:id',authGuard,updateLike);
 router.put('/update-specific-service-dislike/:id',authGuard,updateDislike);
 router.put('/update-specific-service-review/:id',authGuard,UpdateReview);
+// for get  created service or business profile of both in my profile
+router.get('/get-service-creator-view',authGuard,getServiceCreaterView);
 
  
 
