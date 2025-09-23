@@ -114,51 +114,51 @@ const MatrimonySchema = new mongoose.Schema({
     partnerAge: {
         min: {
             type: Number,
-            required: [true, 'Partner minimum age is required'],
+            // required: [true, 'Partner minimum age is required'],
         },
         max: {
             type: Number,
-            required: [true, 'Partner maximum age is required'],
+            // required: [true, 'Partner maximum age is required'],
         }
     },
     partnerHeight: {
         min: {
             type: String,
-            required: [true, 'Partner minimum height is required'],
+            // required: [true, 'Partner minimum height is required'],
         },
         max: {
             type: String,
-            required: [true, 'Partner maximum height is required'],
+            // required: [true, 'Partner maximum height is required'],
         }
     },
     partnerMaritalStatus: {
         type: [String],
-        enum: ['Never Married', 'Divorced', 'Widowed', 'Separated'],
-        required: [true, 'Partner marital status is required'],
+     enum: ['Never Married', 'Divorced', 'Widowed', 'Separated'],
+        // required: [true, 'Partner marital status is required'],
     },
     partnerCity: {
         type: String,
-        required: [true, 'Partner city is required'],
+        // required: [true, 'Partner city is required'],
     },
     partnerState: {
         type: String,
-        required: [true, 'Partner state is required'],
+        // required: [true, 'Partner state is required'],
     },
     partnerEmploymentType: {
         type: String,
-        enum: ['Private Job', 'Government Job', 'Business', 'Self Employed', 'Student', 'Not Working'],
-        required: [true, 'Partner employment type is required'],
+         enum: ['Private Job', 'Government Job', 'Business', 'Self Employed', 'Student', 'Not Working'],
+        // required: [true, 'Partner employment type is required'],
     },
     partnerReligion: {
         type: String,
-        required: [true, 'Partner religion is required'],
+        // required: [true, 'Partner religion is required'],
     },
     partnerRashiAstroDetails: {
         type: String,
     },
     partnerMotherTongue: {
         type: String,
-        required: [true, 'Partner mother tongue is required'],
+        // required: [true, 'Partner mother tongue is required'],
     },
     
     // System fields
