@@ -128,6 +128,13 @@ const { queryServiceUser } = require('../controllers/user/queryServiceUser');
 const { getNotVerifiedUser } = require('../controllers/newsEditor/getNotVerifiedEditor');
 const { getVerifiedUser } = require('../controllers/newsEditor/getVerifiedUser');
 const { getServiceCreaterView } = require('../controllers/AllServicesRegistration/getServiceCreaterView');
+const { createLead } = require('../controllers/leads/createLead');
+const { getAllLead } = require('../controllers/leads/getAllLead');
+const { getSpecificLead } = require('../controllers/leads/getSpecificLead');
+const { updateLead } = require('../controllers/leads/updateLead');
+const { deleteLead } = require('../controllers/leads/daleteLead');
+const { getQueryLead } = require('../controllers/leads/getQueryLead');
+const { getLeadCreaterView } = require('../controllers/leads/getLeadCreaterView');
  cookie();
 router.get('/', (req, res) => {
     res.send('Hello savazon!');
@@ -318,6 +325,14 @@ router.get('/get-local-services-creator-view',authGuard,LocalServiceCreaterView)
 router.get('/get-query-local-services',queryLocalServices);
 router.put('/update-local-services/:id',authGuard,updateLocalService);
 
+//leads
+router.post('/create-lead',authGuard,createLead);
+router.get('/get-all-lead',getAllLead);
+router.get('/get-specific-lead/:id',getSpecificLead);
+router.put('/update-specific-lead/:id',authGuard,updateLead);
+router.delete('/delete-specific-lead/:id',authGuard,deleteLead);
+router.get('/get-query-lead',getQueryLead);
+router.get('/get-lead-creator-view',authGuard,getLeadCreaterView);
 
 
 
