@@ -7,34 +7,23 @@ const ApplyedJob = async (req, res) => {
     try {       
         let id = req.params.job_id;
         let payload = req.body;
-        let jobType = payload.jobType;
-
-        let ExistJob;
-        // Check which job type it belongs to
-        if(jobType == 'JOB'){
-            ExistJob = await jobModel.findById(id);
-        }
-        else if(jobType == 'MATRIMONY'){
-            ExistJob = await MatrimonyModel.findById(id);
-        }
-        else if(jobType == 'PROPERTY'){
-            ExistJob = await PropertyModel.findById(id);
-        }
-
-        if(!ExistJob){
-            return res.status(400).json({message: 'Job not found'});
-        }
-        
+//  console.log(payload);
+         // Check which job type it belongs to
+             ExistJob = await jobModel.findById(id);
+    if(!ExistJob){
+        return res.status(400).json({message: 'Job not found'});
+    }
+       
         // Validate required fields
         if (!payload.fullName || !payload.gender || !payload.pincode || 
             !payload.city || !payload.state || !payload.address || 
-            !payload.contactNumber || !payload.jobType) {
+            !payload.contactNumber ) {
             return res.status(400).json({message: 'All required fields must be provided'});
         }
 
         // Check if user already applied
         const existingApplication = await ApplyModel.findOne({
-            userId: req.user._id,
+            ApplyuserId: req.user._id,
             jobId: id
         });
         
@@ -42,7 +31,7 @@ const ApplyedJob = async (req, res) => {
             return res.status(400).json({message: 'You have already applied for this job'});
         }
         
-        payload.userId = req.user._id;
+        payload.ApplyuserId = req.user._id;
         payload.jobId = id;
         payload.job_creatorId = ExistJob.userId;
         

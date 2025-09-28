@@ -71,8 +71,7 @@ const { getJobCreaterView } = require('../controllers/JobPost/jobCreaterView');
 const { MatrimonyCreatorView } = require('../controllers/MatrimonyPost/matrimoneyCreatorView');
 const { NewsEditorView } = require('../controllers/NewsPost/NewsEditorView');
 const { PropertyEditorView } = require('../controllers/Property/propertyEditorView');
-const { updateApplyJob } = require('../controllers/ApplyJob/EditApplyJob');
-const { LogoutRout } = require('../controllers/logout');
+ const { LogoutRout } = require('../controllers/logout');
 const { newsLike } = require('../controllers/NewsPost/newsLike');
 const { newsComment } = require('../controllers/NewsPost/newsComment');
 const { getUserDetail } = require('../controllers/user/getUserDetail');
@@ -135,6 +134,13 @@ const { updateLead } = require('../controllers/leads/updateLead');
 const { deleteLead } = require('../controllers/leads/daleteLead');
 const { getQueryLead } = require('../controllers/leads/getQueryLead');
 const { getLeadCreaterView } = require('../controllers/leads/getLeadCreaterView');
+const { getAcceptedApplications } = require('../controllers/ApplyJob/getAcceptedApplications');
+const { getRejectedApplications } = require('../controllers/ApplyJob/getRejectedApplications');
+const { getApplicantAcceptedApplications } = require('../controllers/ApplyJob/getApplicantAcceptedApplications');
+const { getApplicantRejectedApplications } = require('../controllers/ApplyJob/getApplicantRejectedApplications');
+const { updateApplyStatusByCreater } = require('../controllers/ApplyJob/EditAcceptApplyJobByCreater');
+const { getpendingApplications } = require('../controllers/ApplyJob/getpendingApplications');
+const { getApplicantPendingApplications } = require('../controllers/ApplyJob/getApplicantPendingApplications');
  cookie();
 router.get('/', (req, res) => {
     res.send('Hello savazon!');
@@ -192,6 +198,32 @@ router.put('/update-specific-job/:id',authGuard,updateJob);
 router.delete('/delete-specific-job/:id',authGuard,deleteJob);
 router.get('/get-query-job',queryJobs);
 router.get('/get-job-creator-view',authGuard,getJobCreaterView);
+
+
+// job Apply
+router.post('/apply-job/:job_id',authGuard,ApplyedJob);
+// admin view
+router.get('/get-all-job-appliation',authGuard,getAllApplyJob);
+// any one can see specific apply job
+router.get('/get-specific-apply-job/:apply_id',getSpecificApplyJob);
+
+ 
+// router.get('/applier-view',authGuard,getApplyedJob);
+// router.get('/job-creator-view',authGuard,getApplyedJobCreterView);
+// router.delete('/delete-job-application/:apply_id',authGuard,deleteApplyJob);
+
+ // job creater view
+router.get('/get-all-accepted-applications', authGuard, getAcceptedApplications);
+router.get('/get-all-rejected-applications', authGuard, getRejectedApplications);
+router.get('/get-all-pending-applications',authGuard,getpendingApplications);
+ 
+// for update pass payload value  =>  { "accept_status":"Accepted"}
+router.put('/update-job-application/:apply_id',authGuard,updateApplyStatusByCreater);
+
+// job applicant view
+router.get('/my-accepted-applications', authGuard, getApplicantAcceptedApplications);
+router.get('/my-rejected-applications', authGuard, getApplicantRejectedApplications);
+router.get('/my-pending-applications',authGuard,getApplicantPendingApplications);
 
 
 
@@ -271,15 +303,7 @@ router.put('/news-like/:news_id',authGuard,newsLike);
 router.put('/news-dislike/:news_id',authGuard,newsDislike);
 
 
-// job Apply
-router.post('/apply-job/:job_id',authGuard,ApplyedJob)
-router.get('/get-all-apply-job',authGuard,getAllApplyJob);
-router.get('/get-specific-apply-job/:apply_id',getSpecificApplyJob);
-router.get('/applier-view',authGuard,getApplyedJob);
-router.get('/job-creator-view',authGuard,getApplyedJobCreterView);
-router.put('/update-job-application/:apply_id',authGuard,updateApplyJob);
-router.delete('/delete-job-application/:apply_id',authGuard,deleteApplyJob);
-  
+ 
 
 
 // user releted route =>service profile releretd route

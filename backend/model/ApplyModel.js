@@ -10,7 +10,7 @@ const ApplySchama = new mongoose.Schema({
         ref: 'jobModel',
         required: true
     },
-    userId: {
+    ApplyuserId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'user',
         required: true
@@ -21,9 +21,9 @@ const ApplySchama = new mongoose.Schema({
         required: true
     },
     job_type: {
-        type: String,
-        required: true
-    },
+        type:String ,
+        enum: ['partTime', 'fullTime', 'internship'],
+     },
  
     fullName: {
         type: String,
@@ -77,7 +77,7 @@ const ApplySchama = new mongoose.Schema({
     },
     uploadResume: {
         type: String
-    },
+    }, 
     status: {
         type: String,
         enum: ['Received', 'Accepted', 'Sent'],
@@ -91,10 +91,7 @@ const ApplySchama = new mongoose.Schema({
     location: {
         type: String
     },
-    jobType:{
-        type:String,
-        required:true
-    },
+  
     time: {
         type: Date,
         required: true,
