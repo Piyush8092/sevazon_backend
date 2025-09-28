@@ -15,7 +15,7 @@ const ApplyedJob = async (req, res) => {
     }
        
         // Validate required fields
-        if (!payload.fullName || !payload.gender || !payload.pincode || 
+        if (!payload.gender || !payload.pincode || 
             !payload.city || !payload.state || !payload.address || 
             !payload.contactNumber ) {
             return res.status(400).json({message: 'All required fields must be provided'});

@@ -27,7 +27,7 @@ const ApplySchama = new mongoose.Schema({
  
     fullName: {
         type: String,
-        required: [true, 'Full name is required']
+        // required: [true, 'Full name is required']
     },
     qualification: {
         type: String
