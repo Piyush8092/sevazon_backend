@@ -155,7 +155,12 @@ const profileSchema = new mongoose.Schema({
             message: 'Work/Service images are required for Service Profile'
         }
     },
- 
+ timeSlot: {
+        type: [String],
+        required: function() {
+            return this.profileType === 'Service Profile';
+        },
+    },
     catalogImages: {
         type: [String],
         required: function() {
