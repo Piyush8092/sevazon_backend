@@ -17,6 +17,7 @@ const UpdateReview = async (req, res) => {
       });
     }
 
+    // console.log(profile);
     // Prevent self-review
     if (profile.userId.toString() === userId.toString()) {
       return res.status(403).json({

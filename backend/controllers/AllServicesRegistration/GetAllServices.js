@@ -7,7 +7,7 @@ const GetAllServices = async (req, res) => {
         let page = req.query.page || 1;
         let limit = req.query.limit || 10;
         const skip = (page - 1) * limit;
-        const result = await createServiceModel.find().skip(skip).limit(limit);
+        const result = await createServiceModel.find().skip(skip).limit(limit).populate('userId', 'name email phone');
         const total = await createServiceModel.countDocuments();
         const totalPages = Math.ceil(total / limit);
         res.json({message: 'Job created successfully', status: 200, data: result, success: true, error: false, total, totalPages});

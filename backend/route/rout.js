@@ -141,6 +141,7 @@ const { getApplicantRejectedApplications } = require('../controllers/ApplyJob/ge
 const { updateApplyStatusByCreater } = require('../controllers/ApplyJob/EditAcceptApplyJobByCreater');
 const { getpendingApplications } = require('../controllers/ApplyJob/getpendingApplications');
 const { getApplicantPendingApplications } = require('../controllers/ApplyJob/getApplicantPendingApplications');
+const { getRatting } = require('../controllers/AllServicesRegistration/getRatting');
  cookie();
 router.get('/', (req, res) => {
     res.send('Hello savazon!');
@@ -185,6 +186,7 @@ router.get('/get-all-service',GetAllServices);
 router.put('/update-specific-service-like/:id',authGuard,updateLike);
 router.put('/update-specific-service-dislike/:id',authGuard,updateDislike);
 router.put('/update-specific-service-review/:id',authGuard,UpdateReview);
+router.get('/get-specific-service-rating',authGuard,getRatting);
 // for get  created service or business profile of both in my profile
 router.get('/get-service-creator-view',authGuard,getServiceCreaterView);
 
