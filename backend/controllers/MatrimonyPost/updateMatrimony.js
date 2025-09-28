@@ -16,18 +16,78 @@ const updateMatrimony = async (req, res) => {
         }
 
         // Validate nested objects if being updated
-        if (payload.partnerAge) {
-            if (!payload.partnerAge.min || !payload.partnerAge.max) {
-                return res.status(400).json({message: 'Partner age range (min and max) is required'});
-            }
-            if (payload.partnerAge.min >= payload.partnerAge.max) {
-                return res.status(400).json({message: 'Partner minimum age must be less than maximum age'});
+        if (payload.partnerAge && Array.isArray(payload.partnerAge)) {
+            if (payload.partnerAge.length === 0) {
+                return res.status(400).json({message: 'Partner age array cannot be empty'});
             }
         }
 
-        if (payload.partnerHeight) {
-            if (!payload.partnerHeight.min || !payload.partnerHeight.max) {
-                return res.status(400).json({message: 'Partner height range (min and max) is required'});
+        if (payload.partnerHeight && Array.isArray(payload.partnerHeight)) {
+            if (payload.partnerHeight.length === 0) {
+                return res.status(400).json({message: 'Partner height array cannot be empty'});
+            }
+        }
+
+        // Validate array fields if being updated
+        if (payload.motherTongue && Array.isArray(payload.motherTongue)) {
+            const validMotherTongue = ['Hindi', 'English', 'Bengali', 'Marathi', 'Tamil', 'Telugu', 'Gujarati', 'Kannada', 'Malayalam', 'Odia', 'Punjabi', 'Urdu', 'Other'];
+            if (!payload.motherTongue.every(tongue => validMotherTongue.includes(tongue))) {
+                return res.status(400).json({message: 'Invalid mother tongue value'});
+            }
+        }
+
+        if (payload.height && Array.isArray(payload.height)) {
+            if (payload.height.length === 0) {
+                return res.status(400).json({message: 'Height array cannot be empty'});
+            }
+        }
+
+        if (payload.religion && Array.isArray(payload.religion)) {
+            if (payload.religion.length === 0) {
+                return res.status(400).json({message: 'Religion array cannot be empty'});
+            }
+        }
+
+        if (payload.caste && Array.isArray(payload.caste)) {
+            if (payload.caste.length === 0) {
+                return res.status(400).json({message: 'Caste array cannot be empty'});
+            }
+        }
+
+        if (payload.profession && Array.isArray(payload.profession)) {
+            if (payload.profession.length === 0) {
+                return res.status(400).json({message: 'Profession array cannot be empty'});
+            }
+        }
+
+        if (payload.highestQualification && Array.isArray(payload.highestQualification)) {
+            if (payload.highestQualification.length === 0) {
+                return res.status(400).json({message: 'Highest qualification array cannot be empty'});
+            }
+        }
+
+        if (payload.employmentType && Array.isArray(payload.employmentType)) {
+            const validEmploymentType = ['Private Job', 'Government Job', 'Business', 'Self Employed', 'Student', 'Not Working'];
+            if (!payload.employmentType.every(type => validEmploymentType.includes(type))) {
+                return res.status(400).json({message: 'Invalid employment type value'});
+            }
+        }
+
+        if (payload.city && Array.isArray(payload.city)) {
+            if (payload.city.length === 0) {
+                return res.status(400).json({message: 'City array cannot be empty'});
+            }
+        }
+
+        if (payload.state && Array.isArray(payload.state)) {
+            if (payload.state.length === 0) {
+                return res.status(400).json({message: 'State array cannot be empty'});
+            }
+        }
+
+        if (payload.pincode && Array.isArray(payload.pincode)) {
+            if (payload.pincode.length === 0) {
+                return res.status(400).json({message: 'Pincode array cannot be empty'});
             }
         }
 

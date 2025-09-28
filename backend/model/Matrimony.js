@@ -27,30 +27,36 @@ const MatrimonySchema = new mongoose.Schema({
         required: [true, 'Gender is required'],
     },
     motherTongue: {
-        type: String,
+        type: [
+            {
+                type: String,
+                enum: ['Hindi', 'English', 'Bengali', 'Marathi', 'Tamil', 'Telugu', 'Gujarati', 'Kannada', 'Malayalam', 'Odia', 'Punjabi', 'Urdu', 'Other'],
+                required: [true, 'Mother tongue is required'],
+            }
+        ],
         required: [true, 'Mother tongue is required'],
     },
     maritalStatus: {
         type: String,
-        enum: ['Never Married', 'Divorced', 'Widowed', 'Separated'],
+        enum: ['Never Married','Married', 'Divorced', 'Widowed', 'Separated'],
         required: [true, 'Marital status is required'],
     },
     height: {
-        type: String,
+        type: [String],
         required: [true, 'Height is required'],
     },
     
     // Religious Information
     religion: {
-        type: String,
+        type: [String],
         required: [true, 'Religion is required'],
     },
     caste: {
-        type: String,
+        type: [ String],
         required: [true, 'Caste is required'],
     },
     subCaste: {
-        type: String,
+        type: [String],
     },
     noCasteBarrier: {
         type: Boolean,
@@ -62,34 +68,34 @@ const MatrimonySchema = new mongoose.Schema({
     
     // Professional Information
     profession: {
-        type: String,
+        type: [String],
         required: [true, 'Profession is required'],
     },
     highestQualification: {
-        type: String,
+        type: [String],
         required: [true, 'Highest qualification is required'],
     },
     employmentType: {
-        type: String,
+        type: [String],
         enum: ['Private Job', 'Government Job', 'Business', 'Self Employed', 'Student', 'Not Working'],
         required: [true, 'Employment type is required'],
     },
     annualIncome: {
-        type: String,
+        type: [String],
         enum: ['Below 1 Lakh', '1-2 Lakhs', '2-3 Lakhs', '3-5 Lakhs', '5-7 Lakhs', '7-10 Lakhs', '10-15 Lakhs', '15-20 Lakhs', '20+ Lakhs'],
     },
     
     // Location & Other Details
     pincode: {
-        type: String,
+        type: [String],
         required: [true, 'Pincode is required'],
     },
     city: {
-        type: String,
+        type: [String],
         required: [true, 'City is required'],
     },
     state: {
-        type: String,
+        type: [String],
         required: [true, 'State is required'],
     },
     moreAboutYourself: {
@@ -108,28 +114,14 @@ const MatrimonySchema = new mongoose.Schema({
             },
             message: 'Minimum 2 images are required'
         }
-    },
+    }, 
     
     // Partner Requirements
     partnerAge: {
-        min: {
-            type: Number,
-            // required: [true, 'Partner minimum age is required'],
-        },
-        max: {
-            type: Number,
-            // required: [true, 'Partner maximum age is required'],
-        }
+    type: [String],
     },
     partnerHeight: {
-        min: {
-            type: String,
-            // required: [true, 'Partner minimum height is required'],
-        },
-        max: {
-            type: String,
-            // required: [true, 'Partner maximum height is required'],
-        }
+ type: [String],
     },
     partnerMaritalStatus: {
         type: [String],
@@ -137,20 +129,20 @@ const MatrimonySchema = new mongoose.Schema({
         // required: [true, 'Partner marital status is required'],
     },
     partnerCity: {
-        type: String,
+        type: [String],
         // required: [true, 'Partner city is required'],
     },
     partnerState: {
-        type: String,
+        type: [String],
         // required: [true, 'Partner state is required'],
     },
     partnerEmploymentType: {
-        type: String,
+        type: [String],
          enum: ['Private Job', 'Government Job', 'Business', 'Self Employed', 'Student', 'Not Working'],
         // required: [true, 'Partner employment type is required'],
     },
     partnerReligion: {
-        type: String,
+        type: [String],
         // required: [true, 'Partner religion is required'],
     },
     partnerRashiAstroDetails: {
