@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const ApplySchama = new mongoose.Schema({
     title: {
         type: String,
-        required: true
+        // required: true
     },
     jobId: {
         type: mongoose.Schema.Types.ObjectId,
