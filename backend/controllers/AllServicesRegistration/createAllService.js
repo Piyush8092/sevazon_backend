@@ -27,6 +27,7 @@ const CreateAllServices = async (req, res) => {
         .json({ message: "All required fields must be provided" });
     }
 
+ 
     // --- Conditional validation based on profile type ---
     if (payload.profileType === "Service Profile") {
       if (!payload.description) {

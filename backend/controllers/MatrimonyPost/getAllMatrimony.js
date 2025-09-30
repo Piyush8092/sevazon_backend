@@ -9,7 +9,7 @@ const getAllMatrimony = async (req, res) => {
         const total = await MatrimonyModel.countDocuments();
         const totalPages = Math.ceil(total / limit);
 
-        res.json({message: 'Job created successfully', status: 200, data: result, success: true, error: false, total, totalPages});
+        res.json({message: 'Matrimony profiles retrieved successfully', status: 200, data: result, success: true, error: false, total, totalPages});
     } catch (e) {
         res.json({message: 'Something went wrong', status: 500, data: e, success: false, error: true});
 
