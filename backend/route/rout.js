@@ -144,6 +144,14 @@ const { getApplicantPendingApplications } = require('../controllers/ApplyJob/get
 const { getRatting } = require('../controllers/AllServicesRegistration/getRatting');
 const { updateImportantLink } = require('../controllers/AllServicesRegistration/updateImportantLink');
 const { updateTimeSlot } = require('../controllers/AllServicesRegistration/updateTimeSlot');
+const { createFaq } = require('../controllers/faq/createFaq');
+const { getFaq } = require('../controllers/faq/getAllFAQData');
+const { getSpecificFAQ } = require('../controllers/faq/getSpecificFaq');
+const { updateFaq } = require('../controllers/faq/updateFaq');
+const { deleteFAQ } = require('../controllers/faq/DeleteFAQ');
+const { queryFAQ } = require('../controllers/faq/queryFaq');
+const { updateFavourit } = require('../controllers/JobPost/updateFavourit');
+const { getAllFavouritJob } = require('../controllers/JobPost/getAllFavouritJob');
  cookie();
 router.get('/', (req, res) => {
     res.send('Hello savazon!');
@@ -230,6 +238,13 @@ router.put('/update-job-application/:apply_id',authGuard,updateApplyStatusByCrea
 router.get('/my-accepted-applications', authGuard, getApplicantAcceptedApplications);
 router.get('/my-rejected-applications', authGuard, getApplicantRejectedApplications);
 router.get('/my-pending-applications',authGuard,getApplicantPendingApplications);
+
+// favourite job
+//for favourite api => http://localhost:3000/api/update-job-favourite/JobId    body=> {"isFavorite":true}
+router.put('/update-job-favourite/:id',authGuard,updateFavourit);
+router.get('/get-all-favourite-job',authGuard,getAllFavouritJob);
+
+
 
 
 
@@ -364,9 +379,18 @@ router.delete('/delete-specific-lead/:id',authGuard,deleteLead);
 router.get('/get-query-lead',getQueryLead);
 router.get('/get-lead-creator-view',authGuard,getLeadCreaterView);
 
+// FAQ route
+router.post('/create-faq',authGuard,createFaq);
+router.get('/get-all-faq',getFaq);
+router.get('/get-specific-faq/:id',getSpecificFAQ);
+router.put('/update-specific-faq/:id',authGuard,updateFaq);
+router.delete('/delete-specific-faq/:id',authGuard,deleteFAQ);
+router.get('/get-query-faq',queryFAQ);
 
 
-// coontact us
+
+
+// contact us
 router.post('/create-contact',createContact);
 router.get('/get-all-contact',getContact);
 router.delete('/delete-specific-contact/:id',deleteContact);
