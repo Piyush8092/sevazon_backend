@@ -5,7 +5,7 @@ const updateFavourit = async (req, res) => {
     const jobId = req.params.id;
     const userId = req.user._id;
     const { isFavorite } = req.body;
-
+ 
     // 1️⃣ Check job existence
     const existingJob = await jobModel.findById(jobId);
     if (!existingJob) {
@@ -54,7 +54,7 @@ const updateFavourit = async (req, res) => {
         });
       }
 
-      existingJob.favoriteJob.push({ userId, isFavorite: true });
+      existingJob.favoriteJob.push({ userId, isFavorite: true ,jobId: jobId});
       const result = await existingJob.save();
 
       return res.status(200).json({

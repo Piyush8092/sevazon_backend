@@ -240,7 +240,7 @@ router.get('/my-rejected-applications', authGuard, getApplicantRejectedApplicati
 router.get('/my-pending-applications',authGuard,getApplicantPendingApplications);
 
 // favourite job
-//for favourite api => http://localhost:3000/api/update-job-favourite/JobId    body=>  {"isFavorite":true} for favouti and  {"isFavorite":false} for unfavourite
+//for favourite api => http://localhost:3000/api/update-job-favourite/JobId    body=>  {"isFavorite":true} for favoutie and  {"isFavorite":false} for unfavourite
 router.put('/update-job-favourite/:id',authGuard,updateFavourit);
 router.get('/get-user-favourite-job',authGuard,getAllFavouritJob);
 

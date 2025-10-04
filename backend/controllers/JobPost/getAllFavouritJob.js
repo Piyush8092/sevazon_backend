@@ -8,20 +8,46 @@ const getAllFavouritJob = async (req, res) => {
     const skip = (page - 1) * limit;
 
     // ✅ Find all jobs favorited by this user
-    const favoriteJobs = await jobModel.find({
-      favoriteJob: {
-        $elemMatch: {
-          userId: userId,
-          isFavorite: true,
-        },
+    const favoriteJobs = await jobModel.aggregate([
+      {
+        $match: {
+          favoriteJob: {
+            $elemMatch: {
+              userId: userId,
+              isFavorite: true,
+            },
+          },
+        }
       },
-    })
-      .skip(skip)
-      .limit(limit)
-      .sort({ createdAt: -1 })
-      .select(
-        'title yourNameBusinessInstituteFirmCompany selectCategory selectSubCategory address pincode description salaryFrom salaryTo salaryPer requiredExperience workMode workShift workType allowCallInApp allowChat isActive isVerified createdAt'
-      );
+      {
+        $project: {
+          jobId: "$_id",
+          title: 1,
+          yourNameBusinessInstituteFirmCompany: 1,
+          selectCategory: 1,
+          selectSubCategory: 1,
+          address: 1,
+          pincode: 1,
+          description: 1,
+          salaryFrom: 1,
+          salaryTo: 1,
+          salaryPer: 1,
+          requiredExperience: 1,
+          workMode: 1,
+          workShift: 1,
+          workType: 1,
+          allowCallInApp: 1,
+          allowChat: 1,
+          isActive: 1,
+          isVerified: 1,
+          createdAt: 1,
+          _id: 0
+        }
+      },
+      { $skip: skip },
+      { $limit: limit },
+      { $sort: { createdAt: -1 } }
+    ]);
 
     // ✅ Count total favorite jobs for pagination
     const total = await jobModel.countDocuments({

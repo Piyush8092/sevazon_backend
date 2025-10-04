@@ -104,6 +104,10 @@ const jobSchema = new mongoose.Schema({
             type: mongoose.Schema.Types.ObjectId,
             ref: 'user',
         },
+        jobId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'jobModel',
+        },
         isFavorite: {
             type: Boolean,
             default: false,
