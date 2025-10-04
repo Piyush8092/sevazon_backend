@@ -5,11 +5,11 @@
             let id = req.params.id;
             let payload = req.body;
             let existContact=await faqModel.findById(id);
-
+let userId = req.user._id;
             if(!existContact){
                 return res.status(404).json({message: 'Contact not found'});
             }
-            if(req.user.role !== 'ADMIN' || existContact.userId.toString() !== req.user._id.toString()){
+          if(userId.toString() !== existContact.userId.toString() && req.user.role !== 'ADMIN'){
                 return res.status(403).json({message: 'Unauthorized access'});
             }
 

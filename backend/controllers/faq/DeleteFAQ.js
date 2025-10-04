@@ -8,7 +8,7 @@ const deleteFAQ=async(req,res)=>{
         if(!existFAQ){
             return res.status(404).json({message: 'FAQ not found', status: 404, success: false, error: true});
         }
-        if(req.user.role !== 'ADMIN' || existFAQ.userId.toString() !== req.user._id.toString()){
+        if(req.user.role !== 'ADMIN' && existFAQ.userId.toString() !== req.user._id.toString()){
             return res.status(403).json({message: 'Unauthorized access', status: 403, success: false, error: true});
         }
         
