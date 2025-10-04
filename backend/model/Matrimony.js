@@ -63,7 +63,7 @@ const MatrimonySchema = new mongoose.Schema({
         default: false,
     },
     rashiAstroDetails: {
-        type: String,
+        type: [String],
     },
     
     // Professional Information
@@ -146,10 +146,12 @@ const MatrimonySchema = new mongoose.Schema({
         // required: [true, 'Partner religion is required'],
     },
     partnerRashiAstroDetails: {
-        type: String,
+        type: [String],
     },
     partnerMotherTongue: {
-        type: String,
+        type:String,
+        enum: ['Hindi', 'English', 'Bengali', 'Marathi', 'Tamil', 'Telugu', 'Gujarati', 'Kannada', 'Malayalam', 'Odia', 'Punjabi', 'Urdu', 'Other'],
+        default: 'Hindi',
         // required: [true, 'Partner mother tongue is required'],
     },
     
