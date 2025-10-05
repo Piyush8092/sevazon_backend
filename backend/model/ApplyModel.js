@@ -3,14 +3,14 @@ const mongoose = require('mongoose');
 const ApplySchama = new mongoose.Schema({
     title: {
         type: String,
-        required: true
+        // required: true
     },
     jobId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'jobModel',
         required: true
     },
-    userId: {
+    ApplyuserId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'user',
         required: true
@@ -21,13 +21,13 @@ const ApplySchama = new mongoose.Schema({
         required: true
     },
     job_type: {
-        type: String,
-        required: true
-    },
+        type:String ,
+        enum: ['partTime', 'fullTime', 'internship'],
+     },
  
     fullName: {
         type: String,
-        required: [true, 'Full name is required']
+        // required: [true, 'Full name is required']
     },
     qualification: {
         type: String
@@ -77,7 +77,7 @@ const ApplySchama = new mongoose.Schema({
     },
     uploadResume: {
         type: String
-    },
+    }, 
     status: {
         type: String,
         enum: ['Received', 'Accepted', 'Sent'],
@@ -91,10 +91,7 @@ const ApplySchama = new mongoose.Schema({
     location: {
         type: String
     },
-    jobType:{
-        type:String,
-        required:true
-    },
+  
     time: {
         type: Date,
         required: true,

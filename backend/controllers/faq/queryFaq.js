@@ -1,6 +1,7 @@
-let serviceListModel = require('../../model/ServiceListModel');
+const faqModel = require("../../model/FaqModel");
 
-const queryServiceList = async (req, res) => {
+ 
+const queryFAQ = async (req, res) => {
     try {       
         let query = req.query.query;
         if (!query) {
@@ -8,29 +9,28 @@ const queryServiceList = async (req, res) => {
         }
         
         let regexQuery = new RegExp(query, 'i');
-        let page = parseInt(req.query.page) || 1;
-        let limit = parseInt(req.query.limit) || 10;
+        let page = req.query.page || 1;
+        let limit = req.query.limit || 10;
         const skip = (page - 1) * limit;
         
-        // Search in both name and subService names
+        // Search across name, email, subject, and message fields
         const searchQuery = {
             $or: [
-                { name: regexQuery },
-                { 'subService.name': regexQuery },
-                
+                { question: regexQuery },
+                { answer: regexQuery }
             ]
         };
         
-        const result = await serviceListModel.find(searchQuery).skip(skip).limit(limit);
-        const total = await serviceListModel.countDocuments(searchQuery);
+        const result = await faqModel.find(searchQuery).skip(skip).limit(parseInt(limit));
+        const total = await faqModel.countDocuments(searchQuery);
         const totalPages = Math.ceil(total / limit);
         
         if(!result || result.length === 0){
-            return res.status(404).json({message: 'No data found'});
+            return res.status(400).json({message: 'No data found'});
         }
         
-        if(page > totalPages){
-            return res.status(400).json({message: 'Page number exceeds total pages'});
+        if(totalPages < page){
+            return res.status(400).json({message: 'No data found'});
         }
         
         if(page < 1){
@@ -38,12 +38,12 @@ const queryServiceList = async (req, res) => {
         }
 
         res.json({
-            message: 'Service List retrieved successfully', 
+            message: 'FAQ retrieved successfully', 
             status: 200, 
             data: result, 
             total,
             totalPages,
-            currentPage: page,
+            currentPage: parseInt(page),
             success: true, 
             error: false
         });
@@ -53,4 +53,4 @@ const queryServiceList = async (req, res) => {
     }
 };
 
-module.exports = { queryServiceList };
+module.exports = { queryFAQ };

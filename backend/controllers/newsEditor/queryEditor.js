@@ -25,6 +25,7 @@ const queryEditors = async (req, res) => {
                 { referralUserId: regexQuery },
                 { title: regexQuery },
                 { content: regexQuery }
+                
             ]
         };
         

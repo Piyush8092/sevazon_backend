@@ -1,26 +1,26 @@
-let userModel = require('../../model/createAllServiceProfileModel');
+let leadModel = require('../../model/leadModel');
 
-const updateUser = async (req, res) => {
-    try {           
+const updateLead = async (req, res) => {
+    try {       
         let id = req.params.id;
         let payload = req.body;
-        let ExistUser = await userModel.findById(id);
-        if (!ExistUser) {
-            return res.status(404).json({message: 'User not found'});
+
+        let ExistLead = await leadModel.findById(id);
+        if (!ExistLead) {
+            return res.status(404).json({message: 'Lead not found'});
         }
 
-        let UserRole   = req.user.role;
-         if (UserRole !== 'ADMIN' && req.user._id.toString() !== id.toString()) {
+        if (ExistLead.userId.toString() !== req.user._id.toString() && req.user.role !== 'ADMIN') {
             return res.status(403).json({message: 'Unauthorized access'});
         }
 
-        const result = await userModel.findByIdAndUpdate(id, payload, {
+        const result = await leadModel.findByIdAndUpdate(id, payload, {
             new: true,
             runValidators: true
         });
         
         res.json({
-            message: 'User updated successfully', 
+            message: 'Lead updated successfully', 
             status: 200, 
             data: result, 
             success: true, 
@@ -28,7 +28,6 @@ const updateUser = async (req, res) => {
         });
 
     }
-
     catch (e) {
         res.json({
             message: 'Something went wrong', 
@@ -40,5 +39,6 @@ const updateUser = async (req, res) => {
     }
 };
 
-module.exports = { updateUser };
+module.exports = { updateLead };
+
 

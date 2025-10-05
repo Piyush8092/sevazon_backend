@@ -98,6 +98,21 @@ const jobSchema = new mongoose.Schema({
         default: false,
         required: [true, 'Allow chat preference is required'],
     },
+    favoriteJob: [{
+       
+        userId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'user',
+        },
+        jobId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'jobModel',
+        },
+        isFavorite: {
+            type: Boolean,
+            default: false,
+        }
+    }],
     isActive: {
         type: Boolean,
         default: true

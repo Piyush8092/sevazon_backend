@@ -1,9 +1,10 @@
-let userModel = require('../../model/createAllServiceProfileModel');
+let userModel = require('../../model/userModel');
 
-const getAuthUserDetail = async (req, res) => {
+const AdminSpecificUserView = async (req, res) => {
     try {  
-        let userId=req.user._id;
-        let result=await userModel.findById({_id:userId});
+        let id=req.params.id;
+        let result=await userModel.findById({_id:id});
+
         if(!result){
             res.json({message: 'No data found', status: 400, data: {}, success: false, error: true});
         }
@@ -15,4 +16,7 @@ const getAuthUserDetail = async (req, res) => {
         }
 };
 
-module.exports = { getAuthUserDetail };
+module.exports = { AdminSpecificUserView };
+
+
+    

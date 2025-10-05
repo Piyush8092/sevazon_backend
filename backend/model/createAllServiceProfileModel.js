@@ -155,7 +155,12 @@ const profileSchema = new mongoose.Schema({
             message: 'Work/Service images are required for Service Profile'
         }
     },
- 
+ timeSlot: {
+        type: [String],
+        required: function() {
+            return this.profileType === 'Service Profile';
+        },
+    },
     catalogImages: {
         type: [String],
         required: function() {
@@ -202,6 +207,16 @@ const profileSchema = new mongoose.Schema({
             type:Number,
         }
     }],
+      importantLink:[
+     {
+        link:{
+            type:String,
+        },
+        linkName:{
+            type:String,
+        }
+     }
+    ],
     // User Reference
     userId: {
         type: mongoose.Schema.Types.ObjectId,
@@ -217,7 +232,8 @@ const profileSchema = new mongoose.Schema({
     isVerified: {
         type: Boolean,
         default: false,
-    }
+    },
+   
     
 }, {timestamps: true});
 

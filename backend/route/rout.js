@@ -71,8 +71,7 @@ const { getJobCreaterView } = require('../controllers/JobPost/jobCreaterView');
 const { MatrimonyCreatorView } = require('../controllers/MatrimonyPost/matrimoneyCreatorView');
 const { NewsEditorView } = require('../controllers/NewsPost/NewsEditorView');
 const { PropertyEditorView } = require('../controllers/Property/propertyEditorView');
-const { updateApplyJob } = require('../controllers/ApplyJob/EditApplyJob');
-const { LogoutRout } = require('../controllers/logout');
+ const { LogoutRout } = require('../controllers/logout');
 const { newsLike } = require('../controllers/NewsPost/newsLike');
 const { newsComment } = require('../controllers/NewsPost/newsComment');
 const { getUserDetail } = require('../controllers/user/getUserDetail');
@@ -129,6 +128,41 @@ const { body, param } = require('express-validator');
 const { agoraCallLimit, agoraTokenLimit, generalAgoraLimit } = require('../middleware/rateLimiter');
 
 cookie();
+const { AdminUpdate } = require('../controllers/user/AdminUpdate');
+const { getSpecificUser } = require('../controllers/user/getSpecificUser');
+const { adminAllUserView } = require('../controllers/user/adminAllUserView');
+const { AdminSpecificUserView } = require('../controllers/user/AdminSpecificUserView');
+const { queryAdminUser } = require('../controllers/user/queryUserModel');
+const { queryServiceUser } = require('../controllers/user/queryServiceUser');
+const { getNotVerifiedUser } = require('../controllers/newsEditor/getNotVerifiedEditor');
+const { getVerifiedUser } = require('../controllers/newsEditor/getVerifiedUser');
+const { getServiceCreaterView } = require('../controllers/AllServicesRegistration/getServiceCreaterView');
+const { createLead } = require('../controllers/leads/createLead');
+const { getAllLead } = require('../controllers/leads/getAllLead');
+const { getSpecificLead } = require('../controllers/leads/getSpecificLead');
+const { updateLead } = require('../controllers/leads/updateLead');
+const { deleteLead } = require('../controllers/leads/daleteLead');
+const { getQueryLead } = require('../controllers/leads/getQueryLead');
+const { getLeadCreaterView } = require('../controllers/leads/getLeadCreaterView');
+const { getAcceptedApplications } = require('../controllers/ApplyJob/getAcceptedApplications');
+const { getRejectedApplications } = require('../controllers/ApplyJob/getRejectedApplications');
+const { getApplicantAcceptedApplications } = require('../controllers/ApplyJob/getApplicantAcceptedApplications');
+const { getApplicantRejectedApplications } = require('../controllers/ApplyJob/getApplicantRejectedApplications');
+const { updateApplyStatusByCreater } = require('../controllers/ApplyJob/EditAcceptApplyJobByCreater');
+const { getpendingApplications } = require('../controllers/ApplyJob/getpendingApplications');
+const { getApplicantPendingApplications } = require('../controllers/ApplyJob/getApplicantPendingApplications');
+const { getRatting } = require('../controllers/AllServicesRegistration/getRatting');
+const { updateImportantLink } = require('../controllers/AllServicesRegistration/updateImportantLink');
+const { updateTimeSlot } = require('../controllers/AllServicesRegistration/updateTimeSlot');
+const { createFaq } = require('../controllers/faq/createFaq');
+const { getFaq } = require('../controllers/faq/getAllFAQData');
+const { getSpecificFAQ } = require('../controllers/faq/getSpecificFaq');
+const { updateFaq } = require('../controllers/faq/updateFaq');
+const { deleteFAQ } = require('../controllers/faq/DeleteFAQ');
+const { queryFAQ } = require('../controllers/faq/queryFaq');
+const { updateFavourit } = require('../controllers/JobPost/updateFavourit');
+const { getAllFavouritJob } = require('../controllers/JobPost/getAllFavouritJob');
+ cookie();
 router.get('/', (req, res) => {
     res.send('Hello savazon!');
 });
@@ -172,6 +206,11 @@ router.get('/get-all-service',GetAllServices);
 router.put('/update-specific-service-like/:id',authGuard,updateLike);
 router.put('/update-specific-service-dislike/:id',authGuard,updateDislike);
 router.put('/update-specific-service-review/:id',authGuard,UpdateReview);
+router.get('/get-specific-service-rating',authGuard,getRatting);
+// for get  created service or business profile of both in my profile
+router.get('/get-service-creator-view',authGuard,getServiceCreaterView);
+router.put('/update-specific-service-important-link/:id',authGuard,updateImportantLink);
+router.put('/update-specific-service-time-slot/:id',authGuard,updateTimeSlot);
 
  
 
@@ -183,6 +222,39 @@ router.put('/update-specific-job/:id',authGuard,updateJob);
 router.delete('/delete-specific-job/:id',authGuard,deleteJob);
 router.get('/get-query-job',queryJobs);
 router.get('/get-job-creator-view',authGuard,getJobCreaterView);
+
+
+// job Apply
+router.post('/apply-job/:job_id',authGuard,ApplyedJob);
+// admin view
+router.get('/get-all-job-appliation',authGuard,getAllApplyJob);
+// any one can see specific apply job
+router.get('/get-specific-apply-job/:apply_id',getSpecificApplyJob);
+
+ 
+// router.get('/applier-view',authGuard,getApplyedJob);
+// router.get('/job-creator-view',authGuard,getApplyedJobCreterView);
+// router.delete('/delete-job-application/:apply_id',authGuard,deleteApplyJob);
+
+ // job creater view
+router.get('/get-all-accepted-applications', authGuard, getAcceptedApplications);
+router.get('/get-all-rejected-applications', authGuard, getRejectedApplications);
+router.get('/get-all-pending-applications',authGuard,getpendingApplications);
+ 
+// for update pass payload value  =>  { "accept_status":"Accepted"}
+router.put('/update-job-application/:apply_id',authGuard,updateApplyStatusByCreater);
+
+// job applicant view
+router.get('/my-accepted-applications', authGuard, getApplicantAcceptedApplications);
+router.get('/my-rejected-applications', authGuard, getApplicantRejectedApplications);
+router.get('/my-pending-applications',authGuard,getApplicantPendingApplications);
+
+// favourite job
+//for favourite api => http://localhost:3000/api/update-job-favourite/JobId    body=>  {"isFavorite":true} for favoutie and  {"isFavorite":false} for unfavourite
+router.put('/update-job-favourite/:id',authGuard,updateFavourit);
+router.get('/get-user-favourite-job',authGuard,getAllFavouritJob);
+
+
 
 
 
@@ -242,6 +314,9 @@ router.get('/get-specific-editor/:id',getSpecificEditor);
   router.get('/get-query-editor',queryEditors);
   // for followers and following 
   router.put('/update-follower-detail/:id',authGuard,updateFollower);
+router.get('/verified-editor',authGuard,getVerifiedUser);
+router.get('/not-verified-editor',authGuard,getNotVerifiedUser);
+
 
 
 
@@ -259,20 +334,29 @@ router.put('/news-like/:news_id',authGuard,newsLike);
 router.put('/news-dislike/:news_id',authGuard,newsDislike);
 
 
-// job Apply
-router.post('/apply-job/:job_id',authGuard,ApplyedJob)
-router.get('/get-all-apply-job',authGuard,getAllApplyJob);
-router.get('/get-specific-apply-job/:apply_id',getSpecificApplyJob);
-router.get('/applier-view',authGuard,getApplyedJob);
-router.get('/job-creator-view',authGuard,getApplyedJobCreterView);
-router.put('/update-job-application/:apply_id',authGuard,updateApplyJob);
-router.delete('/delete-job-application/:apply_id',authGuard,deleteApplyJob);
-  
+ 
 
-// user releted route
+
+// user releted route =>service profile releretd route
 router.get('/get-user-detail',authGuard,getUserDetail);
-router.put('/update-user/:id',authGuard,updateUser);
+router.get('/get-all-user',authGuard,getAuthUserDetail);
+router.get('/get-specific-user/:id',authGuard,getSpecificUser);
 router.delete('/delete-user/:id',authGuard,deleteUser);
+// update service profile => normal user
+router.put('/update-user/:id',authGuard,updateUser);
+router.get('/get-service-query-user',queryServiceUser);
+
+
+// usermodel releted route 
+// admin Access For Main UserModel Role change ['admin','user'] =>at the time of login user 
+router.put('/update-admin-role/:id',authGuard,AdminUpdate);
+// usermodel under route
+router.get('/login-user-view',authGuard,adminAllUserView);
+router.get('/admin-get-specific-user/:id',authGuard,AdminSpecificUserView);
+router.get('/admin-get-query-user',queryAdminUser);
+ 
+
+
 
 
 // vehicles post
@@ -296,14 +380,31 @@ router.get('/get-local-services-creator-view',authGuard,LocalServiceCreaterView)
 router.get('/get-query-local-services',queryLocalServices);
 router.put('/update-local-services/:id',authGuard,updateLocalService);
 
+//leads
+router.post('/create-lead',authGuard,createLead);
+router.get('/get-all-lead',getAllLead);
+router.get('/get-specific-lead/:id',getSpecificLead);
+router.put('/update-specific-lead/:id',authGuard,updateLead);
+router.delete('/delete-specific-lead/:id',authGuard,deleteLead);
+router.get('/get-query-lead',getQueryLead);
+router.get('/get-lead-creator-view',authGuard,getLeadCreaterView);
+
+// FAQ route
+router.post('/create-faq',authGuard,createFaq);
+router.get('/get-all-faq',getFaq);
+router.get('/get-specific-faq/:id',getSpecificFAQ);
+router.put('/update-specific-faq/:id',authGuard,updateFaq);
+router.delete('/delete-specific-faq/:id',authGuard,deleteFAQ);
+router.get('/get-query-faq',queryFAQ);
 
 
 
-// coontact us
-router.post('create-contact',createContact);
+
+// contact us
+router.post('/create-contact',createContact);
 router.get('/get-all-contact',getContact);
 router.delete('/delete-specific-contact/:id',deleteContact);
-router.get('/get-qurey-contact',queryContact);
+router.get('/get-query-contact',queryContact);
 router.get('/get-specific-contact/:id',getSpecificContact);
 router.put('/update-specific-contact/:id',authGuard,updateContact);
 
