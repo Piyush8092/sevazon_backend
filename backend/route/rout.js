@@ -51,6 +51,7 @@ const { getSpecificEditor } = require('../controllers/newsEditor/getSpecificEdit
 const { updateEditor } = require('../controllers/newsEditor/updateEditor');
 const { deleteEditor } = require('../controllers/newsEditor/deleteEditor');
 const { queryEditors } = require('../controllers/newsEditor/queryEditor');
+const { verifyDocument, verifyDocumentImage } = require('../controllers/newsEditor/kycVerification');
 const { createNews } = require('../controllers/NewsPost/createNews');
 const { getAllNews } = require('../controllers/NewsPost/getAllNews');
 const { getSpecificNews } = require('../controllers/NewsPost/getSpecificNews');
@@ -312,10 +313,14 @@ router.get('/get-specific-editor/:id',getSpecificEditor);
   router.delete('/delete-specific-editor/:id',authGuard,deleteEditor);
   // api is =>http://localhost:3000/api/get-query-editor?query=foodie_vlogs123
   router.get('/get-query-editor',queryEditors);
-  // for followers and following 
+  // for followers and following
   router.put('/update-follower-detail/:id',authGuard,updateFollower);
 router.get('/verified-editor',authGuard,getVerifiedUser);
 router.get('/not-verified-editor',authGuard,getNotVerifiedUser);
+
+// KYC Verification routes for news editor profiles
+router.post('/kyc/verify', verifyDocument);
+router.post('/kyc/verify-image', authGuard, verifyDocumentImage);
 
 
 
