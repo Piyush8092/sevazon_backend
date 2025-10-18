@@ -2,7 +2,12 @@ const { getMessaging } = require('../config/firebase');
 const FCMToken = require('../model/fcmTokenModel');
 const NotificationHistory = require('../model/notificationHistoryModel');
 const NotificationPreferences = require('../model/notificationPreferencesModel');
-const { v4: uuidv4 } = require('uuid');
+const crypto = require('crypto');
+
+// Helper function to generate UUID v4
+const uuidv4 = () => {
+    return crypto.randomUUID();
+};
 
 class NotificationService {
     constructor() {
