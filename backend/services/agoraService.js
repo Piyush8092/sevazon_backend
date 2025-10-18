@@ -1,5 +1,10 @@
 const { RtcTokenBuilder, RtcRole } = require('agora-token');
-const { v4: uuidv4 } = require('uuid');
+const crypto = require('crypto');
+
+// UUID replacement using Node.js built-in crypto
+const uuidv4 = () => {
+  return crypto.randomUUID();
+};
 
 /**
  * Agora Service for handling video/voice call functionality

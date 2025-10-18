@@ -9,7 +9,9 @@
     "test:fcm": "jest tests/fcmRoutes.functional.test.js",
     "test:fcm:watch": "jest tests/fcmRoutes.functional.test.js --watch",
     "test:agora": "node scripts/testAgoraService.js",
-    "test:agora:dev": "node scripts/testAgoraDevMode.js"
+    "test:agora:dev": "node scripts/testAgoraDevMode.js",
+    "test:agora:routes": "jest tests/agoraRoutes.functional.test.js",
+    "test:agora:routes:watch": "jest tests/agoraRoutes.functional.test.js --watch"
   },
   "repository": {
     "type": "git",
@@ -24,7 +26,6 @@
   "homepage": "https://github.com/Piyush8092/sevazon_backend#readme",
   "description": "",
   "dependencies": {
-    "agora-access-token": "^2.0.4",
     "agora-token": "^2.0.5",
     "bcryptjs": "^3.0.2",
     "compression": "^1.8.1",
@@ -53,8 +54,12 @@
   "jest": {
     "testEnvironment": "node",
     "testTimeout": 30000,
-    "setupFilesAfterEnv": ["<rootDir>/tests/setup.js"],
-    "testMatch": ["**/tests/**/*.test.js"],
+    "setupFilesAfterEnv": [
+      "<rootDir>/tests/setup.js"
+    ],
+    "testMatch": [
+      "**/tests/**/*.test.js"
+    ],
     "collectCoverageFrom": [
       "controllers/**/*.js",
       "route/**/*.js",
