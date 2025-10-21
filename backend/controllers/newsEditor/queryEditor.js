@@ -29,7 +29,7 @@ const queryEditors = async (req, res) => {
             ]
         };
         
-        const result = await editorModel.find(searchQuery).skip(skip).limit(limit);
+        const result = await editorModel.find(searchQuery).skip(skip).limit(limit).populate('userId', 'name email ');
         const total = await editorModel.countDocuments(searchQuery);
         const totalPages = Math.ceil(total / limit);
         

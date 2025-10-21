@@ -28,7 +28,7 @@ const createNews = async (req, res) => {
         // Set user ID and default values
         payload.userId = userId;
         payload.isActive = true;
-        payload.isVerified = false;
+        payload.isVerified = true;
         payload.likes = [];
         payload.dislikes = [];
         payload.comments = [];

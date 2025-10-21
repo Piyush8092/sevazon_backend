@@ -5,7 +5,7 @@ const getAllEditor = async (req, res) => {
         let page = req.query.page || 1;
         let limit = req.query.limit || 10;
         const skip = (page - 1) * limit;
-        const result = await editorModel.find().skip(skip).limit(limit);
+        const result = await editorModel.find().skip(skip).limit(limit).populate('userId', 'name email ');
         const total = await editorModel.countDocuments();
         const totalPages = Math.ceil(total / limit);
 

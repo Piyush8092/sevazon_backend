@@ -340,8 +340,6 @@ router.put('/news-dislike/:news_id',authGuard,newsDislike);
 
 
  
-
-
 // user releted route =>service profile releretd route
 router.get('/get-user-detail',authGuard,getUserDetail);
 router.get('/get-all-user',authGuard,getAuthUserDetail);

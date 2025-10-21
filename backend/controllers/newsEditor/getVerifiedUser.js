@@ -9,7 +9,7 @@ const getVerifiedUser = async (req, res) => {
         if(role!=='ADMIN'){
             return res.json({message: 'Unauthorized access', status: 403, data: {}, success: false, error: true});
         }
-            const result = await editorModel.find({isVerified: true}).skip(skip).limit(limit);
+            const result = await editorModel.find({isVerified: true}).skip(skip).limit(limit).populate('userId', 'name email ');
             const total = await editorModel.countDocuments({isVerified: true});
             const totalPages = Math.ceil(total / limit);
 
