@@ -13,6 +13,12 @@ const rejectMatrimony = async (req, res) => {
             return res.status(400).json({message: 'You cannot reject to  profile'});
     }
      let index = req.params.index;
+     if(ExistMatrimony.applyMatrimony[index].accept === true){
+        return res.status(400).json({message: 'You have already accepted this profile'});
+    }
+     if(ExistMatrimony.applyMatrimony[index].reject === true){
+        return res.status(400).json({message: 'You have already rejected this profile'});
+    }
      ExistMatrimony.applyMatrimony[index].reject = payload.reject;
      await ExistMatrimony.save();
      res.json({message: 'Matrimony application rejected successfully', status: 200, data: ExistMatrimony, success: true, error: false});
