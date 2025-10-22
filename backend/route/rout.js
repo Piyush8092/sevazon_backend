@@ -163,6 +163,13 @@ const { deleteFAQ } = require('../controllers/faq/DeleteFAQ');
 const { queryFAQ } = require('../controllers/faq/queryFaq');
 const { updateFavourit } = require('../controllers/JobPost/updateFavourit');
 const { getAllFavouritJob } = require('../controllers/JobPost/getAllFavouritJob');
+const { getSpecificApplyMatrimony } = require('../controllers/applyMatrimony/getSpecificApplyMatrimony');
+const { applyMatrimony } = require('../controllers/applyMatrimony/applyMatrimony');
+const { getAllApplyApplication } = require('../controllers/applyMatrimony/getAllApplyedApplication');
+const { acceptMatrimony } = require('../controllers/applyMatrimony/AcceptMatrimony');
+const { rejectMatrimony } = require('../controllers/applyMatrimony/rejectMatrimony');
+const { getAcceptMetrimony } = require('../controllers/applyMatrimony/getAcceptMetrimony');
+const { getRejectMatrimony } = require('../controllers/applyMatrimony/getRejectMatrimony');
  cookie();
 router.get('/', (req, res) => {
     res.send('Hello savazon!');
@@ -269,6 +276,17 @@ router.delete('/delete-specific-matrimony/:id',authGuard,deleteMatrimony);
 router.get('/get-matrimony-creator-view',authGuard,MatrimonyCreatorView);
 // api is =>. http://localhost:3000/api/get-query-matrimony?query=Brahmin
 router.get('/get-query-matrimony',queryMatrimony);
+
+// for apply matrimony
+router.post('/apply-matrimony/:id',authGuard,applyMatrimony);
+router.get('/get-all-apply-matrimony',authGuard,getAllApplyApplication);
+router.get('/get-specific-apply-matrimony/:id',getSpecificApplyMatrimony);
+//pass body {"acceptedUserId":"646666666666666666666666",accept:true}
+router.put('/accept-matrimony/:id/:index',authGuard,acceptMatrimony);
+// pass body {"rejectUserId":"646666666666666666666666",reject:true}
+router.put('/reject-matrimony/:id/:index',authGuard,rejectMatrimony);
+router.get('/get-all-accepted-matrimony',authGuard,getAcceptMetrimony);
+router.get('/get-all-rejected-matrimony',authGuard,getRejectMatrimony);
 
 
 

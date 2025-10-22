@@ -6,6 +6,28 @@ const MatrimonySchema = new mongoose.Schema({
         ref: 'user',
         required: [true, 'User is required'],
     },
+
+    applyMatrimony: [{
+    applyUserId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'user',
+    },
+    applyMatrimonyStatus: {
+       type:Boolean,
+       default:false,  
+    },
+     reject:{
+                type:Boolean,
+                default:false,
+            },
+            accept:{
+                type:Boolean,
+                default:false,
+            }
+}],
+    
+     
+  
     
     // Basic Details
     profileCreatedFor: {
@@ -117,12 +139,18 @@ const MatrimonySchema = new mongoose.Schema({
     }, 
     
     // Partner Requirements
-    partnerAge: {
-    type: [String],
-    },
-    partnerHeight: {
- type: [String],
-    },
+  partnerAge: [
+  {
+    min: { type: Number, required: true },
+    max: { type: Number, required: true }
+  }
+],
+partnerHeight: [
+  {
+    min: { type: String, required: true },
+    max: { type: String, required: true }
+  }
+],
     partnerMaritalStatus: {
         type: [String],
      enum: ['Never Married', 'Divorced', 'Widowed', 'Separated'],
