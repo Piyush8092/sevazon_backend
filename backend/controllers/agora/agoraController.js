@@ -155,6 +155,22 @@ class AgoraController {
 
       const callData = agoraService.answerCall(callId, userId);
 
+      // CRITICAL FIX: Generate token for the callee (answering user)
+      // The callee needs their own token to join the channel
+      const calleeToken = agoraService.generateToken(
+        callData.channelName,
+        userId,
+        'publisher'
+      );
+
+      // Update callData with callee's token information
+      callData.callee = {
+        ...callData.callee,
+        ...calleeToken
+      };
+
+      console.log(`✅ Generated token for callee ${userId}`);
+
       // Notify caller that call was answered
       try {
         await notificationService.sendToUser(
@@ -163,7 +179,10 @@ class AgoraController {
           'Your call has been answered',
           {
             type: 'call_answered',
-            callId: callId
+            callId: callId,
+            channelName: callData.channelName,
+            calleeToken: calleeToken.token,
+            calleeUid: calleeToken.uid
           },
           {
             category: 'calls',
@@ -183,9 +202,9 @@ class AgoraController {
 
     } catch (error) {
       console.error('❌ Error in answerCall:', error);
-      const statusCode = error.message.includes('not found') ? 404 : 
+      const statusCode = error.message.includes('not found') ? 404 :
                         error.message.includes('Unauthorized') ? 403 : 500;
-      
+
       res.status(statusCode).json({
         success: false,
         message: 'Failed to answer call',
