@@ -266,23 +266,35 @@ class AgoraService {
    */
   answerCall(callId, userId) {
     try {
-      const call = this.activeCalls.get(callId);
+      let call = this.activeCalls.get(callId);
+
+      // If call not found in memory, create a minimal call object
+      // This handles cases where the call was lost due to server restart
       if (!call) {
-        throw new Error('Call not found');
+        console.warn(`⚠️ Call ${callId} not found in memory, creating minimal call object for answer`);
+        call = {
+          callId,
+          status: 'initiated',
+          caller: { userId: 'unknown' },
+          callee: { userId: userId },
+          createdAt: new Date(),
+          updatedAt: new Date()
+        };
       }
-      
-      if (call.callee.userId !== userId) {
+
+      // Verify the user is the callee (or callee is unknown)
+      if (call.callee.userId !== 'unknown' && call.callee.userId !== userId) {
         throw new Error('Unauthorized to answer this call');
       }
-      
+
       call.status = 'active';
       call.answeredAt = new Date();
       call.updatedAt = new Date();
-      
+
       this.activeCalls.set(callId, call);
-      
+
       console.log(`✅ Call answered: ${callId} by ${userId}`);
-      
+
       return call;
     } catch (error) {
       console.error('❌ Error answering call:', error);
@@ -298,36 +310,52 @@ class AgoraService {
    */
   endCall(callId, userId) {
     try {
-      const call = this.activeCalls.get(callId);
+      // First check in-memory storage
+      let call = this.activeCalls.get(callId);
+
+      // If not found in memory, create a minimal call object
+      // This handles cases where the call was lost due to server restart
       if (!call) {
-        throw new Error('Call not found');
+        console.warn(`⚠️ Call ${callId} not found in memory, creating minimal call object`);
+        call = {
+          callId,
+          status: 'initiated',
+          caller: { userId: 'unknown' },
+          callee: { userId: 'unknown' },
+          createdAt: new Date(),
+          updatedAt: new Date()
+        };
       }
-      
-      // Allow either participant to end the call
-      if (call.caller.userId !== userId && call.callee.userId !== userId) {
-        throw new Error('Unauthorized to end this call');
+
+      // Allow either participant to end the call (or allow if caller/callee is unknown)
+      if (call.caller.userId !== 'unknown' && call.callee.userId !== 'unknown') {
+        if (call.caller.userId !== userId && call.callee.userId !== userId) {
+          throw new Error('Unauthorized to end this call');
+        }
       }
-      
+
       call.status = 'ended';
       call.endedAt = new Date();
       call.endedBy = userId;
       call.updatedAt = new Date();
-      
+
       // Calculate call duration if it was active
       if (call.answeredAt) {
         call.duration = Math.floor((call.endedAt - call.answeredAt) / 1000); // in seconds
+      } else {
+        call.duration = 0;
       }
-      
+
       this.activeCalls.set(callId, call);
-      
+
       console.log(`📴 Call ended: ${callId} by ${userId}`);
-      
+
       // Remove from active calls after a delay (for cleanup)
       setTimeout(() => {
         this.activeCalls.delete(callId);
         console.log(`🗑️ Call ${callId} removed from active calls`);
       }, 60000); // 1 minute delay
-      
+
       return call;
     } catch (error) {
       console.error('❌ Error ending call:', error);
@@ -343,7 +371,15 @@ class AgoraService {
   getCall(callId) {
     const call = this.activeCalls.get(callId);
     if (!call) {
-      throw new Error('Call not found');
+      console.warn(`⚠️ Call ${callId} not found in memory`);
+      // Return a minimal call object instead of throwing error
+      return {
+        callId,
+        status: 'unknown',
+        message: 'Call information not available (may have been cleared from memory)',
+        createdAt: new Date(),
+        updatedAt: new Date()
+      };
     }
     return call;
   }
