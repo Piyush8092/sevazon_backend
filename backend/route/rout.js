@@ -314,7 +314,7 @@ router.get('/show-create-offer-view',authGuard,showCreateOfferView);
 
 // for adds post
 router.post('/create-ad',authGuard,CreateAdd);
-router.get('/get-all-ad',GetAllAdds);
+router.get('/get-all-ad',GetAllAdds); 
 router.get('/get-specific-ad/:id',GetSpecificAdd);
 router.put('/update-specific-ad/:id',authGuard,UpdateSpecificAdd);
 router.delete('/delete-specific-ad/:id',authGuard,DeleteSpecificAdd);

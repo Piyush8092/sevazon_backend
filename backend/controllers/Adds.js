@@ -67,7 +67,7 @@ const GetAllAdds = async (req, res) => {
             totalPages,
             currentPage: page,
             success: true, 
-            error: false
+            error: false 
         });
     } catch (e) {
         res.json({
