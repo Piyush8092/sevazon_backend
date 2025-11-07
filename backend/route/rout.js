@@ -170,7 +170,11 @@ const { acceptMatrimony } = require('../controllers/applyMatrimony/AcceptMatrimo
 const { rejectMatrimony } = require('../controllers/applyMatrimony/rejectMatrimony');
 const { getAcceptMetrimony } = require('../controllers/applyMatrimony/getAcceptMetrimony');
 const { getRejectMatrimony } = require('../controllers/applyMatrimony/getRejectMatrimony');
- cookie();
+const { UpdateReportAndBlock } = require('../controllers/AllServicesRegistration/UpdateReportAndBlock');
+ const { UpdateServiceProfileBookMark } = require('../controllers/AllServicesRegistration/UpdateServiceProfileBookMark');
+const { getBookmarkServiceProfile } = require('../controllers/user/getBookmarkServiceProfile');
+const { getReportAndBlockServiceProfile } = require('../controllers/user/getReportAndBlockServiceProfile');
+   cookie();
 router.get('/', (req, res) => {
     res.send('Hello savazon!');
 });
@@ -186,6 +190,34 @@ router.get('/auth-user',authGuard,getAuthUserDetail);
 router.post('/send-otp',sendOTP);
 router.post('/verify-otp',verifyOTP);
 router.get('/resend-otp/:phone',getOtp);
+
+
+
+
+ 
+// user releted route =>service profile releretd route
+router.get('/get-user-detail',authGuard,getUserDetail);
+router.get('/get-all-user',authGuard,getAuthUserDetail);
+router.get('/get-specific-user/:id',authGuard,getSpecificUser);
+router.delete('/delete-user/:id',authGuard,deleteUser);
+// update service profile => normal user
+router.put('/update-user/:id',authGuard,updateUser);
+router.get('/get-service-query-user',queryServiceUser);
+// for bookmark service profile
+router.get('/get-bookmark-service-profile',authGuard,getBookmarkServiceProfile);
+router.get('/get-report-block-service-profile',authGuard,getReportAndBlockServiceProfile);
+
+
+// usermodel releted route 
+// admin Access For Main UserModel Role change ['admin','user'] =>at the time of login user 
+router.put('/update-admin-role/:id',authGuard,AdminUpdate);
+// usermodel under route
+router.get('/login-user-view',authGuard,adminAllUserView);
+router.get('/admin-get-specific-user/:id',authGuard,AdminSpecificUserView);
+router.get('/admin-get-query-user',queryAdminUser);
+ 
+
+
 
 
 // for display all services list items
@@ -219,8 +251,15 @@ router.get('/get-specific-service-rating',authGuard,getRatting);
 router.get('/get-service-creator-view',authGuard,getServiceCreaterView);
 router.put('/update-specific-service-important-link/:id',authGuard,updateImportantLink);
 router.put('/update-specific-service-time-slot/:id',authGuard,updateTimeSlot);
+// for report and block
+// http://localhost:3000/api/update-specific-service-report-block.     body pass=>  {"reportAndBlockID":"650666666666666666666666"}
+router.put('/update-specific-service-report-block',authGuard,UpdateReportAndBlock);
+ // for bookmark service profile
+// http://localhost:3000/api/update-specific-service-bookmark.     body pass=>  {"serviceProfileBookmarkID":"650666666666666666666666"}
+router.put('/update-specific-service-bookmark',authGuard,UpdateServiceProfileBookMark);
 
- 
+
+
 
 // for job post
 router.post('/create-job',authGuard,createJob);
@@ -356,27 +395,7 @@ router.put('/news-comment/:news_id',authGuard,newsComment);
 router.put('/news-like/:news_id',authGuard,newsLike);
 router.put('/news-dislike/:news_id',authGuard,newsDislike);
 
-
  
-// user releted route =>service profile releretd route
-router.get('/get-user-detail',authGuard,getUserDetail);
-router.get('/get-all-user',authGuard,getAuthUserDetail);
-router.get('/get-specific-user/:id',authGuard,getSpecificUser);
-router.delete('/delete-user/:id',authGuard,deleteUser);
-// update service profile => normal user
-router.put('/update-user/:id',authGuard,updateUser);
-router.get('/get-service-query-user',queryServiceUser);
-
-
-// usermodel releted route 
-// admin Access For Main UserModel Role change ['admin','user'] =>at the time of login user 
-router.put('/update-admin-role/:id',authGuard,AdminUpdate);
-// usermodel under route
-router.get('/login-user-view',authGuard,adminAllUserView);
-router.get('/admin-get-specific-user/:id',authGuard,AdminSpecificUserView);
-router.get('/admin-get-query-user',queryAdminUser);
- 
-
 
 
 
