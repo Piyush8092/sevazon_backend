@@ -36,10 +36,11 @@ class AttestrConfig {
 
     /**
      * Get authorization headers for Attestr API
+     * According to Attestr API documentation, use "Basic {authToken}" format
      */
     getAuthHeaders() {
         return {
-            'Authorization': `Bearer ${this.apiToken}`,
+            'Authorization': `Basic ${this.apiToken}`,
             'Content-Type': 'application/json',
             'Accept': 'application/json',
         };

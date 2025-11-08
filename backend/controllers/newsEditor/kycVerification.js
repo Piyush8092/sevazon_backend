@@ -98,23 +98,51 @@ const verifyDocument = async (req, res) => {
             }
         }
 
-        // Check if it's a valid Voter ID
+        // Check if it's a valid Voter ID and verify with Attestr
         if (!isValid && document_type === 'voter_id') {
             if (VOTER_ID_PATTERN.test(normalizedId)) {
-                // Voter ID format validation (real verification would require integration with Election Commission API)
-                console.log('🔍 Verifying Voter ID format:', normalizedId);
-                isValid = true;
-                verificationDetails = {
-                    documentType: 'voter_id',
-                    documentId: normalizedId,
-                    format: 'valid',
-                    lastFourDigits: normalizedId.slice(-4),
-                    verified: true,
-                    verificationProvider: 'Format Validation',
-                    verificationId: `VOTER_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-                    timestamp: new Date(),
-                    note: 'Voter ID format validation. Real verification requires Election Commission API integration.'
-                };
+                // Use Attestr API for real Voter ID verification
+                console.log('🔍 Verifying Voter ID with Attestr API:', normalizedId);
+                verificationResult = await attestrService.verifyVoterID(normalizedId);
+
+                if (verificationResult.success && verificationResult.verified) {
+                    isValid = true;
+                    verificationDetails = {
+                        documentType: 'voter_id',
+                        documentId: normalizedId,
+                        format: 'valid',
+                        lastFourDigits: normalizedId.slice(-4),
+                        verified: true,
+                        verificationProvider: verificationResult.data?.provider || 'Attestr',
+                        verificationId: verificationResult.data?.verificationId,
+                        name: verificationResult.data?.name,
+                        gender: verificationResult.data?.gender,
+                        state: verificationResult.data?.state,
+                        district: verificationResult.data?.district,
+                        age: verificationResult.data?.age,
+                        status: verificationResult.data?.status,
+                        timestamp: verificationResult.data?.timestamp,
+                    };
+                } else {
+                    // Voter ID verification failed with Attestr - use fallback format validation
+                    console.log('⚠️ Attestr Voter ID verification failed, using format validation fallback');
+                    console.log('⚠️ Attestr error:', verificationResult.error, '-', verificationResult.message);
+
+                    // Accept the Voter ID if format is valid (fallback verification)
+                    isValid = true;
+                    verificationDetails = {
+                        documentType: 'voter_id',
+                        documentId: normalizedId,
+                        format: 'valid',
+                        lastFourDigits: normalizedId.slice(-4),
+                        verified: true,
+                        verificationProvider: 'Format Validation (Attestr unavailable)',
+                        verificationId: `VOTER_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+                        timestamp: new Date(),
+                        note: 'Voter ID format validation. Attestr API verification failed: ' + verificationResult.message,
+                        attestrError: verificationResult.error,
+                    };
+                }
             }
         }
 
@@ -153,6 +181,12 @@ const verifyDocument = async (req, res) => {
                 details: errorDetails
             });
         }
+
+        console.log('✅ Document verification successful:', {
+            documentType: verificationDetails.documentType,
+            documentId: verificationDetails.documentId,
+            provider: verificationDetails.verificationProvider
+        });
 
         res.json({
             message: 'Document verified successfully',
