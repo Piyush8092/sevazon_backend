@@ -170,6 +170,21 @@ const { acceptMatrimony } = require('../controllers/applyMatrimony/AcceptMatrimo
 const { rejectMatrimony } = require('../controllers/applyMatrimony/rejectMatrimony');
 const { getAcceptMetrimony } = require('../controllers/applyMatrimony/getAcceptMetrimony');
 const { getRejectMatrimony } = require('../controllers/applyMatrimony/getRejectMatrimony');
+
+// Pricing Plan controllers
+const { createPricingPlan } = require('../controllers/pricingPlan/createPricingPlan');
+const { getAllPricingPlans } = require('../controllers/pricingPlan/getAllPricingPlans');
+const { getPricingPlansByCategory } = require('../controllers/pricingPlan/getPricingPlansByCategory');
+const { getSpecificPricingPlan } = require('../controllers/pricingPlan/getSpecificPricingPlan');
+const { updatePricingPlan } = require('../controllers/pricingPlan/updatePricingPlan');
+const { deletePricingPlan } = require('../controllers/pricingPlan/deletePricingPlan');
+
+// Payment controllers
+const { createPaymentOrder } = require('../controllers/payment/createPaymentOrder');
+const { verifyPayment } = require('../controllers/payment/verifyPayment');
+const { getPaymentHistory } = require('../controllers/payment/getPaymentHistory');
+const { getRazorpayKey } = require('../controllers/payment/getRazorpayKey');
+
  cookie();
 router.get('/', (req, res) => {
     res.send('Hello savazon!');
@@ -583,5 +598,19 @@ router.post('/agora/switch-certificate', [
 
 // FCM notification routes
 router.use('/fcm', fcmRoutes);
+
+// Pricing Plan routes
+router.post('/create-pricing-plan', authGuard, createPricingPlan);
+router.get('/get-all-pricing-plans', getAllPricingPlans);
+router.get('/get-pricing-plans-by-category/:category', getPricingPlansByCategory);
+router.get('/get-specific-pricing-plan/:id', getSpecificPricingPlan);
+router.put('/update-pricing-plan/:id', authGuard, updatePricingPlan);
+router.delete('/delete-pricing-plan/:id', authGuard, deletePricingPlan);
+
+// Payment routes
+router.post('/create-payment-order', authGuard, createPaymentOrder);
+router.post('/verify-payment', authGuard, verifyPayment);
+router.get('/get-payment-history', authGuard, getPaymentHistory);
+router.get('/get-razorpay-key', getRazorpayKey);
 
 module.exports=router;
