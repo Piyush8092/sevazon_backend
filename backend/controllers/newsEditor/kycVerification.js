@@ -1,7 +1,10 @@
 /**
  * KYC Verification Controller
  * Handles Aadhaar and PAN ID verification for news editor profiles
+ * Now integrated with Attestr API for real PAN verification
  */
+
+const attestrService = require('../../services/attestrService');
 
 // Simple validation patterns for Aadhaar and PAN
 const AADHAAR_PATTERN = /^\d{12}$/; // 12 digits
@@ -10,16 +13,13 @@ const PAN_PATTERN = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/; // PAN format: AAAAA9999A
 /**
  * Verify Aadhaar or PAN ID
  * POST /api/kyc/verify
- * 
- * This is a basic verification that checks format validity.
- * In production, integrate with actual KYC verification services like:
- * - Aadhaar Verification API
- * - PAN Verification API
- * - Third-party KYC providers
+ *
+ * Now uses Attestr API for real PAN verification
+ * Falls back to format validation for Aadhaar or if Attestr is unavailable
  */
 const verifyDocument = async (req, res) => {
     try {
-        const { document_id, document_type } = req.body;
+        const { document_id, document_type, name, dob } = req.body;
 
         // Validate required fields
         if (!document_id || !document_type) {
@@ -36,6 +36,7 @@ const verifyDocument = async (req, res) => {
 
         let isValid = false;
         let verificationDetails = {};
+        let verificationResult = null;
 
         // Verify based on document type
         if (document_type === 'aadhaar_or_pan' || document_type === 'aadhaar') {
@@ -46,21 +47,47 @@ const verifyDocument = async (req, res) => {
                     documentType: 'aadhaar',
                     documentId: normalizedId,
                     format: 'valid',
-                    lastFourDigits: normalizedId.slice(-4)
+                    lastFourDigits: normalizedId.slice(-4),
+                    note: 'Aadhaar format validation only. Real verification requires separate integration.'
                 };
             }
         }
 
-        // If not Aadhaar, check if it's a valid PAN
+        // If not Aadhaar, check if it's a valid PAN and verify with Attestr
         if (!isValid && (document_type === 'aadhaar_or_pan' || document_type === 'pan')) {
             if (PAN_PATTERN.test(normalizedId)) {
-                isValid = true;
-                verificationDetails = {
-                    documentType: 'pan',
-                    documentId: normalizedId,
-                    format: 'valid',
-                    lastFourDigits: normalizedId.slice(-4)
-                };
+                // Use Attestr API for real PAN verification
+                console.log('🔍 Verifying PAN with Attestr API:', normalizedId);
+                verificationResult = await attestrService.verifyPAN(normalizedId, name, dob);
+
+                if (verificationResult.success && verificationResult.verified) {
+                    isValid = true;
+                    verificationDetails = {
+                        documentType: 'pan',
+                        documentId: normalizedId,
+                        format: 'valid',
+                        lastFourDigits: normalizedId.slice(-4),
+                        verified: true,
+                        verificationProvider: verificationResult.data?.provider || 'Attestr',
+                        verificationId: verificationResult.data?.verificationId,
+                        name: verificationResult.data?.name,
+                        status: verificationResult.data?.status,
+                        timestamp: verificationResult.data?.timestamp,
+                    };
+                } else {
+                    // PAN verification failed
+                    return res.status(400).json({
+                        message: verificationResult.message || 'PAN verification failed',
+                        status: 400,
+                        success: false,
+                        error: true,
+                        details: {
+                            error: verificationResult.error,
+                            documentType: 'pan',
+                            documentId: normalizedId,
+                        }
+                    });
+                }
             }
         }
 
@@ -77,10 +104,6 @@ const verifyDocument = async (req, res) => {
             });
         }
 
-        // In production, you would call actual verification APIs here
-        // For now, we're doing basic format validation
-        // TODO: Integrate with real KYC verification services
-
         res.json({
             message: 'Document verified successfully',
             status: 200,
@@ -90,8 +113,6 @@ const verifyDocument = async (req, res) => {
                 verified: true,
                 verificationDetails,
                 timestamp: new Date(),
-                // In production, add verification reference ID from KYC provider
-                verificationId: `KYC_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
             }
         });
 
