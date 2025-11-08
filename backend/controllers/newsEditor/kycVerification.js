@@ -6,9 +6,10 @@
 
 const attestrService = require('../../services/attestrService');
 
-// Simple validation patterns for Aadhaar and PAN
+// Simple validation patterns for Aadhaar, PAN, and Voter ID
 const AADHAAR_PATTERN = /^\d{12}$/; // 12 digits
 const PAN_PATTERN = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/; // PAN format: AAAAA9999A
+const VOTER_ID_PATTERN = /^[A-Z]{3}[0-9]{7}$/; // Voter ID format: AAA1234567 (3 letters + 7 digits)
 
 /**
  * Verify Aadhaar or PAN ID
@@ -91,16 +92,59 @@ const verifyDocument = async (req, res) => {
             }
         }
 
+        // Check if it's a valid Voter ID
+        if (!isValid && document_type === 'voter_id') {
+            if (VOTER_ID_PATTERN.test(normalizedId)) {
+                // Voter ID format validation (real verification would require integration with Election Commission API)
+                console.log('🔍 Verifying Voter ID format:', normalizedId);
+                isValid = true;
+                verificationDetails = {
+                    documentType: 'voter_id',
+                    documentId: normalizedId,
+                    format: 'valid',
+                    lastFourDigits: normalizedId.slice(-4),
+                    verified: true,
+                    verificationProvider: 'Format Validation',
+                    verificationId: `VOTER_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+                    timestamp: new Date(),
+                    note: 'Voter ID format validation. Real verification requires Election Commission API integration.'
+                };
+            }
+        }
+
         if (!isValid) {
+            let errorMessage = 'Invalid document format';
+            let errorDetails = {};
+
+            if (document_type === 'aadhaar_or_pan') {
+                errorMessage = 'Invalid Aadhaar or PAN ID format';
+                errorDetails = {
+                    aadhaarFormat: 'Must be 12 digits (e.g., 123456789012)',
+                    panFormat: 'Must be in format AAAAA9999A (e.g., ABCDE1234F)'
+                };
+            } else if (document_type === 'pan') {
+                errorMessage = 'Invalid PAN format';
+                errorDetails = {
+                    panFormat: 'Must be in format AAAAA9999A (e.g., ABCDE1234F)'
+                };
+            } else if (document_type === 'voter_id') {
+                errorMessage = 'Invalid Voter ID format';
+                errorDetails = {
+                    voterIdFormat: 'Must be 3 letters followed by 7 digits (e.g., ABC1234567)'
+                };
+            } else if (document_type === 'aadhaar') {
+                errorMessage = 'Invalid Aadhaar format';
+                errorDetails = {
+                    aadhaarFormat: 'Must be 12 digits (e.g., 123456789012)'
+                };
+            }
+
             return res.status(400).json({
-                message: 'Invalid Aadhaar or PAN ID format',
+                message: errorMessage,
                 status: 400,
                 success: false,
                 error: true,
-                details: {
-                    aadhaarFormat: 'Must be 12 digits (e.g., 123456789012)',
-                    panFormat: 'Must be in format AAAAA9999A (e.g., ABCDE1234F)'
-                }
+                details: errorDetails
             });
         }
 
