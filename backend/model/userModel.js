@@ -43,6 +43,15 @@ const userSchema = new mongoose.Schema({
     },
     subscriptions: [{
         type: mongoose.Schema.Types.ObjectId,
+    }],
+
+    serviceProfileBookmarkID: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref:'ProfileModel',
+    }],
+    reportAndBlockID:[{
+        type: mongoose.Schema.Types.ObjectId,
+        ref:'ProfileModel',
     }]
 }, { timestamps: true });
 
