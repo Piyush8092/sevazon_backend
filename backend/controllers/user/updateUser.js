@@ -1,4 +1,4 @@
-let userModel = require('../../model/createAllServiceProfileModel');
+let userModel = require('../../model/userModel');
 
 const updateUser = async (req, res) => {
     try {           
