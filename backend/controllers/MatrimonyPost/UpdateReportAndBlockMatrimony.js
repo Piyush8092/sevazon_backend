@@ -22,8 +22,24 @@ const UpdateReportAndBlockMatrimony = async (req, res) => {
         if (alreadyReported) {
             return res.status(400).json({ message: 'You have already reported this profile' });
         }
-         ExistMatrimony.reportAndBlock.push({ report: report, block: block, reportAndBlockID: userId });
-        const result = await ExistMatrimony.save();
+
+        // Use findByIdAndUpdate to avoid full document validation
+        const result = await MatrimonyModel.findByIdAndUpdate(
+            id,
+            {
+                $push: {
+                    reportAndBlock: {
+                        report: report,
+                        block: block,
+                        reportAndBlockID: userId
+                    }
+                }
+            },
+            {
+                new: true, // Return the updated document
+                runValidators: false // Skip validation to avoid phoneNo requirement
+            }
+        );
 
         res.json({
             message: 'Report added successfully',
