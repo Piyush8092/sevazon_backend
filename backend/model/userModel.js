@@ -39,8 +39,31 @@ const userSchema = new mongoose.Schema({
     },
     verified: {
         type: Boolean,
-        default: true
+        default: false
     },
+
+    // KYC Verification Fields
+    panNumber: {
+        type: String,
+        sparse: true, // allow multiple null/missing values
+    },
+    aadhaarNumber: {
+        type: String,
+        sparse: true, // allow multiple null/missing values
+    },
+    voterIdNumber: {
+        type: String,
+        sparse: true, // allow multiple null/missing values
+    },
+    isKycVerified: {
+        type: Boolean,
+        default: false
+    },
+    kycVerificationDetails: {
+        type: Object,
+        default: null
+    },
+
     subscriptions: [{
         type: mongoose.Schema.Types.ObjectId,
     }],

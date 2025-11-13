@@ -78,6 +78,7 @@ const { newsComment } = require('../controllers/NewsPost/newsComment');
 const { getUserDetail } = require('../controllers/user/getUserDetail');
 const { updateUser } = require('../controllers/user/updateUser');
 const { deleteUser } = require('../controllers/user/deleteUser');
+const { verifyUserKyc } = require('../controllers/user/verifyUserKyc');
 const { createVehicle } = require('../controllers/vehicles/createVehicals');
 const { getAllVehicle } = require('../controllers/vehicles/getAllVehicle');
 const { getSpecificVehicles } = require('../controllers/vehicles/getSpecificVehicles');
@@ -219,6 +220,8 @@ router.delete('/delete-user/:id',authGuard,deleteUser);
 // update service profile => normal user
 router.put('/update-user/:id',authGuard,updateUser);
 router.get('/get-service-query-user',queryServiceUser);
+// KYC verification for user profile
+router.post('/user/kyc/verify',authGuard,verifyUserKyc);
 // for bookmark service profile
 router.get('/get-bookmark-service-profile',authGuard,getBookmarkServiceProfile);
 router.get('/get-report-block-service-profile',authGuard,getReportAndBlockServiceProfile);
