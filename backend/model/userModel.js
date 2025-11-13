@@ -68,8 +68,8 @@ const userSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
     }],
     LastLoginTime: {
-        type: Date,
-        default: Date.now
+        type: String,
+        default: null
     },
 
     serviceProfileBookmarkID: [{
