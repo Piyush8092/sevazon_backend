@@ -5,9 +5,8 @@ const getSpecificUser = async (req, res) => {
         const id = req.params.id;
 
         const result = await userModel
-            .findById(id)
-            .populate('serviceProfileBookmarkID', 'name email phone profileImage businessName profileType serviceType _id').populate('reportAndBlockID', 'name email phone profileImage businessName profileType serviceType _id');
-
+            .findById(id).populate('reportAndBlock.reportAndBlockID', 'name email phone profileImage businessName profileType serviceType _id').populate('matrimonyProfileBookmarkID', 'profileCreatedFor fullName phoneNo dateOfBirth gender age maritalStatus height religion caste subCaste noCasteBarrier motherTongue rashiAstroDetails profession highestQualification employmentType annualIncome pincode city state country partnerMinAge partnerMaxAge partnerCity partnerState partnerMaritalStatus partnerEmploymentType partnerReligion partnerMotherTongue isActive isVerified createdAt _id').populate('jobProfileBookmarkID', 'title yourNameBusinessInstituteFirmCompany selectCategory selectSubCategory address pincode description salaryFrom salaryTo salaryPer requiredExperience workMode workShift workType allowCallInApp allowChat isActive isVerified createdAt _id').populate('serviceProfileBookmarkID', 'name email phone profileImage businessName profileType serviceType _id').populate('userId', 'name email phone profileImage businessName profileType serviceType _id');
+            
         if (!result) {
             return res.status(404).json({
                 message: 'No data found',

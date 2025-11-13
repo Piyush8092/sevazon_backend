@@ -4,7 +4,7 @@ let MatrimonyModel = require('../../model/Matrimony');
 const getBookmarkMatrimonyProfile = async (req, res) => {
     try {  
         let userId=req.user._id;
-        let result=await userModel.findById(userId).populate('matrimonyProfileBookmarkID', 'name email phone profileImage  businessName profileType serviceType   _id ');
+        let result=await userModel.findById(userId).populate('matrimonyProfileBookmarkID', 'profileCreatedFor fullName phoneNo dateOfBirth gender age maritalStatus height religion caste subCaste noCasteBarrier motherTongue rashiAstroDetails profession highestQualification employmentType annualIncome pincode city state country partnerMinAge partnerMaxAge partnerCity partnerState partnerMaritalStatus partnerEmploymentType partnerReligion partnerMotherTongue isActive isVerified createdAt _id');
         if(!result){
             res.json({message: 'No data found', status: 400, data: {}, success: false, error: true});
         }

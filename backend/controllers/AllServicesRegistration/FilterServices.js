@@ -20,6 +20,7 @@ const FilterServices = async (req, res) => {
             // Category Filters
             category,       // selectCategory
             subCategory,    // selectSubCategory
+            subCategoryOther,
             
             // Business/Service Filters
             experience,

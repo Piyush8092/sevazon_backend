@@ -14,6 +14,7 @@ const UpdateReportAndBlock = async (req, res) => {
         if (!ExistUser) {
             return res.status(404).json({ message: 'Service not found' });
         }
+        console.log(userId,ExistUser.userId.toString());
         if (ExistUser.userId.toString() === userId.toString() && req.user.role !== 'ADMIN') {
             return res.status(403).json({ message: 'Unauthorized access' });
         }

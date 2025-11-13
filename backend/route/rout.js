@@ -290,6 +290,10 @@ router.put('/update-specific-service-time-slot/:id',authGuard,updateTimeSlot);
 router.put('/update-specific-service-report-block/:id',authGuard,UpdateReportAndBlock);
 // for report and block service profile api is => http://localhost:3000/api/get-report-block-service-profile
 router.get('/get-report-block-service-profile',authGuard,getReportAndBlockServiceProfile);
+
+// //login user view for block user
+// router.get('/get-block-user-view',authGuard,getBlockUserView);
+
  
 // for bookmark service profile
 // http://localhost:3000/api/update-specific-service-bookmark.     body pass=>  {"serviceProfileBookmarkID":"650666666666666666666666"}
@@ -347,8 +351,8 @@ router.get('/get-report-block-job-profile',authGuard,getReportAndBlockJobProfile
 
 
 // favourite job
-//api is => http://localhost:3000/api/update-job-favourite  body   pass=>  {"matrimonyProfileBookmarkID":"650666666666666666666666"}
-router.put('/update-job-favourite/:id',authGuard,UpdateJobProfileBookMark);
+//api is => http://localhost:3000/api/update-job-favourite  body   pass=>  {"jobProfileBookmarkID":"650666666666666666666666"}
+router.put('/update-job-favourite',authGuard,UpdateJobProfileBookMark);
   // api is => http://localhost:3000/api/get-user-favourite-job     
 router.get('/get-user-favourite-job',authGuard,getAllFavouritJob);
 
@@ -378,7 +382,7 @@ router.get('/get-report-block-matrimony-profile',authGuard,getReportAndBlockMatr
 
 // for bookmark matrimony profile
 //api is => http://localhost:3000/api/update-specific-matrimony-bookmark  body pass=>  {"matrimonyProfileBookmarkID":"650666666666666666666666"}
-router.put('/update-specific-matrimony-bookmark/:id',authGuard,UpdateMatrimonyProfileBookMark);
+router.put('/update-specific-matrimony-bookmark',authGuard,UpdateMatrimonyProfileBookMark);
 //api is => http://localhost:3000/api/get-bookmark-Matrimony-profile
 router.get('/get-bookmark-Matrimony-profile',authGuard,getBookmarkMatrimonyProfile);
 
