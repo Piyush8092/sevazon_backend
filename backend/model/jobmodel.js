@@ -98,21 +98,20 @@ const jobSchema = new mongoose.Schema({
         default: false,
         required: [true, 'Allow chat preference is required'],
     },
-    favoriteJob: [{
-       
-        userId: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'user',
-        },
-        jobId: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'jobModel',
-        },
-        isFavorite: {
-            type: Boolean,
-            default: false,
-        }
-    }],
+   reportAndBlock:[{
+    report:{
+       type:String,
+       required:[true,'Report is required'],
+     },
+    block:{
+      type:Boolean,
+      default:false,
+  },
+  reportAndBlockID: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref:'user',
+  }
+}],
     isActive: {
         type: Boolean,
         default: true

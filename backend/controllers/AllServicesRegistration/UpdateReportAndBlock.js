@@ -3,48 +3,33 @@ const userModel = require('../../model/userModel');
 
 const UpdateReportAndBlock = async (req, res) => {
     try {
-        const { reportAndBlockID } = req.body;
-let userId=req.user._id;
-if(userId.toString() === reportAndBlockID.toString()){
-    return res.status(400).json({ message: 'You cannot report your own profile', success: false, error: true });
-}
-        // Check if the service profile exists
-        const existingService = await createServiceModel.findById(reportAndBlockID);
-        if (!existingService) {
-            return res.status(404).json({ 
-                message: 'Service profile not found',
-                success: false,
-                error: true
-            });
+        
+        let id = req.params.id;
+        let userId = req.user._id;
+        let payload = req.body;
+        let report = payload.report;
+        let block = payload.block;
+        let reportAndBlockID = userId;
+        let ExistUser = await createServiceModel.findById(id);
+        if (!ExistUser) {
+            return res.status(404).json({ message: 'Service not found' });
+        }
+        if (ExistUser.userId.toString() === userId.toString() && req.user.role !== 'ADMIN') {
+            return res.status(403).json({ message: 'Unauthorized access' });
         }
 
-        // Find the logged-in user
-        const user = await userModel.findById(req.user._id);
-        if (!user) {
-            return res.status(404).json({
-                message: 'User not found',
-                success: false,
-                error: true
-            });
-        }
+//frist check if user already report and block
+const alreadyReported = ExistUser.reportAndBlock.some(
+    (r) => r.reportAndBlockID.toString() === userId.toString()
+);
+if (alreadyReported) {
+    return res.status(400).json({ message: 'You have already reported this profile' });
+} 
+        ExistUser.reportAndBlock.push({ report: report, block: block, reportAndBlockID: userId });
+        const result = await ExistUser.save();
 
-        // Check if the service is already bookmarked
-        const isBookmarked = user.reportAndBlockID.includes(reportAndBlockID);
-
-        if (isBookmarked) {
-            // Remove bookmark if it exists
-            user.reportAndBlockID.pull(reportAndBlockID);
-        } else {
-            // Add bookmark if it doesn't exist
-            user.reportAndBlockID.push(reportAndBlockID);
-        }
-
-        const result = await user.save();
-
-        res.status(200).json({
-            message: isBookmarked 
-                ? 'Bookmark removed successfully' 
-                : 'Bookmark added successfully',
+        res.json({
+            message: 'Report added successfully',
             status: 200,
             data: result,
             success: true,

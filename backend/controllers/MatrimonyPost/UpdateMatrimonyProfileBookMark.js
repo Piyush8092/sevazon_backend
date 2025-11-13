@@ -1,25 +1,27 @@
-const createServiceModel = require('../../model/createAllServiceProfileModel');
+const MatrimonyModel = require('../../model/Matrimony');
 const userModel = require('../../model/userModel');
 
-const UpdateServiceProfileBookMark = async (req, res) => {
+const UpdateMatrimonyProfileBookMark = async (req, res) => {
     try {
-        const { serviceProfileBookmarkID } = req.body;
+        const { matrimonyProfileBookmarkID } = req.body;
 
-        let userId=req.user._id;
-       
-        // Check if the service profile exists
-        const existingService = await createServiceModel.findById(serviceProfileBookmarkID);
-        if (!existingService) {
-            return res.status(404).json({ 
-                message: 'Service profile not found',
+        let userId = req.user._id;
+  
+        // Check if the matrimony profile exists
+        const existingMatrimony = await MatrimonyModel.findById(matrimonyProfileBookmarkID);
+        if (!existingMatrimony) {
+            return res.status(404).json({
+                message: 'Matrimony profile not found',
                 success: false,
                 error: true
             });
         }
-        if(userId.toString() === existingService.userId.toString()){
+        if(userId.toString() === existingMatrimony.userId.toString()){
             return res.status(400).json({ message: 'You cannot bookmark your own profile', success: false, error: true });
-        }
-
+        }       
+        
+ 
+ 
         // Find the logged-in user
         const user = await userModel.findById(req.user._id);
         if (!user) {
@@ -30,23 +32,23 @@ const UpdateServiceProfileBookMark = async (req, res) => {
             });
         }
 
-        // Check if the service is already bookmarked
-        const isBookmarked = user.serviceProfileBookmarkID.includes(serviceProfileBookmarkID);
+        // Check if the matrimony profile is already bookmarked
+        const isBookmarked = user.matrimonyProfileBookmarkID.includes(matrimonyProfileBookmarkID);
 
         if (isBookmarked) {
             // Remove bookmark if it exists
-            user.serviceProfileBookmarkID.pull(serviceProfileBookmarkID);
+            user.matrimonyProfileBookmarkID.pull(matrimonyProfileBookmarkID);
         } else {
             // Add bookmark if it doesn't exist
-            user.serviceProfileBookmarkID.push(serviceProfileBookmarkID);
+            user.matrimonyProfileBookmarkID.push(matrimonyProfileBookmarkID);
         }
 
         const result = await user.save();
 
         res.status(200).json({
-            message: isBookmarked 
-                ? 'Bookmark removed successfully' 
-                : 'Bookmark added successfully',
+            message: isBookmarked
+                ? 'Matrimony bookmark removed successfully'
+                : 'Matrimony bookmark added successfully',
             status: 200,
             data: result,
             success: true,
@@ -64,4 +66,6 @@ const UpdateServiceProfileBookMark = async (req, res) => {
     }
 };
 
-module.exports = { UpdateServiceProfileBookMark };
+module.exports = { UpdateMatrimonyProfileBookMark };
+
+

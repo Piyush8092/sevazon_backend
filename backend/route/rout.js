@@ -190,7 +190,15 @@ const { getRazorpayKey } = require('../controllers/payment/getRazorpayKey');
 const { UpdateReportAndBlock } = require('../controllers/AllServicesRegistration/UpdateReportAndBlock');
  const { UpdateServiceProfileBookMark } = require('../controllers/AllServicesRegistration/UpdateServiceProfileBookMark');
 const { getBookmarkServiceProfile } = require('../controllers/user/getBookmarkServiceProfile');
+const { getBookmarkJobPost } = require('../controllers/user/getBookmarkJobPost');
 const { getReportAndBlockServiceProfile } = require('../controllers/user/getReportAndBlockServiceProfile');
+const { UpdateReportAndBlockMatrimony } = require('../controllers/MatrimonyPost/UpdateReportAndBlockMatrimony');
+const { getReportAndBlockMatrimonyProfile } = require('../controllers/MatrimonyPost/getReportAndBlockMatrimonyProfile');
+const { getBookmarkMatrimonyProfile } = require('../controllers/MatrimonyPost/getBookmarkMatrimonyProfile');
+const { UpdateMatrimonyProfileBookMark } = require('../controllers/MatrimonyPost/UpdateMatrimonyProfileBookMark');
+const { UpdateJobProfileBookMark } = require('../controllers/JobPost/UpdateJobProfileBookMark');
+const { UpdateReportAndBlockJob } = require('../controllers/JobPost/UpdateReportAndBlockJob');
+const { getReportAndBlockJobProfile } = require('../controllers/JobPost/getReportAndBlockJobProfile');
    cookie();
 router.get('/', (req, res) => {
     res.send('Hello savazon!');
@@ -222,9 +230,9 @@ router.put('/update-user/:id',authGuard,updateUser);
 router.get('/get-service-query-user',queryServiceUser);
 // KYC verification for user profile
 router.post('/user/kyc/verify',authGuard,verifyUserKyc);
-// for bookmark service profile
-router.get('/get-bookmark-service-profile',authGuard,getBookmarkServiceProfile);
-router.get('/get-report-block-service-profile',authGuard,getReportAndBlockServiceProfile);
+  
+  //  for bookmark job post
+router.get('/get-bookmark-job-post',authGuard, getBookmarkJobPost);
 
 
 // usermodel releted route 
@@ -270,13 +278,20 @@ router.get('/get-specific-service-rating',authGuard,getRatting);
 router.get('/get-service-creator-view',authGuard,getServiceCreaterView);
 router.put('/update-specific-service-important-link/:id',authGuard,updateImportantLink);
 router.put('/update-specific-service-time-slot/:id',authGuard,updateTimeSlot);
+
 // for report and block
-// http://localhost:3000/api/update-specific-service-report-block.     body pass=>  {"reportAndBlockID":"650666666666666666666666"}
-router.put('/update-specific-service-report-block',authGuard,UpdateReportAndBlock);
- // for bookmark service profile
+//api is => http://localhost:3000/api/update-specific-service-report-block/650666666666666666666666  body pass=>  {"report":"This is a test report","block":true} 
+router.put('/update-specific-service-report-block/:id',authGuard,UpdateReportAndBlock);
+// for report and block service profile api is => http://localhost:3000/api/get-report-block-service-profile
+router.get('/get-report-block-service-profile',authGuard,getReportAndBlockServiceProfile);
+ 
+// for bookmark service profile
 // http://localhost:3000/api/update-specific-service-bookmark.     body pass=>  {"serviceProfileBookmarkID":"650666666666666666666666"}
 router.put('/update-specific-service-bookmark',authGuard,UpdateServiceProfileBookMark);
+// for bookmark service profile api is => http://localhost:3000/api/get-bookmark-service-profile
+router.get('/get-bookmark-service-profile',authGuard,getBookmarkServiceProfile); 
 
+ 
 
 
 
@@ -315,9 +330,17 @@ router.get('/my-accepted-applications', authGuard, getApplicantAcceptedApplicati
 router.get('/my-rejected-applications', authGuard, getApplicantRejectedApplications);
 router.get('/my-pending-applications',authGuard,getApplicantPendingApplications);
 
+//report and block job post
+//api is => http://localhost:3000/api/update-specific-job-report-block/650666666666666666666666  body pass=>  {"report":"This is a test report","block":true} 
+router.put('/update-specific-job-report-block/:id',authGuard,UpdateReportAndBlockJob);
+// for report and block. user side view api is => http://localhost:3000/api/get-report-block-job-profile
+router.get('/get-report-block-job-profile',authGuard,getReportAndBlockJobProfile);
+
+
 // favourite job
-//for favourite api => http://localhost:3000/api/update-job-favourite/JobId    body=>  {"isFavorite":true} for favoutie and  {"isFavorite":false} for unfavourite
-router.put('/update-job-favourite/:id',authGuard,updateFavourit);
+//api is => http://localhost:3000/api/update-job-favourite  body   pass=>  {"matrimonyProfileBookmarkID":"650666666666666666666666"}
+router.put('/update-job-favourite/:id',authGuard,UpdateJobProfileBookMark);
+  // api is => http://localhost:3000/api/get-user-favourite-job     
 router.get('/get-user-favourite-job',authGuard,getAllFavouritJob);
 
 
@@ -334,6 +357,21 @@ router.delete('/delete-specific-matrimony/:id',authGuard,deleteMatrimony);
 router.get('/get-matrimony-creator-view',authGuard,MatrimonyCreatorView);
 // api is =>. http://localhost:3000/api/get-query-matrimony?query=Brahmin
 router.get('/get-query-matrimony', queryMatrimony);
+
+//for report and block 
+//api is => http://localhost:3000/api/update-specific-matrimony-report-block/650666666666666666666666  body pass=>  {"report":"This is a test report","block":true} 
+router.put('/update-specific-matrimony-report-block/:id',authGuard,UpdateReportAndBlockMatrimony);
+//for report and block. user side view api is => http://localhost:3000/api/get-report-block-matrimony-profile
+router.get('/get-report-block-matrimony-profile',authGuard,getReportAndBlockMatrimonyProfile);
+
+// for bookmark matrimony profile
+//api is => http://localhost:3000/api/update-specific-matrimony-bookmark  body pass=>  {"matrimonyProfileBookmarkID":"650666666666666666666666"}
+router.put('/update-specific-matrimony-bookmark/:id',authGuard,UpdateMatrimonyProfileBookMark);
+//api is => http://localhost:3000/api/get-bookmark-Matrimony-profile
+router.get('/get-bookmark-Matrimony-profile',authGuard,getBookmarkMatrimonyProfile);
+
+
+
 
 // for apply matrimony
 router.post('/apply-matrimony/:id',authGuard,applyMatrimony);
