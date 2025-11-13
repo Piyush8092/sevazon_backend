@@ -42,7 +42,7 @@ const { queryProperty } = require('../controllers/Property/queryProperty');
 
 
 
-const { createOffer, showCreateOfferView } = require('../controllers/offersAndDiscount');
+const { createOffer, showCreateOfferView, FilterOffer } = require('../controllers/offersAndDiscount');
 const { GetAllOffer } = require('../controllers/offersAndDiscount');
 const { GetSpecificOffer } = require('../controllers/offersAndDiscount');
 const { UpdateSpecificOffer } = require('../controllers/offersAndDiscount');
@@ -422,6 +422,8 @@ router.delete('/delete-specific-offer/:id',authGuard,DeleteSpecificOffer);
 // api is => http://localhost:3000/api/get-query-offer?query=411001
 router.get('/get-query-offer',queryOffer);
 router.get('/show-create-offer-view',authGuard,showCreateOfferView);
+//api is => http://localhost:3000/api/filter-offer?city=Mumbai
+router.get('/filter-offer',FilterOffer);
 
 
 // for adds post

@@ -10,6 +10,10 @@ const offerSchema = new mongoose.Schema({
         type: String,
         required: [true, 'Your Name/business/institute/firm/organisation is required'],
     },
+    offerType: {
+        type: String,
+         required: [true, 'Offer type is required'],
+    },
     selectCategory: {
         type: String,
         required: [true, 'Select Category is required'],
