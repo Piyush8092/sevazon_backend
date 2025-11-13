@@ -49,7 +49,9 @@ const LoginRout = async (req, res) => {
         });
 
         existingUser.token = token;
-        existingUser.LastLoginTime = Date.now();
+        //afetr login strore last login time
+        existingUser.LastLoginTime = new Date().toLocaleTimeString();
+
         await existingUser.save();
         res.json({ message: 'Login successful', status: 200, data: existingUser, success: true, error: false });
     } catch (e) {

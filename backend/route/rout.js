@@ -8,6 +8,7 @@ const { CreateAdd,GetAllAdds,GetSpecificAdd,UpdateSpecificAdd,DeleteSpecificAdd,
  const { CreateAllServices} = require('../controllers/AllServicesRegistration/createAllService');
 const { UpdateSpecificServices } = require('../controllers/AllServicesRegistration/UpdateSpecificServices');
 const { GetSpecificServices } = require('../controllers/AllServicesRegistration/GetSpecificServices');
+const { FilterServices } = require('../controllers/AllServicesRegistration/FilterServices');
 const { DeleteSpecsificServices } = require('../controllers/AllServicesRegistration/DeleteSpecificServices');
 const { GetAllServices } = require('../controllers/AllServicesRegistration/GetAllServices');
 const { createVarityServiceList } = require('../controllers/CreateAllServices/CreateServiceList');
@@ -23,9 +24,11 @@ const { updateJob } = require('../controllers/JobPost/updateJob');
 const { deleteJob } = require('../controllers/JobPost/deletejob');
 const { queryJobs } = require('../controllers/JobPost/queryJobs');
 const { createJob } = require('../controllers/JobPost/createJob');
+const { FilterJobs } = require('../controllers/JobPost/FilterJobs');
 const { createMatrimony } = require('../controllers/MatrimonyPost/createMatrimony');
 const { getAllMatrimony } = require('../controllers/MatrimonyPost/getAllMatrimony');
 const { getSpecificMatrimony } = require('../controllers/MatrimonyPost/getSpecificMatrimony');
+const { FilterMatrimony } = require('../controllers/MatrimonyPost/FilterMatrimony');
 const { updateMatrimony } = require('../controllers/MatrimonyPost/updateMatrimony');
 const { deleteMatrimony } = require('../controllers/MatrimonyPost/deleteMatrimony');
 const { queryMatrimony } = require('../controllers/MatrimonyPost/queryMatrimony');
@@ -269,6 +272,9 @@ router.delete('/delete-specific-service/:id',authGuard,DeleteSpecsificServices);
 router.get('/get-all-service',GetAllServices);
 // api route is http://localhost:3000/api/get-query-service?query=Bengaluru
  router.get('/get-query-service',queryServices);
+// Flexible filtering API - supports multiple optional parameters
+// Examples:  http://localhost:3000/api/filter-services?city=Mumbai&profileType=Service Profile&minPrice=1000
+router.get('/filter-services',FilterServices);
 // for like comment 
 router.put('/update-specific-service-like/:id',authGuard,updateLike);
 router.put('/update-specific-service-dislike/:id',authGuard,updateDislike);
@@ -302,6 +308,9 @@ router.get('/get-specific-job/:id',getSpecificJob);
 router.put('/update-specific-job/:id',authGuard,updateJob);
 router.delete('/delete-specific-job/:id',authGuard,deleteJob);
 router.get('/get-query-job',queryJobs);
+// Flexible job filtering API - supports multiple optional parameters
+// Examples: /api/filter-jobs?city=Mumbai&workMode=Remote&minSalary=50000
+router.get('/filter-jobs',FilterJobs);
 router.get('/get-job-creator-view',authGuard,getJobCreaterView);
 
 
@@ -357,6 +366,9 @@ router.delete('/delete-specific-matrimony/:id',authGuard,deleteMatrimony);
 router.get('/get-matrimony-creator-view',authGuard,MatrimonyCreatorView);
 // api is =>. http://localhost:3000/api/get-query-matrimony?query=Brahmin
 router.get('/get-query-matrimony', queryMatrimony);
+// Flexible matrimony filtering API - supports multiple optional parameters
+// Examples: /api/filter-matrimony?gender=Male&city=Mumbai&minAge=25&maxAge=35
+router.get('/filter-matrimony',FilterMatrimony);
 
 //for report and block 
 //api is => http://localhost:3000/api/update-specific-matrimony-report-block/650666666666666666666666  body pass=>  {"report":"This is a test report","block":true} 
