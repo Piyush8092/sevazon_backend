@@ -28,7 +28,14 @@ const queryJobs = async (req, res) => {
                 { workShift: { $in: [regexQuery] } },
                 { workMode: { $in: [regexQuery] } },
                 { workType: { $in: [regexQuery] } },
-                { salaryPer: regexQuery }
+                { salaryPer: regexQuery },
+                { locationURL: regexQuery },
+                { jobType: regexQuery },
+                { jobDescription: regexQuery },
+                { jobResponsibility: regexQuery },
+                { jobRequirement: regexQuery },
+                { otherBenifits: regexQuery }
+
             ]
         };
         

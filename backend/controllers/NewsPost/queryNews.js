@@ -19,7 +19,7 @@ const queryNews = async (req, res) => {
                 { description: regexQuery },
                 { hashtag: regexQuery },
                 { mentions: regexQuery },
-                { content: regexQuery }
+                { content: regexQuery },
             ]
         };
         

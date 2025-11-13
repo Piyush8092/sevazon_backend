@@ -24,7 +24,8 @@ const queryEditors = async (req, res) => {
                 { socialMediaIdLink: regexQuery },
                 { referralUserId: regexQuery },
                 { title: regexQuery },
-                { content: regexQuery }
+                { content: regexQuery },
+                
                 
             ]
         };

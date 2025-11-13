@@ -24,7 +24,16 @@ const queryLocalServices = async (req, res) => {
                 { subCategoryOther: regexQuery },
                 { address: regexQuery },
                 { pincode: regexQuery },
-                { description: regexQuery }
+                { description: regexQuery },
+                { locationURL: regexQuery },
+                { timing: regexQuery },
+                { experience: regexQuery },
+                { establishedInYear: regexQuery },
+                { locationURL: regexQuery },
+                { workServiceImages: regexQuery },
+                { catalogImages: regexQuery },
+                { timeSlot: regexQuery },
+                { importantLink: regexQuery },
             ]
         };
         

@@ -224,7 +224,7 @@ const queryAdds = async (req, res) => {
                 { description: regexQuery },
                 { category: regexQuery },
                 { location: regexQuery },
-                { status: regexQuery }
+                { status: regexQuery },
             ]
         };
         

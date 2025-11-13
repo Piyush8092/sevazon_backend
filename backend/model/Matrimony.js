@@ -38,6 +38,9 @@ const MatrimonySchema = new mongoose.Schema({
     fullName: {
         type: String,
         required: [true, 'Full name is required'],
+    },phoneNo:{
+        type: String,
+        required: [true, 'Phone number is required'],
     },
     dateOfBirth: {
         type: Date,

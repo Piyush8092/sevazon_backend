@@ -44,6 +44,10 @@ const userSchema = new mongoose.Schema({
     subscriptions: [{
         type: mongoose.Schema.Types.ObjectId,
     }],
+    LastLoginTime: {
+        type: Date,
+        default: Date.now
+    },
 
     serviceProfileBookmarkID: [{
         type: mongoose.Schema.Types.ObjectId,
@@ -52,7 +56,11 @@ const userSchema = new mongoose.Schema({
     reportAndBlockID:[{
         type: mongoose.Schema.Types.ObjectId,
         ref:'ProfileModel',
-    }]
+    }],
+    jobProfileBookmarkID: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref:'',
+    }],
 }, { timestamps: true });
 
 /**

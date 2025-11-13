@@ -13,29 +13,51 @@ const queryMatrimony = async (req, res) => {
         const skip = (page - 1) * limit;
         
         // Search across multiple fields based on the matrimony model
-        const searchQuery = {
-            $or: [
-                { fullName: regexQuery },
-                { profession: regexQuery },
-                { highestQualification: regexQuery },
-                { employmentType: regexQuery },
-                { religion: regexQuery },
-                { caste: regexQuery },
-                { subCaste: regexQuery },
-                { motherTongue: regexQuery },
-                { city: regexQuery },
-                { state: regexQuery },
-                { pincode: regexQuery },
-                { maritalStatus: regexQuery },
-                { height: regexQuery },
-                { annualIncome: regexQuery },
-                { moreAboutYourself: regexQuery },
-                { partnerReligion: regexQuery },
-                { partnerMotherTongue: regexQuery },
-                { partnerMaritalStatus: { $in: [regexQuery] } }
-            ]
-        };
-        
+      const searchQuery = {
+  $or: [
+    // String fields
+    { fullName: regexQuery },
+    { phoneNo: regexQuery },
+    { profileCreatedFor: regexQuery },
+    { gender: regexQuery },
+    { maritalStatus: regexQuery },
+    { moreAboutYourself: regexQuery },
+    { contactNumber: regexQuery },
+
+    // Array fields use $in
+    { profession: { $in: [regexQuery] } },
+    { highestQualification: { $in: [regexQuery] } },
+    { employmentType: { $in: [regexQuery] } },
+    { religion: { $in: [regexQuery] } },
+    { caste: { $in: [regexQuery] } },
+    { subCaste: { $in: [regexQuery] } },
+    { motherTongue: { $in: [regexQuery] } },
+    { city: { $in: [regexQuery] } },
+    { state: { $in: [regexQuery] } },
+    { pincode: { $in: [regexQuery] } },
+    { height: { $in: [regexQuery] } },
+    { annualIncome: { $in: [regexQuery] } },
+    { rashiAstroDetails: { $in: [regexQuery] } },
+
+    // Partner Requirements (array fields)
+    { partnerReligion: { $in: [regexQuery] } },
+    { partnerMotherTongue: regexQuery },  
+    { partnerMaritalStatus: { $in: [regexQuery] } },
+    { partnerCity: { $in: [regexQuery] } },
+    { partnerState: { $in: [regexQuery] } },
+    { partnerEmploymentType: { $in: [regexQuery] } },
+    { partnerRashiAstroDetails: { $in: [regexQuery] } },
+    
+    // Partner Age (min & max numbers)
+    { "partnerAge.min": regexQuery },
+    { "partnerAge.max": regexQuery },
+
+    // Partner Height (string)
+    { "partnerHeight.min": regexQuery },
+    { "partnerHeight.max": regexQuery }
+  ]
+};
+
         const result = await MatrimonyModel.find(searchQuery).skip(skip).limit(limit);
         const total = await MatrimonyModel.countDocuments(searchQuery);
         const totalPages = Math.ceil(total / limit);

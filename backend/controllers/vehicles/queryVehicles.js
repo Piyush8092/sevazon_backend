@@ -28,7 +28,10 @@ const queryVehicles = async (req, res) => {
                 { fullName: regexQuery },
                 { pincode: regexQuery },
                 { address: regexQuery },
-                { status: regexQuery }
+                { status: regexQuery },
+                { expectedPrice: regexQuery },
+                { locationUrl: regexQuery },
+                 
             ]
         };
         
