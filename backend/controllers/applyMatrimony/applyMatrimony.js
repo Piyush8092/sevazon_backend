@@ -18,7 +18,8 @@ try{
     if(existingApplication){
         return res.status(400).json({message: 'You have already applied to this profile'});
     }
-    ExistMatrimony.applyMatrimony.push({applyUserId: userId, applyMatrimonyStatus: true});
+    ExistMatrimony.applyMatrimony.push({applyUserId: userId, applyMatrimonyStatus: true, status: 'Pending'});
+
     await ExistMatrimony.save();
     res.json({message: 'Matrimony application submitted successfully', status: 200, data: ExistMatrimony, success: true, error: false});
     }

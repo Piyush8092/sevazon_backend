@@ -16,6 +16,12 @@ const MatrimonySchema = new mongoose.Schema({
        type:Boolean,
        default:false,  
     },
+    status: {
+        type: String,
+        enum: ['Pending', 'Accepted', 'Rejected'],
+        default: 'Pending',
+        required: [true, 'Status is required']
+    },
      reject:{
                 type:Boolean,
                 default:false,

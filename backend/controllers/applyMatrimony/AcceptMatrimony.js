@@ -21,6 +21,7 @@ const acceptMatrimony = async (req, res) => {
         return res.status(400).json({message: 'You have already rejected this profile'});
     }
     ExistMatrimony.applyMatrimony[index].accept = payload.accept;
+    ExistMatrimony.applyMatrimony[index].status = 'Accepted';
     await ExistMatrimony.save();
     res.json({message: 'Matrimony application accepted successfully', status: 200, data: ExistMatrimony, success: true, error: false});
     }

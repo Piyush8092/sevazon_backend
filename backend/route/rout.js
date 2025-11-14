@@ -205,6 +205,7 @@ const { getReportAndBlockJobProfile } = require('../controllers/JobPost/getRepor
 const { getBlockUserView } = require('../controllers/AllServicesRegistration/getBlockUserView');
 const { getBlockJobUserView } = require('../controllers/JobPost/getBlockJobUserView');
 const { getBlockMatrimonyUserView } = require('../controllers/MatrimonyPost/getBlockMatrimonyUserView');
+const { getPendingMatrimony } = require('../controllers/applyMatrimony/getPendingMatrimony');
    cookie();
 router.get('/', (req, res) => {
     res.send('Hello savazon!');
@@ -401,21 +402,23 @@ router.get('/get-bookmark-Matrimony-profile',authGuard,getBookmarkMatrimonyProfi
 
 
 // for apply matrimony
+//api is => http://localhost:3000/api/apply-matrimony/matrimony_id    
 router.post('/apply-matrimony/:id',authGuard,applyMatrimony);
 router.get('/get-all-apply-matrimony',authGuard,getAllApplyApplication);
 router.get('/get-specific-apply-matrimony/:id',getSpecificApplyMatrimony);
-//pass body {"acceptedUserId":"646666666666666666666666",accept:true}
+//pass body {"accept":true}
 router.put('/accept-matrimony/:id/:index',authGuard,acceptMatrimony);
-// pass body {"rejectUserId":"646666666666666666666666",reject:true}
+// pass body  {"reject":true}
 router.put('/reject-matrimony/:id/:index',authGuard,rejectMatrimony);
 router.get('/get-all-accepted-matrimony',authGuard,getAcceptMetrimony);
 router.get('/get-all-rejected-matrimony',authGuard,getRejectMatrimony);
+router.get('/get-all-pending-matrimony',authGuard,getPendingMatrimony);
+ 
 
 
-
-// for propert post
+// for propert post. 
 router.post('/create-property',authGuard,createProperty);
-router.get('/get-all-property',getAllProperty);
+router.get('/get-all-property',getAllProperty); 
 router.get('/get-specific-property/:id',getSpecificqueryProperty);
 router.put('/update-specific-property/:id',authGuard,updateProperty);
 router.delete('/delete-specific-property/:id',authGuard,deleteProperty);
