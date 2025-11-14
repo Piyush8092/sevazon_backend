@@ -29,6 +29,16 @@ if (alreadyReported) {
         ExistUser.reportAndBlock.push({ report: report, block: block, reportAndBlockID: userId });
         const result = await ExistUser.save();
 
+        let user = await userModel.findById(userId);
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+        if (user.ServiceReportAndBlockID.includes(id)) {
+            return res.status(400).json({ message: 'You have already reported this profile' });
+        }
+        user.ServiceReportAndBlockID.push(id);
+        // console.log("anmdkdk",user.ServiceReportAndBlockID)
+        await user.save();
         res.json({
             message: 'Report added successfully',
             status: 200,

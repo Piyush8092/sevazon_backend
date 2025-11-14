@@ -1,4 +1,5 @@
 let MatrimonyModel = require('../../model/Matrimony');
+const userModel = require('../../model/userModel');
 
 const UpdateReportAndBlockMatrimony = async (req, res) => {
     try {       
@@ -23,23 +24,20 @@ const UpdateReportAndBlockMatrimony = async (req, res) => {
             return res.status(400).json({ message: 'You have already reported this profile' });
         }
 
-        // Use findByIdAndUpdate to avoid full document validation
-        const result = await MatrimonyModel.findByIdAndUpdate(
-            id,
-            {
-                $push: {
-                    reportAndBlock: {
-                        report: report,
-                        block: block,
-                        reportAndBlockID: userId
-                    }
-                }
-            },
-            {
-                new: true, // Return the updated document
-                runValidators: false // Skip validation to avoid phoneNo requirement
-            }
-        );
+         ExistMatrimony.reportAndBlock.push({ report: report, block: block, reportAndBlockID: userId });
+         const result = await ExistMatrimony.save();
+         let user = await userModel.findById(userId);
+
+         if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+        if (user.matrimonyReportAndBlockID.includes(id)) {
+            return res.status(400).json({ message: 'You have already reported this profile' });
+        }
+        user.matrimonyReportAndBlockID.push(id);
+        await user.save();
+
+
 
         res.json({
             message: 'Report added successfully',

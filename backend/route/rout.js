@@ -202,6 +202,9 @@ const { UpdateMatrimonyProfileBookMark } = require('../controllers/MatrimonyPost
 const { UpdateJobProfileBookMark } = require('../controllers/JobPost/UpdateJobProfileBookMark');
 const { UpdateReportAndBlockJob } = require('../controllers/JobPost/UpdateReportAndBlockJob');
 const { getReportAndBlockJobProfile } = require('../controllers/JobPost/getReportAndBlockJobProfile');
+const { getBlockUserView } = require('../controllers/AllServicesRegistration/getBlockUserView');
+const { getBlockJobUserView } = require('../controllers/JobPost/getBlockJobUserView');
+const { getBlockMatrimonyUserView } = require('../controllers/MatrimonyPost/getBlockMatrimonyUserView');
    cookie();
 router.get('/', (req, res) => {
     res.send('Hello savazon!');
@@ -285,14 +288,15 @@ router.get('/get-service-creator-view',authGuard,getServiceCreaterView);
 router.put('/update-specific-service-important-link/:id',authGuard,updateImportantLink);
 router.put('/update-specific-service-time-slot/:id',authGuard,updateTimeSlot);
 
+
 // for report and block
-//api is => http://localhost:3000/api/update-specific-service-report-block/650666666666666666666666  body pass=>  {"report":"This is a test report","block":true} 
+//api is => http://localhost:3000/api/update-specific-service-report-block/profileId  body pass=>  {"report":"This is a test report","block":true} 
 router.put('/update-specific-service-report-block/:id',authGuard,UpdateReportAndBlock);
 // for report and block service profile api is => http://localhost:3000/api/get-report-block-service-profile
 router.get('/get-report-block-service-profile',authGuard,getReportAndBlockServiceProfile);
 
-// //login user view for block user
-// router.get('/get-block-user-view',authGuard,getBlockUserView);
+// login user view whom he/she block 
+router.get('/get-block-service-user-view',authGuard,getBlockUserView);
 
  
 // for bookmark service profile
@@ -300,6 +304,7 @@ router.get('/get-report-block-service-profile',authGuard,getReportAndBlockServic
 router.put('/update-specific-service-bookmark',authGuard,UpdateServiceProfileBookMark);
 // for bookmark service profile api is => http://localhost:3000/api/get-bookmark-service-profile
 router.get('/get-bookmark-service-profile',authGuard,getBookmarkServiceProfile); 
+
 
  
 
@@ -349,6 +354,9 @@ router.put('/update-specific-job-report-block/:id',authGuard,UpdateReportAndBloc
 // for report and block. user side view api is => http://localhost:3000/api/get-report-block-job-profile
 router.get('/get-report-block-job-profile',authGuard,getReportAndBlockJobProfile);
 
+// login user view whom he/she block 
+router.get('/get-block-job-user-view',authGuard,getBlockJobUserView);
+
 
 // favourite job
 //api is => http://localhost:3000/api/update-job-favourite  body   pass=>  {"jobProfileBookmarkID":"650666666666666666666666"}
@@ -379,6 +387,9 @@ router.get('/filter-matrimony',FilterMatrimony);
 router.put('/update-specific-matrimony-report-block/:id',authGuard,UpdateReportAndBlockMatrimony);
 //for report and block. user side view api is => http://localhost:3000/api/get-report-block-matrimony-profile
 router.get('/get-report-block-matrimony-profile',authGuard,getReportAndBlockMatrimonyProfile);
+// login user view whom he/she block 
+router.get('/get-block-matrimony-user-view',authGuard,getBlockMatrimonyUserView);
+
 
 // for bookmark matrimony profile
 //api is => http://localhost:3000/api/update-specific-matrimony-bookmark  body pass=>  {"matrimonyProfileBookmarkID":"650666666666666666666666"}

@@ -76,12 +76,23 @@ const userSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref:'ProfileModel',
     }],
-
+ServiceReportAndBlockID: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref:'ProfileModel',
+    }],
     matrimonyProfileBookmarkID: [{
         type: mongoose.Schema.Types.ObjectId,
         ref:'MatrimonyModel',
     }],
+    matrimonyReportAndBlockID: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref:'MatrimonyModel',
+    }],
     jobProfileBookmarkID: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref:'jobModel',
+    }],
+    jobReportAndBlockID: [{
         type: mongoose.Schema.Types.ObjectId,
         ref:'jobModel',
     }],

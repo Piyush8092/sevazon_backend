@@ -24,6 +24,16 @@
         }
         ExistJob.reportAndBlock.push({ report: report, block: block, reportAndBlockID: userId });
         const result = await ExistJob.save();
+let user = await userModel.findById(userId);
+
+if (!user) {
+    return res.status(404).json({ message: 'User not found' });
+}
+if (user.jobReportAndBlockID.includes(id)) {
+    return res.status(400).json({ message: 'You have already reported this profile' });
+}
+user.jobReportAndBlockID.push(id);
+await user.save();
 
         res.json({
             message: 'Report added successfully',
