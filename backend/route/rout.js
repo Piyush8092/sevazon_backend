@@ -82,6 +82,7 @@ const { getUserDetail } = require('../controllers/user/getUserDetail');
 const { updateUser } = require('../controllers/user/updateUser');
 const { deleteUser } = require('../controllers/user/deleteUser');
 const { verifyUserKyc } = require('../controllers/user/verifyUserKyc');
+const { followEditor } = require('../controllers/user/followEditor');
 const { createVehicle } = require('../controllers/vehicles/createVehicals');
 const { getAllVehicle } = require('../controllers/vehicles/getAllVehicle');
 const { getSpecificVehicles } = require('../controllers/vehicles/getSpecificVehicles');
@@ -237,6 +238,8 @@ router.put('/update-user/:id',authGuard,updateUser);
 router.get('/get-service-query-user',queryServiceUser);
 // KYC verification for user profile
 router.post('/user/kyc/verify',authGuard,verifyUserKyc);
+// Follow/Unfollow editor (any user can follow)
+router.post('/user/follow-editor',authGuard,followEditor);
   
   //  for bookmark job post
 router.get('/get-bookmark-job-post',authGuard, getBookmarkJobPost);

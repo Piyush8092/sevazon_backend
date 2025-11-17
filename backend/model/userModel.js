@@ -96,6 +96,18 @@ ServiceReportAndBlockID: [{
         type: mongoose.Schema.Types.ObjectId,
         ref:'jobModel',
     }],
+
+    // Following/Followers for news editors
+    followingEditors: [{
+        editorId: {
+            type: String,
+        }
+    }],
+    editorFollowers: [{
+        userId: {
+            type: String,
+        }
+    }],
 }, { timestamps: true });
 
 /**
