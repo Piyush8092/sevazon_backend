@@ -465,6 +465,7 @@ router.get('/get-all-not-verified-adds',authGuard,getAllNotVerifiedAdds);
 router.get('/filter-adds',FilterAdds);
 
 
+
 // editor post
 router.post('/create-editor',authGuard,createEditor);
 router.get('/get-all-editor',getAllEditor);
