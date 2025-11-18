@@ -64,6 +64,17 @@ const createJob = async (req, res) => {
             return res.status(400).json({message: 'User not authenticated'});
         }
 
+        // Check if user has completed KYC verification
+        if (!req.user.isKycVerified) {
+            return res.status(403).json({
+                message: 'Please complete KYC verification first',
+                status: 403,
+                success: false,
+                error: true,
+                errorType: 'VERIFICATION_REQUIRED'
+            });
+        }
+
         payload.userId = userId;
         payload.phoneNumberForCalls = req.user.phone;
         payload.isVerified = true;

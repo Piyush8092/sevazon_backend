@@ -10,7 +10,18 @@ const CreateAdd = async (req, res) => {
         if (!payload.adImages || !Array.isArray(payload.adImages) || payload.adImages.length < 1 || payload.adImages.length > 5) {
             return res.status(400).json({message: 'Minimum 1 and maximum 5 ad images are required'});
         }
-  
+
+        // Check if user has completed KYC verification
+        if (!req.user.isKycVerified) {
+            return res.status(403).json({
+                message: 'Please complete KYC verification first',
+                status: 403,
+                success: false,
+                error: true,
+                errorType: 'VERIFICATION_REQUIRED'
+            });
+        }
+
         payload.userId = req.user._id;
         payload.isVerified = true;
         payload.status = 'Pending';
