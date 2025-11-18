@@ -25,8 +25,12 @@ const adSchema = new mongoose.Schema({
     route:{
         type: String,
         //give all get route of backend as enum
-        enum: ['/get-all-service','/get-all-job','/get-all-property','/get-all-news','/get-all-local-services','/get-all-vehicle','/get-all-matrimony','/get-all-editor','/get-all-offer',],
-        required: [true, 'Route is required'],
+        // enum: ['service','job','/property','/get-all-news','/get-all-local-services','/get-all-vehicle','/get-all-matrimony','/get-all-editor','/get-all-offer',],
+        // required: [true, 'Route is required'],
+    },
+    position: {
+        type:  Number,
+        // required: [true, 'Position is required'],
     },
     isActive: {
         type: Boolean,

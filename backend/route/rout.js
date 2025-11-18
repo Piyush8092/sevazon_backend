@@ -4,7 +4,7 @@ const { SignupRout } = require('../controllers/signup');
 const  authGuard  = require('../middleware/auth');
 const connectDB=require('../DB/connection');
 const cookie=require('cookie-parser');
-const { CreateAdd,GetAllAdds,GetSpecificAdd,UpdateSpecificAdd,DeleteSpecificAdd,queryAdds, AddCreaterView } = require('../controllers/Adds');
+const { CreateAdd,GetAllAdds,GetSpecificAdd,UpdateSpecificAdd,DeleteSpecificAdd,queryAdds, AddCreaterView, getAllNotVerifiedAdds, FilterAdds } = require('../controllers/Adds');
  const { CreateAllServices} = require('../controllers/AllServicesRegistration/createAllService');
 const { UpdateSpecificServices } = require('../controllers/AllServicesRegistration/UpdateSpecificServices');
 const { GetSpecificServices } = require('../controllers/AllServicesRegistration/GetSpecificServices');
@@ -460,6 +460,9 @@ router.delete('/delete-specific-ad/:id',authGuard,DeleteSpecificAdd);
 // api is =>    http://localhost:3000/api/get-query-ad?query=Electronics
 router.get('/get-query-ad',queryAdds);
 router.get('/get-add-creator-view',authGuard,AddCreaterView);
+router.get('/get-all-not-verified-adds',authGuard,getAllNotVerifiedAdds);
+// api is => http://localhost:3000/api/filter-adds?category=Electronics&route=Mobiles&position=Top&isActive=true&validTill=2025-12-31&location=Bengaluru&isVerified=true&search=iPhone
+router.get('/filter-adds',FilterAdds);
 
 
 // editor post

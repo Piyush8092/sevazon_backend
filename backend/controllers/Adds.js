@@ -55,7 +55,7 @@ const GetAllAdds = async (req, res) => {
         let limit = parseInt(req.query.limit) || 10;
         const skip = (page - 1) * limit;
         
-        const result = await adModel.find().skip(skip).limit(limit);
+        const result = await adModel.find({isVerified: true}).skip(skip).limit(limit);
         const total = await adModel.countDocuments();
         const totalPages = Math.ceil(total / limit);
         
@@ -129,6 +129,12 @@ const UpdateSpecificAdd = async (req, res) => {
         if (ExistAd.userId.toString() !== UserId.toString() && req.user.role !== 'ADMIN') {
             return res.status(403).json({message: 'Unauthorized access'});
         }
+        if(payload.isVerified===true ){
+            if(req.user.role !== 'ADMIN'){
+                return res.status(403).json({message: 'Unauthorized access'});
+            }
+         }
+         
 
         // Validate images array if being updated
         if (payload.adImages && (!Array.isArray(payload.adImages) || payload.adImages.length < 1 || payload.adImages.length > 5)) {
@@ -169,6 +175,26 @@ const UpdateSpecificAdd = async (req, res) => {
     }
 };
 
+
+let getAllNotVerifiedAdds = async (req, res) => {
+    try {  
+        let page = req.query.page || 1;
+        let limit = req.query.limit || 10;
+        const skip = (page - 1) * limit;
+        const result = await adModel.find({isVerified: false}).skip(skip).limit(limit);
+        const total = await adModel.countDocuments({isVerified: false});
+        const totalPages = Math.ceil(total / limit);
+
+        res.json({message: 'Not verified adds retrieved successfully', status: 200, data: result, success: true, error: false, total, totalPages});
+    }
+    catch (e) {
+        res.json({message: 'Something went wrong', status: 500, data: e, success: false, error: true});
+
+        }
+};
+
+
+
 // delete specific add
 const DeleteSpecificAdd = async (req, res) => {
     try {       
@@ -203,6 +229,97 @@ const DeleteSpecificAdd = async (req, res) => {
         });
     }
 };
+
+
+//get filter adds by all field
+const FilterAdds = async (req, res) => {
+    try {
+        // Extract query parameters
+        const {
+            category,       // selectCategory
+            route,          // selectSubCategory
+            position,       // selectSubCategory
+            isActive,       // selectSubCategory
+            validTill,      // selectSubCategory
+            location,       // selectSubCategory
+            isVerified,     // selectSubCategory
+            search,         // selectSubCategory
+            page = 1,
+            limit = 10,
+            sortBy = 'createdAt',
+            sortOrder = 'desc'
+        } = req.query;
+
+        // Build dynamic filter object
+        const filter = {};
+
+        // Only add filters if parameters are provided
+        if (category) {
+            filter.category = category;
+        }
+        if (route) {
+            filter.route = route;
+        }
+        if (position) {
+            filter.position = position;
+        }
+        if (isActive !== undefined) {
+            filter.isActive = isActive === 'true';
+        }
+        if (validTill) {
+            filter.validTill = validTill;
+        }
+        if (location) {
+            filter.location = location;
+        }
+        if (isVerified !== undefined) {
+            filter.isVerified = isVerified === 'true';
+        }
+        if (search) {
+            filter.$text = {$search: search};
+        }
+
+        // Pagination setup
+        const pageNum = parseInt(page);
+        const limitNum = parseInt(limit);
+        const skip = (pageNum - 1) * limitNum;
+
+        // Sorting setup
+        const sortObj = {};
+        sortObj[sortBy] = sortOrder === 'asc' ? 1 : -1;
+
+        // Execute query with filters, pagination, and sorting
+        const result = await adModel
+            .find(filter)
+            .populate('userId', 'name email phone profileImage')
+            .sort(sortObj)
+            .skip(skip)
+            .limit(limitNum);
+            const total = await adModel.countDocuments(filter);
+            const totalPages = Math.ceil(total / limitNum);
+
+        res.json({
+            message: 'Adds retrieved successfully', 
+            status: 200, 
+            data: result,
+            total,
+            totalPages,
+            currentPage: pageNum,
+            success: true, 
+            error: false
+        });
+    }
+    catch (e) {
+        res.json({
+            message: 'Something went wrong', 
+            status: 500, 
+            data: e.message, 
+            success: false, 
+            error: true
+        });
+    }
+};
+
 
 // query adds
 const queryAdds = async (req, res) => {
@@ -265,6 +382,10 @@ const queryAdds = async (req, res) => {
     }
 };
 
+
+ 
+
+
 // view add creaetr
 const AddCreaterView = async (req, res) => {
     try {  
@@ -285,4 +406,4 @@ const AddCreaterView = async (req, res) => {
 };
 
 
-module.exports = {CreateAdd, GetAllAdds, GetSpecificAdd, UpdateSpecificAdd, DeleteSpecificAdd, queryAdds, AddCreaterView};
+module.exports = {CreateAdd, GetAllAdds, GetSpecificAdd, UpdateSpecificAdd, DeleteSpecificAdd, queryAdds, AddCreaterView,getAllNotVerifiedAdds,FilterAdds};
