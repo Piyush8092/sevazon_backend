@@ -125,6 +125,14 @@ const { updateContact } = require('../controllers/contact/updateContact');
 const { getSpecificContact } = require('../controllers/contact/getSpecificContact');
 const { newsDislike } = require('../controllers/NewsPost/newsDisLike');
 
+// Feedback controllers
+const { createFeedback } = require('../controllers/feedback/createFeedback');
+const { getAllFeedback } = require('../controllers/feedback/getAllFeedback');
+const { getSpecificFeedback } = require('../controllers/feedback/getSpecificFeedback');
+const { updateFeedback } = require('../controllers/feedback/updateFeedback');
+const { deleteFeedback } = require('../controllers/feedback/deleteFeedback');
+const { queryFeedback } = require('../controllers/feedback/queryFeedback');
+
 // Import FCM routes
 const fcmRoutes = require('./fcmRoutes');
 
@@ -540,7 +548,13 @@ router.get('/get-query-contact',queryContact);
 router.get('/get-specific-contact/:id',getSpecificContact);
 router.put('/update-specific-contact/:id',authGuard,updateContact);
 
-
+// feedback
+router.post('/create-feedback',authGuard,createFeedback);
+router.get('/get-all-feedback',getAllFeedback);
+router.get('/get-specific-feedback/:id',getSpecificFeedback);
+router.put('/update-feedback/:id',authGuard,updateFeedback);
+router.delete('/delete-feedback/:id',authGuard,deleteFeedback);
+router.get('/get-query-feedback',queryFeedback);
 
 // account delete policy
 router.post('/create-account-delete-policy',authGuard,createAccountDeletePolicy);
