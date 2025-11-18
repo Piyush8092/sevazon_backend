@@ -83,6 +83,17 @@ const CreateAllServices = async (req, res) => {
       });
     }
 
+    // --- Check if user has completed KYC verification ---
+    if (!req.user.isKycVerified) {
+      return res.status(403).json({
+        message: "Please complete KYC verification first",
+        status: 403,
+        success: false,
+        error: true,
+        errorType: "VERIFICATION_REQUIRED",
+      });
+    }
+
     // --- Attach user info from authGuard ---
     payload.userId = req.user._id;
     payload.email = req.user.email;

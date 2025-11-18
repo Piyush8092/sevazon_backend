@@ -15,10 +15,7 @@ const createMatrimony = async (req, res) => {
             !payload.employmentType || !Array.isArray(payload.employmentType) || payload.employmentType.length === 0 ||
             !payload.pincode || !Array.isArray(payload.pincode) || payload.pincode.length === 0 ||
             !payload.city || !Array.isArray(payload.city) || payload.city.length === 0 ||
-            !payload.state || !Array.isArray(payload.state) || payload.state.length === 0 ||
-            !payload.partnerAge || !Array.isArray(payload.partnerAge) || payload.partnerAge.length === 0 ||
-            !payload.partnerHeight || !Array.isArray(payload.partnerHeight) || payload.partnerHeight.length === 0 ||
-            !payload.partnerMaritalStatus || !payload.partnerReligion || !payload.partnerMotherTongue) {
+            !payload.state || !Array.isArray(payload.state) || payload.state.length === 0 ) {
             return res.status(400).json({message: 'All required fields must be provided'});
         }
 
@@ -74,6 +71,17 @@ const createMatrimony = async (req, res) => {
         let userId = req.user._id;
         if (!userId) {
             return res.status(400).json({message: 'User not authenticated'});
+        }
+
+        // Check if user has completed KYC verification
+        if (!req.user.isKycVerified) {
+            return res.status(403).json({
+                message: 'Please complete KYC verification first',
+                status: 403,
+                success: false,
+                error: true,
+                errorType: 'VERIFICATION_REQUIRED'
+            });
         }
 
         payload.userId = userId;

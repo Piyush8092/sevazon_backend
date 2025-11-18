@@ -39,11 +39,75 @@ const userSchema = new mongoose.Schema({
     },
     verified: {
         type: Boolean,
-        default: true
+        default: false
     },
+
+    // KYC Verification Fields
+    panNumber: {
+        type: String,
+        sparse: true, // allow multiple null/missing values
+    },
+    aadhaarNumber: {
+        type: String,
+        sparse: true, // allow multiple null/missing values
+    },
+    voterIdNumber: {
+        type: String,
+        sparse: true, // allow multiple null/missing values
+    },
+    isKycVerified: {
+        type: Boolean,
+        default: false
+    },
+    kycVerificationDetails: {
+        type: Object,
+        default: null
+    },
+
     subscriptions: [{
         type: mongoose.Schema.Types.ObjectId,
-    }]
+    }],
+    LastLoginTime: {
+        type: String,
+        default: null
+    },
+
+    serviceProfileBookmarkID: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref:'ProfileModel',
+    }],
+ServiceReportAndBlockID: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref:'ProfileModel',
+    }],
+    matrimonyProfileBookmarkID: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref:'MatrimonyModel',
+    }],
+    matrimonyReportAndBlockID: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref:'MatrimonyModel',
+    }],
+    jobProfileBookmarkID: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref:'jobModel',
+    }],
+    jobReportAndBlockID: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref:'jobModel',
+    }],
+
+    // Following/Followers for news editors
+    followingEditors: [{
+        editorId: {
+            type: String,
+        }
+    }],
+    editorFollowers: [{
+        userId: {
+            type: String,
+        }
+    }],
 }, { timestamps: true });
 
 /**

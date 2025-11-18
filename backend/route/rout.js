@@ -8,6 +8,7 @@ const { CreateAdd,GetAllAdds,GetSpecificAdd,UpdateSpecificAdd,DeleteSpecificAdd,
  const { CreateAllServices} = require('../controllers/AllServicesRegistration/createAllService');
 const { UpdateSpecificServices } = require('../controllers/AllServicesRegistration/UpdateSpecificServices');
 const { GetSpecificServices } = require('../controllers/AllServicesRegistration/GetSpecificServices');
+const { FilterServices } = require('../controllers/AllServicesRegistration/FilterServices');
 const { DeleteSpecsificServices } = require('../controllers/AllServicesRegistration/DeleteSpecificServices');
 const { GetAllServices } = require('../controllers/AllServicesRegistration/GetAllServices');
 const { createVarityServiceList } = require('../controllers/CreateAllServices/CreateServiceList');
@@ -23,9 +24,11 @@ const { updateJob } = require('../controllers/JobPost/updateJob');
 const { deleteJob } = require('../controllers/JobPost/deletejob');
 const { queryJobs } = require('../controllers/JobPost/queryJobs');
 const { createJob } = require('../controllers/JobPost/createJob');
+const { FilterJobs } = require('../controllers/JobPost/FilterJobs');
 const { createMatrimony } = require('../controllers/MatrimonyPost/createMatrimony');
 const { getAllMatrimony } = require('../controllers/MatrimonyPost/getAllMatrimony');
 const { getSpecificMatrimony } = require('../controllers/MatrimonyPost/getSpecificMatrimony');
+const { FilterMatrimony } = require('../controllers/MatrimonyPost/FilterMatrimony');
 const { updateMatrimony } = require('../controllers/MatrimonyPost/updateMatrimony');
 const { deleteMatrimony } = require('../controllers/MatrimonyPost/deleteMatrimony');
 const { queryMatrimony } = require('../controllers/MatrimonyPost/queryMatrimony');
@@ -39,7 +42,7 @@ const { queryProperty } = require('../controllers/Property/queryProperty');
 
 
 
-const { createOffer, showCreateOfferView } = require('../controllers/offersAndDiscount');
+const { createOffer, showCreateOfferView, FilterOffer } = require('../controllers/offersAndDiscount');
 const { GetAllOffer } = require('../controllers/offersAndDiscount');
 const { GetSpecificOffer } = require('../controllers/offersAndDiscount');
 const { UpdateSpecificOffer } = require('../controllers/offersAndDiscount');
@@ -51,6 +54,7 @@ const { getSpecificEditor } = require('../controllers/newsEditor/getSpecificEdit
 const { updateEditor } = require('../controllers/newsEditor/updateEditor');
 const { deleteEditor } = require('../controllers/newsEditor/deleteEditor');
 const { queryEditors } = require('../controllers/newsEditor/queryEditor');
+const { verifyDocument, verifyDocumentImage } = require('../controllers/newsEditor/kycVerification');
 const { createNews } = require('../controllers/NewsPost/createNews');
 const { getAllNews } = require('../controllers/NewsPost/getAllNews');
 const { getSpecificNews } = require('../controllers/NewsPost/getSpecificNews');
@@ -77,6 +81,8 @@ const { newsComment } = require('../controllers/NewsPost/newsComment');
 const { getUserDetail } = require('../controllers/user/getUserDetail');
 const { updateUser } = require('../controllers/user/updateUser');
 const { deleteUser } = require('../controllers/user/deleteUser');
+const { verifyUserKyc } = require('../controllers/user/verifyUserKyc');
+const { followEditor } = require('../controllers/user/followEditor');
 const { createVehicle } = require('../controllers/vehicles/createVehicals');
 const { getAllVehicle } = require('../controllers/vehicles/getAllVehicle');
 const { getSpecificVehicles } = require('../controllers/vehicles/getSpecificVehicles');
@@ -118,6 +124,24 @@ const { deleteApplyJob } = require('../controllers/ApplyJob/deleteJobs');
 const { updateContact } = require('../controllers/contact/updateContact');
 const { getSpecificContact } = require('../controllers/contact/getSpecificContact');
 const { newsDislike } = require('../controllers/NewsPost/newsDisLike');
+
+// Feedback controllers
+const { createFeedback } = require('../controllers/feedback/createFeedback');
+const { getAllFeedback } = require('../controllers/feedback/getAllFeedback');
+const { getSpecificFeedback } = require('../controllers/feedback/getSpecificFeedback');
+const { updateFeedback } = require('../controllers/feedback/updateFeedback');
+const { deleteFeedback } = require('../controllers/feedback/deleteFeedback');
+const { queryFeedback } = require('../controllers/feedback/queryFeedback');
+
+// Import FCM routes
+const fcmRoutes = require('./fcmRoutes');
+
+// Import Agora controller and validation
+const agoraController = require('../controllers/agora/agoraController');
+const { body, param } = require('express-validator');
+const { agoraCallLimit, agoraTokenLimit, generalAgoraLimit } = require('../middleware/rateLimiter');
+
+cookie();
 const { AdminUpdate } = require('../controllers/user/AdminUpdate');
 const { getSpecificUser } = require('../controllers/user/getSpecificUser');
 const { adminAllUserView } = require('../controllers/user/adminAllUserView');
@@ -144,7 +168,54 @@ const { getApplicantPendingApplications } = require('../controllers/ApplyJob/get
 const { getRatting } = require('../controllers/AllServicesRegistration/getRatting');
 const { updateImportantLink } = require('../controllers/AllServicesRegistration/updateImportantLink');
 const { updateTimeSlot } = require('../controllers/AllServicesRegistration/updateTimeSlot');
+const { createFaq } = require('../controllers/faq/createFaq');
+const { getFaq } = require('../controllers/faq/getAllFAQData');
+const { getSpecificFAQ } = require('../controllers/faq/getSpecificFaq');
+const { updateFaq } = require('../controllers/faq/updateFaq');
+const { deleteFAQ } = require('../controllers/faq/DeleteFAQ');
+const { queryFAQ } = require('../controllers/faq/queryFaq');
+const { updateFavourit } = require('../controllers/JobPost/updateFavourit');
+const { getAllFavouritJob } = require('../controllers/JobPost/getAllFavouritJob');
+const { getSpecificApplyMatrimony } = require('../controllers/applyMatrimony/getSpecificApplyMatrimony');
+const { applyMatrimony } = require('../controllers/applyMatrimony/applyMatrimony');
+const { getAllApplyApplication } = require('../controllers/applyMatrimony/getAllApplyedApplication');
+const { acceptMatrimony } = require('../controllers/applyMatrimony/AcceptMatrimony');
+const { rejectMatrimony } = require('../controllers/applyMatrimony/rejectMatrimony');
+const { getAcceptMetrimony } = require('../controllers/applyMatrimony/getAcceptMetrimony');
+const { getRejectMatrimony } = require('../controllers/applyMatrimony/getRejectMatrimony');
+
+// Pricing Plan controllers
+const { createPricingPlan } = require('../controllers/pricingPlan/createPricingPlan');
+const { getAllPricingPlans } = require('../controllers/pricingPlan/getAllPricingPlans');
+const { getPricingPlansByCategory } = require('../controllers/pricingPlan/getPricingPlansByCategory');
+const { getSpecificPricingPlan } = require('../controllers/pricingPlan/getSpecificPricingPlan');
+const { updatePricingPlan } = require('../controllers/pricingPlan/updatePricingPlan');
+const { deletePricingPlan } = require('../controllers/pricingPlan/deletePricingPlan');
+
+// Payment controllers
+const { createPaymentOrder } = require('../controllers/payment/createPaymentOrder');
+const { verifyPayment } = require('../controllers/payment/verifyPayment');
+const { getPaymentHistory } = require('../controllers/payment/getPaymentHistory');
+const { getRazorpayKey } = require('../controllers/payment/getRazorpayKey');
+
  cookie();
+const { UpdateReportAndBlock } = require('../controllers/AllServicesRegistration/UpdateReportAndBlock');
+ const { UpdateServiceProfileBookMark } = require('../controllers/AllServicesRegistration/UpdateServiceProfileBookMark');
+const { getBookmarkServiceProfile } = require('../controllers/user/getBookmarkServiceProfile');
+const { getBookmarkJobPost } = require('../controllers/user/getBookmarkJobPost');
+const { getReportAndBlockServiceProfile } = require('../controllers/user/getReportAndBlockServiceProfile');
+const { UpdateReportAndBlockMatrimony } = require('../controllers/MatrimonyPost/UpdateReportAndBlockMatrimony');
+const { getReportAndBlockMatrimonyProfile } = require('../controllers/MatrimonyPost/getReportAndBlockMatrimonyProfile');
+const { getBookmarkMatrimonyProfile } = require('../controllers/MatrimonyPost/getBookmarkMatrimonyProfile');
+const { UpdateMatrimonyProfileBookMark } = require('../controllers/MatrimonyPost/UpdateMatrimonyProfileBookMark');
+const { UpdateJobProfileBookMark } = require('../controllers/JobPost/UpdateJobProfileBookMark');
+const { UpdateReportAndBlockJob } = require('../controllers/JobPost/UpdateReportAndBlockJob');
+const { getReportAndBlockJobProfile } = require('../controllers/JobPost/getReportAndBlockJobProfile');
+const { getBlockUserView } = require('../controllers/AllServicesRegistration/getBlockUserView');
+const { getBlockJobUserView } = require('../controllers/JobPost/getBlockJobUserView');
+const { getBlockMatrimonyUserView } = require('../controllers/MatrimonyPost/getBlockMatrimonyUserView');
+const { getPendingMatrimony } = require('../controllers/applyMatrimony/getPendingMatrimony');
+   cookie();
 router.get('/', (req, res) => {
     res.send('Hello savazon!');
 });
@@ -160,6 +231,38 @@ router.get('/auth-user',authGuard,getAuthUserDetail);
 router.post('/send-otp',sendOTP);
 router.post('/verify-otp',verifyOTP);
 router.get('/resend-otp/:phone',getOtp);
+
+
+
+
+ 
+// user releted route =>service profile releretd route
+router.get('/get-user-detail',authGuard,getUserDetail);
+router.get('/get-all-user',authGuard,getAuthUserDetail);
+router.get('/get-specific-user/:id',authGuard,getSpecificUser);
+router.delete('/delete-user/:id',authGuard,deleteUser);
+// update service profile => normal user
+router.put('/update-user/:id',authGuard,updateUser);
+router.get('/get-service-query-user',queryServiceUser);
+// KYC verification for user profile
+router.post('/user/kyc/verify',authGuard,verifyUserKyc);
+// Follow/Unfollow editor (any user can follow)
+router.post('/user/follow-editor',authGuard,followEditor);
+  
+  //  for bookmark job post
+router.get('/get-bookmark-job-post',authGuard, getBookmarkJobPost);
+
+
+// usermodel releted route 
+// admin Access For Main UserModel Role change ['admin','user'] =>at the time of login user 
+router.put('/update-admin-role/:id',authGuard,AdminUpdate);
+// usermodel under route
+router.get('/login-user-view',authGuard,adminAllUserView);
+router.get('/admin-get-specific-user/:id',authGuard,AdminSpecificUserView);
+router.get('/admin-get-query-user',queryAdminUser);
+ 
+
+
 
 
 // for display all services list items
@@ -184,6 +287,9 @@ router.delete('/delete-specific-service/:id',authGuard,DeleteSpecsificServices);
 router.get('/get-all-service',GetAllServices);
 // api route is http://localhost:3000/api/get-query-service?query=Bengaluru
  router.get('/get-query-service',queryServices);
+// Flexible filtering API - supports multiple optional parameters
+// Examples:  http://localhost:3000/api/filter-services?city=Mumbai&profileType=Service Profile&minPrice=1000
+router.get('/filter-services',FilterServices);
 // for like comment 
 router.put('/update-specific-service-like/:id',authGuard,updateLike);
 router.put('/update-specific-service-dislike/:id',authGuard,updateDislike);
@@ -194,7 +300,27 @@ router.get('/get-service-creator-view',authGuard,getServiceCreaterView);
 router.put('/update-specific-service-important-link/:id',authGuard,updateImportantLink);
 router.put('/update-specific-service-time-slot/:id',authGuard,updateTimeSlot);
 
+
+// for report and block
+//api is => http://localhost:3000/api/update-specific-service-report-block/profileId  body pass=>  {"report":"This is a test report","block":true} 
+router.put('/update-specific-service-report-block/:id',authGuard,UpdateReportAndBlock);
+// for report and block service profile api is => http://localhost:3000/api/get-report-block-service-profile
+router.get('/get-report-block-service-profile',authGuard,getReportAndBlockServiceProfile);
+
+// login user view whom he/she block 
+router.get('/get-block-service-user-view',authGuard,getBlockUserView);
+
  
+// for bookmark service profile
+// http://localhost:3000/api/update-specific-service-bookmark.     body pass=>  {"serviceProfileBookmarkID":"650666666666666666666666"}
+router.put('/update-specific-service-bookmark',authGuard,UpdateServiceProfileBookMark);
+// for bookmark service profile api is => http://localhost:3000/api/get-bookmark-service-profile
+router.get('/get-bookmark-service-profile',authGuard,getBookmarkServiceProfile); 
+
+
+ 
+
+
 
 // for job post
 router.post('/create-job',authGuard,createJob);
@@ -203,6 +329,9 @@ router.get('/get-specific-job/:id',getSpecificJob);
 router.put('/update-specific-job/:id',authGuard,updateJob);
 router.delete('/delete-specific-job/:id',authGuard,deleteJob);
 router.get('/get-query-job',queryJobs);
+// Flexible job filtering API - supports multiple optional parameters
+// Examples: /api/filter-jobs?city=Mumbai&workMode=Remote&minSalary=50000
+router.get('/filter-jobs',FilterJobs);
 router.get('/get-job-creator-view',authGuard,getJobCreaterView);
 
 
@@ -231,6 +360,24 @@ router.get('/my-accepted-applications', authGuard, getApplicantAcceptedApplicati
 router.get('/my-rejected-applications', authGuard, getApplicantRejectedApplications);
 router.get('/my-pending-applications',authGuard,getApplicantPendingApplications);
 
+//report and block job post
+//api is => http://localhost:3000/api/update-specific-job-report-block/650666666666666666666666  body pass=>  {"report":"This is a test report","block":true} 
+router.put('/update-specific-job-report-block/:id',authGuard,UpdateReportAndBlockJob);
+// for report and block. user side view api is => http://localhost:3000/api/get-report-block-job-profile
+router.get('/get-report-block-job-profile',authGuard,getReportAndBlockJobProfile);
+
+// login user view whom he/she block 
+router.get('/get-block-job-user-view',authGuard,getBlockJobUserView);
+
+
+// favourite job
+//api is => http://localhost:3000/api/update-job-favourite  body   pass=>  {"jobProfileBookmarkID":"650666666666666666666666"}
+router.put('/update-job-favourite',authGuard,UpdateJobProfileBookMark);
+  // api is => http://localhost:3000/api/get-user-favourite-job     
+router.get('/get-user-favourite-job',authGuard,getAllFavouritJob);
+
+
+
 
 
 
@@ -242,13 +389,47 @@ router.put('/update-specific-matrimony/:id',authGuard,updateMatrimony);
 router.delete('/delete-specific-matrimony/:id',authGuard,deleteMatrimony);
 router.get('/get-matrimony-creator-view',authGuard,MatrimonyCreatorView);
 // api is =>. http://localhost:3000/api/get-query-matrimony?query=Brahmin
-router.get('/get-query-matrimony',queryMatrimony);
+router.get('/get-query-matrimony', queryMatrimony);
+// Flexible matrimony filtering API - supports multiple optional parameters
+// Examples: /api/filter-matrimony?gender=Male&city=Mumbai&minAge=25&maxAge=35
+router.get('/filter-matrimony',FilterMatrimony);
+
+//for report and block 
+//api is => http://localhost:3000/api/update-specific-matrimony-report-block/650666666666666666666666  body pass=>  {"report":"This is a test report","block":true} 
+router.put('/update-specific-matrimony-report-block/:id',authGuard,UpdateReportAndBlockMatrimony);
+//for report and block. user side view api is => http://localhost:3000/api/get-report-block-matrimony-profile
+router.get('/get-report-block-matrimony-profile',authGuard,getReportAndBlockMatrimonyProfile);
+// login user view whom he/she block 
+router.get('/get-block-matrimony-user-view',authGuard,getBlockMatrimonyUserView);
+
+
+// for bookmark matrimony profile
+//api is => http://localhost:3000/api/update-specific-matrimony-bookmark  body pass=>  {"matrimonyProfileBookmarkID":"650666666666666666666666"}
+router.put('/update-specific-matrimony-bookmark',authGuard,UpdateMatrimonyProfileBookMark);
+//api is => http://localhost:3000/api/get-bookmark-Matrimony-profile
+router.get('/get-bookmark-Matrimony-profile',authGuard,getBookmarkMatrimonyProfile);
 
 
 
-// for propert post
+
+// for apply matrimony
+//api is => http://localhost:3000/api/apply-matrimony/matrimony_id    
+router.post('/apply-matrimony/:id',authGuard,applyMatrimony);
+router.get('/get-all-apply-matrimony',authGuard,getAllApplyApplication);
+router.get('/get-specific-apply-matrimony/:id',getSpecificApplyMatrimony);
+//pass body {"accept":true}
+router.put('/accept-matrimony/:id/:index',authGuard,acceptMatrimony);
+// pass body  {"reject":true}
+router.put('/reject-matrimony/:id/:index',authGuard,rejectMatrimony);
+router.get('/get-all-accepted-matrimony',authGuard,getAcceptMetrimony);
+router.get('/get-all-rejected-matrimony',authGuard,getRejectMatrimony);
+router.get('/get-all-pending-matrimony',authGuard,getPendingMatrimony);
+ 
+
+
+// for propert post. 
 router.post('/create-property',authGuard,createProperty);
-router.get('/get-all-property',getAllProperty);
+router.get('/get-all-property',getAllProperty); 
 router.get('/get-specific-property/:id',getSpecificqueryProperty);
 router.put('/update-specific-property/:id',authGuard,updateProperty);
 router.delete('/delete-specific-property/:id',authGuard,deleteProperty);
@@ -266,6 +447,8 @@ router.delete('/delete-specific-offer/:id',authGuard,DeleteSpecificOffer);
 // api is => http://localhost:3000/api/get-query-offer?query=411001
 router.get('/get-query-offer',queryOffer);
 router.get('/show-create-offer-view',authGuard,showCreateOfferView);
+//api is => http://localhost:3000/api/filter-offer?city=Mumbai
+router.get('/filter-offer',FilterOffer);
 
 
 // for adds post
@@ -287,10 +470,14 @@ router.get('/get-specific-editor/:id',getSpecificEditor);
   router.delete('/delete-specific-editor/:id',authGuard,deleteEditor);
   // api is =>http://localhost:3000/api/get-query-editor?query=foodie_vlogs123
   router.get('/get-query-editor',queryEditors);
-  // for followers and following 
+  // for followers and following
   router.put('/update-follower-detail/:id',authGuard,updateFollower);
 router.get('/verified-editor',authGuard,getVerifiedUser);
 router.get('/not-verified-editor',authGuard,getNotVerifiedUser);
+
+// KYC Verification routes for news editor profiles
+router.post('/kyc/verify', verifyDocument);
+router.post('/kyc/verify-image', authGuard, verifyDocumentImage);
 
 
 
@@ -308,29 +495,7 @@ router.put('/news-comment/:news_id',authGuard,newsComment);
 router.put('/news-like/:news_id',authGuard,newsLike);
 router.put('/news-dislike/:news_id',authGuard,newsDislike);
 
-
  
-
-
-// user releted route =>service profile releretd route
-router.get('/get-user-detail',authGuard,getUserDetail);
-router.get('/get-all-user',authGuard,getAuthUserDetail);
-router.get('/get-specific-user/:id',authGuard,getSpecificUser);
-router.delete('/delete-user/:id',authGuard,deleteUser);
-// update service profile => normal user
-router.put('/update-user/:id',authGuard,updateUser);
-router.get('/get-service-query-user',queryServiceUser);
-
-
-// usermodel releted route 
-// admin Access For Main UserModel Role change ['admin','user'] =>at the time of login user 
-router.put('/update-admin-role/:id',authGuard,AdminUpdate);
-// usermodel under route
-router.get('/login-user-view',authGuard,adminAllUserView);
-router.get('/admin-get-specific-user/:id',authGuard,AdminSpecificUserView);
-router.get('/admin-get-query-user',queryAdminUser);
- 
-
 
 
 
@@ -364,9 +529,18 @@ router.delete('/delete-specific-lead/:id',authGuard,deleteLead);
 router.get('/get-query-lead',getQueryLead);
 router.get('/get-lead-creator-view',authGuard,getLeadCreaterView);
 
+// FAQ route
+router.post('/create-faq',authGuard,createFaq);
+router.get('/get-all-faq',getFaq);
+router.get('/get-specific-faq/:id',getSpecificFAQ);
+router.put('/update-specific-faq/:id',authGuard,updateFaq);
+router.delete('/delete-specific-faq/:id',authGuard,deleteFAQ);
+router.get('/get-query-faq',queryFAQ);
 
 
-// coontact us
+
+
+// contact us
 router.post('/create-contact',createContact);
 router.get('/get-all-contact',getContact);
 router.delete('/delete-specific-contact/:id',deleteContact);
@@ -374,7 +548,13 @@ router.get('/get-query-contact',queryContact);
 router.get('/get-specific-contact/:id',getSpecificContact);
 router.put('/update-specific-contact/:id',authGuard,updateContact);
 
-
+// feedback
+router.post('/create-feedback',authGuard,createFeedback);
+router.get('/get-all-feedback',getAllFeedback);
+router.get('/get-specific-feedback/:id',getSpecificFeedback);
+router.put('/update-feedback/:id',authGuard,updateFeedback);
+router.delete('/delete-feedback/:id',authGuard,deleteFeedback);
+router.get('/get-query-feedback',queryFeedback);
 
 // account delete policy
 router.post('/create-account-delete-policy',authGuard,createAccountDeletePolicy);
@@ -397,5 +577,150 @@ router.get('/get-terms-and-conditions',getTermsAndConditions);
 router.put('/edit-terms-and-conditions/:id',authGuard,editTermsAndConditions);
 router.delete('/delete-terms-and-conditions/:id',authGuard,deleteTermsAndConditions);
 router.get('/get-specific-terms-and-conditions/:id',getSpecificTermsAndConditions);
+
+// Agora video/voice call routes
+router.post('/generate-call-token', [
+  generalAgoraLimit,
+  agoraTokenLimit,
+  body('channelName')
+    .notEmpty()
+    .withMessage('Channel name is required')
+    .isLength({ min: 1, max: 64 })
+    .withMessage('Channel name must be between 1 and 64 characters')
+    .matches(/^[a-zA-Z0-9_-]+$/)
+    .withMessage('Channel name can only contain letters, numbers, underscores, and hyphens'),
+
+  body('userId')
+    .notEmpty()
+    .withMessage('User ID is required')
+    .isLength({ min: 1, max: 255 })
+    .withMessage('User ID must be between 1 and 255 characters'),
+
+  body('role')
+    .optional()
+    .isIn(['publisher', 'subscriber'])
+    .withMessage('Role must be either "publisher" or "subscriber"')
+], agoraController.generateToken);
+
+router.post('/initiate-call', [
+  authGuard,
+  generalAgoraLimit,
+  agoraCallLimit,
+  body('calleeId')
+    .notEmpty()
+    .withMessage('Callee ID is required')
+    .isLength({ min: 1, max: 255 })
+    .withMessage('Callee ID must be between 1 and 255 characters'),
+
+  body('callType')
+    .optional()
+    .isIn(['voice', 'video'])
+    .withMessage('Call type must be either "voice" or "video"'),
+
+  body('callerId')
+    .optional() // Can come from auth middleware
+    .isLength({ min: 1, max: 255 })
+    .withMessage('Caller ID must be between 1 and 255 characters')
+], agoraController.initiateCall);
+
+router.post('/answer-call/:callId', [
+  authGuard,
+  generalAgoraLimit,
+  agoraCallLimit,
+  param('callId')
+    .notEmpty()
+    .withMessage('Call ID is required')
+    .isUUID()
+    .withMessage('Call ID must be a valid UUID'),
+
+  body('userId')
+    .optional() // Can come from auth middleware
+    .isLength({ min: 1, max: 255 })
+    .withMessage('User ID must be between 1 and 255 characters')
+], agoraController.answerCall);
+
+router.post('/decline-call/:callId', [
+  authGuard,
+  generalAgoraLimit,
+  agoraCallLimit,
+  param('callId')
+    .notEmpty()
+    .withMessage('Call ID is required')
+    .isUUID()
+    .withMessage('Call ID must be a valid UUID'),
+
+  body('userId')
+    .optional() // Can come from auth middleware
+    .isLength({ min: 1, max: 255 })
+    .withMessage('User ID must be between 1 and 255 characters')
+], agoraController.declineCall);
+
+router.post('/end-call/:callId', [
+  authGuard,
+  generalAgoraLimit,
+  agoraCallLimit,
+  param('callId')
+    .notEmpty()
+    .withMessage('Call ID is required')
+    .isUUID()
+    .withMessage('Call ID must be a valid UUID'),
+
+  body('userId')
+    .optional() // Can come from auth middleware
+    .isLength({ min: 1, max: 255 })
+    .withMessage('User ID must be between 1 and 255 characters')
+], agoraController.endCall);
+
+router.get('/call/:callId', [
+  authGuard,
+  generalAgoraLimit,
+  param('callId')
+    .notEmpty()
+    .withMessage('Call ID is required')
+    .isUUID()
+    .withMessage('Call ID must be a valid UUID')
+], agoraController.getCall);
+
+router.get('/call-history/:userId', [
+  authGuard,
+  generalAgoraLimit,
+  param('userId')
+    .notEmpty()
+    .withMessage('User ID is required')
+    .isLength({ min: 1, max: 255 })
+    .withMessage('User ID must be between 1 and 255 characters')
+], agoraController.getCallHistory);
+
+router.get('/agora/status', [
+  generalAgoraLimit
+], agoraController.getStatus);
+
+// Certificate management routes (admin only)
+router.post('/agora/reset-certificate', [
+  authGuard,
+  generalAgoraLimit
+], agoraController.resetToPrimaryCertificate);
+
+router.post('/agora/switch-certificate', [
+  authGuard,
+  generalAgoraLimit
+], agoraController.switchToBackupCertificate);
+
+// FCM notification routes
+router.use('/fcm', fcmRoutes);
+
+// Pricing Plan routes
+router.post('/create-pricing-plan', authGuard, createPricingPlan);
+router.get('/get-all-pricing-plans', getAllPricingPlans);
+router.get('/get-pricing-plans-by-category/:category', getPricingPlansByCategory);
+router.get('/get-specific-pricing-plan/:id', getSpecificPricingPlan);
+router.put('/update-pricing-plan/:id', authGuard, updatePricingPlan);
+router.delete('/delete-pricing-plan/:id', authGuard, deletePricingPlan);
+
+// Payment routes
+router.post('/create-payment-order', authGuard, createPaymentOrder);
+router.post('/verify-payment', authGuard, verifyPayment);
+router.get('/get-payment-history', authGuard, getPaymentHistory);
+router.get('/get-razorpay-key', getRazorpayKey);
 
 module.exports=router;

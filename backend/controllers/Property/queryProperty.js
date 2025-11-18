@@ -29,7 +29,8 @@ const queryProperty = async (req, res) => {
                 { pincode: regexQuery },
                 { address: regexQuery },
                 { 'floorInfo.floorNo': regexQuery },
-                { 'floorInfo.totalFloor': regexQuery }
+                { 'floorInfo.totalFloor': regexQuery },
+                
             ]
         };
         

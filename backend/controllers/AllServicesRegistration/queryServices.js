@@ -24,7 +24,17 @@ const queryServices = async (req, res) => {
                 { selectSubCategory: regexQuery },
                 { subCategoryOther: regexQuery },
                 { description: regexQuery },
-                { businessSummary: regexQuery }
+                { businessSummary: regexQuery },
+                { timing: regexQuery },
+                { experience: regexQuery },
+                { establishedInYear: regexQuery },
+                { locationURL: regexQuery },
+                { workServiceImages: regexQuery },
+                { catalogImages: regexQuery },
+                { timeSlot: regexQuery },
+                { importantLink: regexQuery },
+               
+
             ]
         };
         

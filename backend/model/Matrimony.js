@@ -6,6 +6,49 @@ const MatrimonySchema = new mongoose.Schema({
         ref: 'user',
         required: [true, 'User is required'],
     },
+
+    applyMatrimony: [{
+    applyUserId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'user',
+    },
+    applyMatrimonyStatus: {
+       type:Boolean,
+       default:false,  
+    },
+    status: {
+        type: String,
+        enum: ['Pending', 'Accepted', 'Rejected'],
+        default: 'Pending',
+        required: [true, 'Status is required']
+    },
+     reject:{
+                type:Boolean,
+                default:false,
+            },
+            accept:{
+                type:Boolean,
+                default:false,
+            }
+}],
+    
+     
+
+     reportAndBlock:[{
+              report:{
+                 type:String,
+                 required:[true,'Report is required'],
+               },
+            block:{
+              type:Boolean,
+              default:false,
+          },
+          reportAndBlockID: {
+              type: mongoose.Schema.Types.ObjectId,
+              ref:'user',
+          }
+      
+      }],
     
     // Basic Details
     profileCreatedFor: {
@@ -16,6 +59,9 @@ const MatrimonySchema = new mongoose.Schema({
     fullName: {
         type: String,
         required: [true, 'Full name is required'],
+    },phoneNo:{
+        type: String,
+        required: [true, 'Phone number is required'],
     },
     dateOfBirth: {
         type: Date,
@@ -63,7 +109,7 @@ const MatrimonySchema = new mongoose.Schema({
         default: false,
     },
     rashiAstroDetails: {
-        type: String,
+        type: [String],
     },
     
     // Professional Information
@@ -117,12 +163,18 @@ const MatrimonySchema = new mongoose.Schema({
     }, 
     
     // Partner Requirements
-    partnerAge: {
-    type: [String],
-    },
-    partnerHeight: {
- type: [String],
-    },
+  partnerAge: [
+  {
+    min: { type: Number, required: true },
+    max: { type: Number, required: true }
+  }
+],
+partnerHeight: [
+  {
+    min: { type: String, required: true },
+    max: { type: String, required: true }
+  }
+],
     partnerMaritalStatus: {
         type: [String],
      enum: ['Never Married', 'Divorced', 'Widowed', 'Separated'],
@@ -146,10 +198,12 @@ const MatrimonySchema = new mongoose.Schema({
         // required: [true, 'Partner religion is required'],
     },
     partnerRashiAstroDetails: {
-        type: String,
+        type: [String],
     },
     partnerMotherTongue: {
-        type: String,
+        type:String,
+        enum: ['Hindi', 'English', 'Bengali', 'Marathi', 'Tamil', 'Telugu', 'Gujarati', 'Kannada', 'Malayalam', 'Odia', 'Punjabi', 'Urdu', 'Other'],
+        default: 'Hindi',
         // required: [true, 'Partner mother tongue is required'],
     },
     

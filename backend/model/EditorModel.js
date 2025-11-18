@@ -32,13 +32,23 @@ let EditorSchema=new mongoose.Schema({
         },
         
         // Identity Verification
-        uploadAadhaarCard:{
+        // Support for PAN or Voter ID verification (at least one required)
+        panNumber:{
             type:String,
-            required:[true,'Aadhaar Card is required'],
         },
-        verifyAadhaarOrPanId:{
+        voterIdNumber:{
             type:String,
-            required:[true,'Aadhaar or PAN ID verification is required'],
+        },
+        verificationType:{
+            type:String,
+            enum: ['pan', 'voter_id'],
+        },
+        isKycVerified:{
+            type:Boolean,
+            default:false,
+        },
+        kycVerificationDetails:{
+            type:Object,
         },
         aboutYourself:{
             type:String,

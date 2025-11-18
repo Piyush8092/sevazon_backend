@@ -10,7 +10,8 @@ const createOffer = async (req, res) => {
             !payload.selectCategory || !payload.selectSubCategory || !payload.address || 
             !payload.pincode || !payload.description || 
             payload.allowCallInApp === undefined || payload.allowCallViaPhone === undefined || 
-            payload.allowChat === undefined) {
+            payload.allowChat === undefined || !payload.offerType)
+  {
             return res.status(400).json({message: 'All required fields must be provided'});
         }
 
@@ -304,6 +305,115 @@ const queryOffer = async (req, res) => {
     }
 };
 
+const FilterOffer = async (req, res) => {
+    try {
+        // Extract query parameters
+        const {
+            // Basic Info Filters
+            title,              // Job title
+            offerType,          // yourNameBusinessInstituteFirmCompany
+
+            // Category Filters
+            category,           // selectCategory
+            subCategory,        // selectSubCategory
+
+            // Location Filters
+            address,            // Full address search
+            pincode,            // Exact pincode match
+
+            // Search Query (for text search)
+            search,
+
+            // Pagination
+            page = 1,
+            limit = 10,
+
+            // Sorting
+            sortBy = 'createdAt',
+            sortOrder = 'desc'
+        } = req.query;
+
+        // Build dynamic filter object
+        const filter = {};
+
+        // Only add filters if parameters are provided
+        if (title) {
+            filter.title = new RegExp(title, 'i'); // Case-insensitive search
+        }
+        if (offerType) {
+            filter.offerType = offerType;
+        }
+        if (category) {
+            filter.selectCategory = new RegExp(category, 'i');
+        }
+        if (subCategory) {
+            filter.selectSubCategory = new RegExp(subCategory, 'i');
+        }
+
+        if (address) {
+            filter.address = new RegExp(address, 'i');
+        }
+        if (pincode) {
+            filter.pincode = pincode;
+        }
+        if (search) {
+            filter.$or = [
+                { title: new RegExp(search, 'i') },
+                { yourNameBusinessInstituteFirmOrganisation: new RegExp(search, 'i') },
+                { selectCategory: new RegExp(search, 'i') },
+                { selectSubCategory: new RegExp(search, 'i') },
+                { subCategoryOther: new RegExp(search, 'i') },
+                { address: new RegExp(search, 'i') },
+                { pincode: new RegExp(search, 'i') },
+                { description: new RegExp(search, 'i') }
+            ];
+        
+            filter.isActive = true;
+        }
+    
+        // Pagination setup
+        const pageNum = parseInt(page);
+        const limitNum = parseInt(limit);
+        const skip = (pageNum - 1) * limitNum;
+        
+        // Sorting setup
+        const sortObj = {};
+        sortObj[sortBy] = sortOrder === 'asc' ? 1 : -1;
+        
+      
+        const result = await offer
+            .find(filter)
+            .populate('userId', 'name email phone profileImage')
+            .sort(sortObj)
+            .skip(skip)
+            .limit(limitNum);
+            const total = await offer.countDocuments(filter);
+            const totalPages = Math.ceil(total / limitNum);
+
+        res.json({
+            message: 'Offers retrieved successfully', 
+            status: 200, 
+            data: result,
+            total,
+            totalPages,
+            currentPage: pageNum,
+            success: true, 
+            error: false
+        });
+    }
+    catch (e) {
+        res.json({
+            message: 'Something went wrong', 
+            status: 500, 
+            data: e.message, 
+            success: false, 
+            error: true
+        });
+    }
+};
+
+
+
 // show create offer view
 const showCreateOfferView = async (req, res) => {
     try {   
@@ -337,4 +447,4 @@ const showCreateOfferView = async (req, res) => {
     }
 };
 
-module.exports = { createOffer, GetAllOffer, GetSpecificOffer, UpdateSpecificOffer, DeleteSpecificOffer, queryOffer, showCreateOfferView };
+module.exports = { createOffer, GetAllOffer, GetSpecificOffer, UpdateSpecificOffer, DeleteSpecificOffer, queryOffer, showCreateOfferView ,FilterOffer};
