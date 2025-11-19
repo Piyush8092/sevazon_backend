@@ -83,16 +83,8 @@ const CreateAllServices = async (req, res) => {
       });
     }
 
-    // --- Check if user has completed KYC verification ---
-    if (!req.user.isKycVerified) {
-      return res.status(403).json({
-        message: "Please complete KYC verification first",
-        status: 403,
-        success: false,
-        error: true,
-        errorType: "VERIFICATION_REQUIRED",
-      });
-    }
+    // Verification is optional - users can create profiles without verification
+    // Note: Verification status will be tracked separately for display purposes
 
     // --- Attach user info from authGuard ---
     payload.userId = req.user._id;
