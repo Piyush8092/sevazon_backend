@@ -256,13 +256,19 @@ notificationPreferencesSchema.statics.getDefaultPreferences = function(userId) {
 
 // Static method to find or create preferences for a user
 notificationPreferencesSchema.statics.findOrCreateForUser = async function(userId) {
+    // Validate userId before querying
+    if (!userId || userId === 'unknown' || !mongoose.Types.ObjectId.isValid(userId)) {
+        console.error(`Invalid userId provided to findOrCreateForUser: ${userId}`);
+        throw new Error(`Invalid userId: ${userId}`);
+    }
+
     let preferences = await this.findOne({ userId });
-    
+
     if (!preferences) {
         preferences = this.getDefaultPreferences(userId);
         await preferences.save();
     }
-    
+
     return preferences;
 };
 

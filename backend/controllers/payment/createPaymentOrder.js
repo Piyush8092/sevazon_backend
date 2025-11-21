@@ -41,7 +41,11 @@ const createPaymentOrder = async (req, res) => {
         }
 
         // Create Razorpay order
-        const receipt = `plan_${planId}_${Date.now()}`;
+        // Receipt must be max 40 chars - use shortened format
+        const timestamp = Date.now().toString();
+        const shortPlanId = planId.toString().substring(0, 8); // First 8 chars of planId
+        const receipt = `p${shortPlanId}${timestamp.substring(timestamp.length - 10)}`; // Max 19 chars
+
         const notes = {
             planId: planId.toString(),
             planTitle: plan.title,
