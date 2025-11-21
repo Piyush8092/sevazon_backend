@@ -78,6 +78,12 @@ class NotificationService {
     // Send notification to a single user
     async sendToUser(userId, title, body, data = {}, options = {}) {
         try {
+            // Validate userId
+            if (!userId || userId === 'unknown') {
+                console.error(`Invalid userId provided to sendToUser: ${userId}`);
+                return { success: false, reason: 'invalid_user_id', error: 'Invalid or missing userId' };
+            }
+
             // Check user preferences
             const preferences = await NotificationPreferences.findOrCreateForUser(userId);
             const category = options.category || 'system';
