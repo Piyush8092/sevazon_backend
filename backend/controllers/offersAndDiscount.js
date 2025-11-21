@@ -1,4 +1,5 @@
  const offer = require('../model/OfferModel');
+ const userModel = require('../model/userModel');
 
 // create offer
 const createOffer = async (req, res) => {
@@ -447,4 +448,33 @@ const showCreateOfferView = async (req, res) => {
     }
 };
 
-module.exports = { createOffer, GetAllOffer, GetSpecificOffer, UpdateSpecificOffer, DeleteSpecificOffer, queryOffer, showCreateOfferView ,FilterOffer};
+const specificOfferAdminView = async (req, res) => {
+    try {  
+        let id=req.params.id;
+        if(req.user.role !== 'ADMIN'){
+            return res.status(403).json({message: 'Unauthorized access'});
+        }
+        let ExistUser = await userModel.findById(id);
+        // console.log(ExistUser);
+        if (!ExistUser) {
+            return res.status(404).json({message: 'User not found'});
+        }
+        if(req.user.role !== 'ADMIN'){
+            return res.status(403).json({message: 'Unauthorized access'});
+        }
+        let result=await offer.find({userId:id});
+        if(!result){
+            res.json({message: 'No data found', status: 400, data: {}, success: false, error: true});
+        }
+        res.json({message: 'Offer detail retrieved successfully', status: 200, data: result, success: true, error: false});
+    }
+    catch (e) {
+        res.json({message: 'Something went wrong', status: 500, data: e, success: false, error: true});
+
+        }
+
+};
+
+
+
+module.exports = { createOffer, GetAllOffer, GetSpecificOffer, specificOfferAdminView,UpdateSpecificOffer, DeleteSpecificOffer, queryOffer, showCreateOfferView ,FilterOffer};

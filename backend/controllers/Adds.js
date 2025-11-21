@@ -415,6 +415,21 @@ const AddCreaterView = async (req, res) => {
 
         }
 };
+const specificAddAdminView = async (req, res) => {
+    try {  
+        let id=req.params.id;
+        let result=await adModel.find({userId:id});
+        if(!result){
+            res.json({message: 'No data found', status: 400, data: {}, success: false, error: true});
+        }
+        res.json({message: 'Add detail retrieved successfully', status: 200, data: result, success: true, error: false});
+    }
+    catch (e) {
+        res.json({message: 'Something went wrong', status: 500, data: e, success: false, error: true});
+
+        }
+};
 
 
-module.exports = {CreateAdd, GetAllAdds, GetSpecificAdd, UpdateSpecificAdd, DeleteSpecificAdd, queryAdds, AddCreaterView,getAllNotVerifiedAdds,FilterAdds};
+
+module.exports = {CreateAdd, GetAllAdds, GetSpecificAdd, UpdateSpecificAdd, DeleteSpecificAdd, queryAdds,specificAddAdminView, AddCreaterView,getAllNotVerifiedAdds,FilterAdds};

@@ -4,7 +4,7 @@ const { SignupRout } = require('../controllers/signup');
 const  authGuard  = require('../middleware/auth');
 const connectDB=require('../DB/connection');
 const cookie=require('cookie-parser');
-const { CreateAdd,GetAllAdds,GetSpecificAdd,UpdateSpecificAdd,DeleteSpecificAdd,queryAdds, AddCreaterView, getAllNotVerifiedAdds, FilterAdds } = require('../controllers/Adds');
+const { CreateAdd,GetAllAdds,GetSpecificAdd,UpdateSpecificAdd,DeleteSpecificAdd,queryAdds, AddCreaterView, getAllNotVerifiedAdds, FilterAdds, specificAddAdminView } = require('../controllers/Adds');
  const { CreateAllServices} = require('../controllers/AllServicesRegistration/createAllService');
 const { UpdateSpecificServices } = require('../controllers/AllServicesRegistration/UpdateSpecificServices');
 const { GetSpecificServices } = require('../controllers/AllServicesRegistration/GetSpecificServices');
@@ -12,6 +12,7 @@ const { FilterServices } = require('../controllers/AllServicesRegistration/Filte
 const { DeleteSpecsificServices } = require('../controllers/AllServicesRegistration/DeleteSpecificServices');
 const { GetAllServices } = require('../controllers/AllServicesRegistration/GetAllServices');
 const { createVarityServiceList } = require('../controllers/CreateAllServices/CreateServiceList');
+const { AdminSpecificServiceView } = require('../controllers/AllServicesRegistration/AdminSpecificServiceView');
  const { GetAllServiceList } = require('../controllers/CreateAllServices/GetAllServiceList');
   const { GetSpecificServiceList } = require('../controllers/CreateAllServices/GetSpecificSercice'); 
 const { updateServiceListDetail } = require('../controllers/CreateAllServices/updateServiceListDetail');
@@ -42,7 +43,7 @@ const { queryProperty } = require('../controllers/Property/queryProperty');
 
 
 
-const { createOffer, showCreateOfferView, FilterOffer } = require('../controllers/offersAndDiscount');
+const { createOffer, showCreateOfferView, FilterOffer, specificOfferAdminView } = require('../controllers/offersAndDiscount');
 const { GetAllOffer } = require('../controllers/offersAndDiscount');
 const { GetSpecificOffer } = require('../controllers/offersAndDiscount');
 const { UpdateSpecificOffer } = require('../controllers/offersAndDiscount');
@@ -71,6 +72,7 @@ const { getAllApplyJob } = require('../controllers/ApplyJob/getAllApplyUserJob')
 const { getSpecificApplyJob } = require('../controllers/ApplyJob/getSpecificApplyJob');
 const { getApplyedJob } = require('../controllers/ApplyJob/JobApplierView');
 const { jobCreaterView, getApplyedJobCreterView } = require('../controllers/ApplyJob/jobCreaterView');
+const { AdminJobView } = require('../controllers/JobPost/AdminJobView');
 const { getJobCreaterView } = require('../controllers/JobPost/jobCreaterView');
 const { MatrimonyCreatorView } = require('../controllers/MatrimonyPost/matrimoneyCreatorView');
 const { NewsEditorView } = require('../controllers/NewsPost/NewsEditorView');
@@ -215,6 +217,13 @@ const { getBlockUserView } = require('../controllers/AllServicesRegistration/get
 const { getBlockJobUserView } = require('../controllers/JobPost/getBlockJobUserView');
 const { getBlockMatrimonyUserView } = require('../controllers/MatrimonyPost/getBlockMatrimonyUserView');
 const { getPendingMatrimony } = require('../controllers/applyMatrimony/getPendingMatrimony');
+const { AdminLeadView } = require('../controllers/leads/AdminLeadsView');
+const { specificLoaclServicesAdminView } = require('../controllers/localServices/specificUserAdminView');
+const { specificMatrimonyAdminView } = require('../controllers/MatrimonyPost/getSpecificUserAdminView');
+const { specificNewsAdminView } = require('../controllers/NewsPost/getSpecificUserAdminView');
+const { specificVehiclesAdminView } = require('../controllers/vehicles/getSpecificUserAdminView');
+const { specificPropertyAdminView } = require('../controllers/Property/getSpecificUserAdminView');
+const { specificFeedbackAdminView } = require('../controllers/feedback/specificFeedbackAdminView');
    cookie();
 router.get('/', (req, res) => {
     res.send('Hello savazon!');
@@ -284,6 +293,7 @@ router.post('/create-all-service',authGuard,CreateAllServices);
 router.put('/update-specific-service/:id',authGuard,UpdateSpecificServices);
 router.get('/get-specific-service/:id',GetSpecificServices);
 router.delete('/delete-specific-service/:id',authGuard,DeleteSpecsificServices);
+router.get('/get-specific-service-admin-view/:id',authGuard,AdminSpecificServiceView);
 router.get('/get-all-service',GetAllServices);
 // api route is http://localhost:3000/api/get-query-service?query=Bengaluru
  router.get('/get-query-service',queryServices);
@@ -333,6 +343,7 @@ router.get('/get-query-job',queryJobs);
 // Examples: /api/filter-jobs?city=Mumbai&workMode=Remote&minSalary=50000
 router.get('/filter-jobs',FilterJobs);
 router.get('/get-job-creator-view',authGuard,getJobCreaterView);
+router.get('/get-all-job-admin-view/:id',authGuard,AdminJobView);
 
 
 // job Apply
@@ -388,6 +399,7 @@ router.get('/get-specific-matrimony/:id',getSpecificMatrimony);
 router.put('/update-specific-matrimony/:id',authGuard,updateMatrimony);
 router.delete('/delete-specific-matrimony/:id',authGuard,deleteMatrimony);
 router.get('/get-matrimony-creator-view',authGuard,MatrimonyCreatorView);
+router.get('/get-specific-matrimony-admin-view/:id',authGuard,specificMatrimonyAdminView);
 // api is =>. http://localhost:3000/api/get-query-matrimony?query=Brahmin
 router.get('/get-query-matrimony', queryMatrimony);
 // Flexible matrimony filtering API - supports multiple optional parameters
@@ -436,6 +448,7 @@ router.delete('/delete-specific-property/:id',authGuard,deleteProperty);
 // api is => http://localhost:3000/api/get-query-property?query=Bengaluru
 router.get('/get-query-property',queryProperty);
 router.get('/get-property-editor-view',authGuard,PropertyEditorView);
+router.get('/get-specific-property-admin-view/:id',authGuard,specificPropertyAdminView);
 
 
 // for Offers post
@@ -449,6 +462,7 @@ router.get('/get-query-offer',queryOffer);
 router.get('/show-create-offer-view',authGuard,showCreateOfferView);
 //api is => http://localhost:3000/api/filter-offer?city=Mumbai
 router.get('/filter-offer',FilterOffer);
+router.get('/get-specific-offer-admin-view/:id',authGuard,specificOfferAdminView);
 
 
 // for adds post
@@ -463,6 +477,7 @@ router.get('/get-add-creator-view',authGuard,AddCreaterView);
 router.get('/get-all-not-verified-adds',authGuard,getAllNotVerifiedAdds);
 // api is => http://localhost:3000/api/filter-adds?category=Electronics&route=Mobiles&position=Top&isActive=true&validTill=2025-12-31&location=Bengaluru&isVerified=true&search=iPhone
 router.get('/filter-adds',FilterAdds);
+router.get('/get-specific-ad-admin-view/:id',authGuard,specificAddAdminView);
 
 
 
@@ -496,6 +511,7 @@ router.delete('/delete-specific-news/:id',authGuard,deleteNews);
 router.get('/get-query-news',queryNews);
 router.get('/get-news-editor-view',authGuard,NewsEditorView);
 router.put('/news-comment/:news_id',authGuard,newsComment);
+router.get('/get-specific-news-admin-view/:id',authGuard,specificNewsAdminView);
 router.put('/news-like/:news_id',authGuard,newsLike);
 router.put('/news-dislike/:news_id',authGuard,newsDislike);
 
@@ -512,6 +528,7 @@ router.put('/update-specific-vehicle/:id',authGuard,updateVehicle);
 router.get('/get-query-vehicle',queryVehicles);
 router.get('/get-vehicles-creator-view',authGuard,getVehiclesCreaterView);
 router.delete('/delete-specific-vehicle/:id',authGuard,deleteVehicles);
+router.get('/get-specific-vehicle-admin-view/:id',authGuard,specificVehiclesAdminView);
 
 
 // local services
@@ -523,6 +540,7 @@ router.get('/get-local-services-creator-view',authGuard,LocalServiceCreaterView)
 // api is => http://localhost:3000/api/get-query-local-services?query=local Service
 router.get('/get-query-local-services',queryLocalServices);
 router.put('/update-local-services/:id',authGuard,updateLocalService);
+router.get('/get-specific-local-services-admin-view/:id',authGuard,specificLoaclServicesAdminView);
 
 //leads
 router.post('/create-lead',authGuard,createLead);
@@ -532,6 +550,7 @@ router.put('/update-specific-lead/:id',authGuard,updateLead);
 router.delete('/delete-specific-lead/:id',authGuard,deleteLead);
 router.get('/get-query-lead',getQueryLead);
 router.get('/get-lead-creator-view',authGuard,getLeadCreaterView);
+router.get('/get-all-job-admin-view/:user_id',authGuard,AdminLeadView);
 
 // FAQ route
 router.post('/create-faq',authGuard,createFaq);
@@ -559,6 +578,7 @@ router.get('/get-specific-feedback/:id',getSpecificFeedback);
 router.put('/update-feedback/:id',authGuard,updateFeedback);
 router.delete('/delete-feedback/:id',authGuard,deleteFeedback);
 router.get('/get-query-feedback',queryFeedback);
+router.get('/get-specific-feedback-admin-view/:id',authGuard,specificFeedbackAdminView);
 
 // account delete policy
 router.post('/create-account-delete-policy',authGuard,createAccountDeletePolicy);

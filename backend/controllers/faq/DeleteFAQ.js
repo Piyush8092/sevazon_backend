@@ -12,7 +12,7 @@ const deleteFAQ=async(req,res)=>{
             return res.status(403).json({message: 'Unauthorized access', status: 403, success: false, error: true});
         }
         
-        await FAQModel.findByIdAndDelete(id);
+        await faqModel.findByIdAndDelete(id);
         
         res.json({message: 'FAQ deleted successfully', status: 200, success: true, error: false});
     }
