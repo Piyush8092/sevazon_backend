@@ -15,16 +15,32 @@ const updateMatrimony = async (req, res) => {
             return res.status(403).json({message: 'Unauthorized access'});
         }
 
-        // Validate nested objects if being updated
-        if (payload.partnerAge && Array.isArray(payload.partnerAge)) {
-            if (payload.partnerAge.length === 0) {
-                return res.status(400).json({message: 'Partner age array cannot be empty'});
+        // Validate partnerAge array if being updated - each object must have min and max
+        if (payload.partnerAge) {
+            if (!Array.isArray(payload.partnerAge) || payload.partnerAge.length === 0) {
+                return res.status(400).json({message: 'Partner age preferences must be a non-empty array'});
+            }
+
+            for (let ageRange of payload.partnerAge) {
+                if (!ageRange.min || !ageRange.max) {
+                    return res.status(400).json({message: 'Partner age range must have both min and max values'});
+                }
+                if (ageRange.min >= ageRange.max) {
+                    return res.status(400).json({message: 'Partner minimum age must be less than maximum age'});
+                }
             }
         }
 
-        if (payload.partnerHeight && Array.isArray(payload.partnerHeight)) {
-            if (payload.partnerHeight.length === 0) {
-                return res.status(400).json({message: 'Partner height array cannot be empty'});
+        // Validate partnerHeight array if being updated - each object must have min and max
+        if (payload.partnerHeight) {
+            if (!Array.isArray(payload.partnerHeight) || payload.partnerHeight.length === 0) {
+                return res.status(400).json({message: 'Partner height preferences must be a non-empty array'});
+            }
+
+            for (let heightRange of payload.partnerHeight) {
+                if (!heightRange.min || !heightRange.max) {
+                    return res.status(400).json({message: 'Partner height range must have both min and max values'});
+                }
             }
         }
 
@@ -68,8 +84,22 @@ const updateMatrimony = async (req, res) => {
 
         if (payload.employmentType && Array.isArray(payload.employmentType)) {
             const validEmploymentType = ['Private Job', 'Government Job', 'Business', 'Self Employed', 'Student', 'Not Working'];
+            if (payload.employmentType.length === 0) {
+                return res.status(400).json({message: 'Employment type array cannot be empty'});
+            }
             if (!payload.employmentType.every(type => validEmploymentType.includes(type))) {
                 return res.status(400).json({message: 'Invalid employment type value'});
+            }
+        }
+
+        // Validate annual income array if being updated
+        if (payload.annualIncome && Array.isArray(payload.annualIncome)) {
+            const validAnnualIncome = ['Below 1 Lakh', '1-2 Lakhs', '2-3 Lakhs', '3-5 Lakhs', '5-7 Lakhs', '7-10 Lakhs', '10-15 Lakhs', '15-20 Lakhs', '20+ Lakhs'];
+            if (payload.annualIncome.length === 0) {
+                return res.status(400).json({message: 'Annual income array cannot be empty'});
+            }
+            if (!payload.annualIncome.every(income => validAnnualIncome.includes(income))) {
+                return res.status(400).json({message: 'Invalid annual income value'});
             }
         }
 
@@ -96,9 +126,46 @@ const updateMatrimony = async (req, res) => {
             return res.status(400).json({message: 'Minimum 2 images are required'});
         }
 
-        // Validate array fields if being updated
-        if (payload.partnerMaritalStatus && (!Array.isArray(payload.partnerMaritalStatus) || payload.partnerMaritalStatus.length === 0)) {
-            return res.status(400).json({message: 'Partner marital status must be a non-empty array'});
+        // Validate partner preference arrays if being updated
+        if (payload.partnerMaritalStatus) {
+            if (!Array.isArray(payload.partnerMaritalStatus) || payload.partnerMaritalStatus.length === 0) {
+                return res.status(400).json({message: 'Partner marital status must be a non-empty array'});
+            }
+        }
+
+        if (payload.partnerCity && Array.isArray(payload.partnerCity)) {
+            if (payload.partnerCity.length === 0) {
+                return res.status(400).json({message: 'Partner city array cannot be empty'});
+            }
+        }
+
+        if (payload.partnerState && Array.isArray(payload.partnerState)) {
+            if (payload.partnerState.length === 0) {
+                return res.status(400).json({message: 'Partner state array cannot be empty'});
+            }
+        }
+
+        if (payload.partnerEmploymentType && Array.isArray(payload.partnerEmploymentType)) {
+            const validEmploymentType = ['Private Job', 'Government Job', 'Business', 'Self Employed', 'Student', 'Not Working'];
+            if (payload.partnerEmploymentType.length === 0) {
+                return res.status(400).json({message: 'Partner employment type array cannot be empty'});
+            }
+            if (!payload.partnerEmploymentType.every(type => validEmploymentType.includes(type))) {
+                return res.status(400).json({message: 'Invalid partner employment type value'});
+            }
+        }
+
+        if (payload.partnerReligion && Array.isArray(payload.partnerReligion)) {
+            if (payload.partnerReligion.length === 0) {
+                return res.status(400).json({message: 'Partner religion array cannot be empty'});
+            }
+        }
+
+        if (payload.partnerMotherTongue) {
+            const validMotherTongue = ['Hindi', 'English', 'Bengali', 'Marathi', 'Tamil', 'Telugu', 'Gujarati', 'Kannada', 'Malayalam', 'Odia', 'Punjabi', 'Urdu', 'Other'];
+            if (!validMotherTongue.includes(payload.partnerMotherTongue)) {
+                return res.status(400).json({message: 'Invalid partner mother tongue value'});
+            }
         }
 
         // Validate enum values if being updated
@@ -123,14 +190,16 @@ const updateMatrimony = async (req, res) => {
             }
         }
 
-        if (payload.employmentType) {
+        // Validate single value employment type if being updated (not array)
+        if (payload.employmentType && !Array.isArray(payload.employmentType)) {
             const validEmploymentType = ['Private Job', 'Government Job', 'Business', 'Self Employed', 'Student', 'Not Working'];
             if (!validEmploymentType.includes(payload.employmentType)) {
                 return res.status(400).json({message: 'Invalid employment type value'});
             }
         }
 
-        if (payload.annualIncome) {
+        // Validate single value annual income if being updated (not array)
+        if (payload.annualIncome && !Array.isArray(payload.annualIncome)) {
             const validAnnualIncome = ['Below 1 Lakh', '1-2 Lakhs', '2-3 Lakhs', '3-5 Lakhs', '5-7 Lakhs', '7-10 Lakhs', '10-15 Lakhs', '15-20 Lakhs', '20+ Lakhs'];
             if (!validAnnualIncome.includes(payload.annualIncome)) {
                 return res.status(400).json({message: 'Invalid annual income value'});
