@@ -33,27 +33,27 @@ const createMatrimony = async (req, res) => {
         // }
 
         // Validate enum values for arrays
-        if (payload.employmentType && Array.isArray(payload.employmentType)) {
-            const validEmploymentType = ['Private Job', 'Government Job', 'Business', 'Self Employed', 'Student', 'Not Working'];
-            if (!payload.employmentType.every(type => validEmploymentType.includes(type))) {
-                return res.status(400).json({message: 'Invalid employment type value'});
-            }
-        }
+        // if (payload.employmentType && Array.isArray(payload.employmentType)) {
+        //     const validEmploymentType = ['Private Job', 'Government Job', 'Business', 'Self Employed', 'Student', 'Not Working'];
+        //     if (!payload.employmentType.every(type => validEmploymentType.includes(type))) {
+        //         return res.status(400).json({message: 'Invalid employment type value'});
+        //     }
+        // }
 
-        if (payload.annualIncome && Array.isArray(payload.annualIncome)) {
-            const validAnnualIncome = ['Below 1 Lakh', '1-2 Lakhs', '2-3 Lakhs', '3-5 Lakhs', '5-7 Lakhs', '7-10 Lakhs', '10-15 Lakhs', '15-20 Lakhs', '20+ Lakhs'];
-            if (!payload.annualIncome.every(income => validAnnualIncome.includes(income))) {
-                return res.status(400).json({message: 'Invalid annual income value'});
-            }
-        }
+        // if (payload.annualIncome && Array.isArray(payload.annualIncome)) {
+        //     const validAnnualIncome = ['Below 1 Lakh', '1-2 Lakhs', '2-3 Lakhs', '3-5 Lakhs', '5-7 Lakhs', '7-10 Lakhs', '10-15 Lakhs', '15-20 Lakhs', '20+ Lakhs'];
+        //     if (!payload.annualIncome.every(income => validAnnualIncome.includes(income))) {
+        //         return res.status(400).json({message: 'Invalid annual income value'});
+        //     }
+        // }
 
-        // Validate motherTongue array
-        if (payload.motherTongue && Array.isArray(payload.motherTongue)) {
-            const validMotherTongue = ['Hindi', 'English', 'Bengali', 'Marathi', 'Tamil', 'Telugu', 'Gujarati', 'Kannada', 'Malayalam', 'Odia', 'Punjabi', 'Urdu', 'Other'];
-            if (!payload.motherTongue.every(tongue => validMotherTongue.includes(tongue))) {
-                return res.status(400).json({message: 'Invalid mother tongue value'});
-            }
-        }
+        // // Validate motherTongue array
+        // if (payload.motherTongue && Array.isArray(payload.motherTongue)) {
+        //     const validMotherTongue = ['Hindi', 'English', 'Bengali', 'Marathi', 'Tamil', 'Telugu', 'Gujarati', 'Kannada', 'Malayalam', 'Odia', 'Punjabi', 'Urdu', 'Other'];
+        //     if (!payload.motherTongue.every(tongue => validMotherTongue.includes(tongue))) {
+        //         return res.status(400).json({message: 'Invalid mother tongue value'});
+        //     }
+        // }
 
         // Validate date of birth
         const dob = new Date(payload.dateOfBirth);
