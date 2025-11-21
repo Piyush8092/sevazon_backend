@@ -11,19 +11,12 @@ const CreateAdd = async (req, res) => {
             return res.status(400).json({message: 'Minimum 1 and maximum 5 ad images are required'});
         }
 
-        // Check if user has completed KYC verification
-        if (!req.user.isKycVerified) {
-            return res.status(403).json({
-                message: 'Please complete KYC verification first',
-                status: 403,
-                success: false,
-                error: true,
-                errorType: 'VERIFICATION_REQUIRED'
-            });
-        }
+        // Verification is optional - set isVerified based on user's KYC status
+        // This allows unverified users to post, but marks their posts accordingly
+        const isUserVerified = req.user.isKycVerified || false;
 
         payload.userId = req.user._id;
-        payload.isVerified = true;
+        payload.isVerified = isUserVerified;
         payload.status = 'Pending';
         
         const newAd = new adModel(payload);
