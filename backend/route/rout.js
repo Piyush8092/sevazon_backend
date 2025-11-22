@@ -127,6 +127,11 @@ const { updateContact } = require('../controllers/contact/updateContact');
 const { getSpecificContact } = require('../controllers/contact/getSpecificContact');
 const { newsDislike } = require('../controllers/NewsPost/newsDisLike');
 
+// Seasonal Category controllers
+const { getSeasonalCategory } = require('../controllers/seasonalCategory/getSeasonalCategory');
+const { setSeasonalCategory } = require('../controllers/seasonalCategory/setSeasonalCategory');
+const { clearSeasonalCategory } = require('../controllers/seasonalCategory/clearSeasonalCategory');
+
 // Feedback controllers
 const { createFeedback } = require('../controllers/feedback/createFeedback');
 const { getAllFeedback } = require('../controllers/feedback/getAllFeedback');
@@ -284,6 +289,13 @@ router.get('/get-sub-service-list/:id',GetSubServiceList);
 // api name of query service
 // http://localhost:3000/api/get-query-service-list?query=Plumbing
 router.get('/get-query-service-list',queryServiceList);
+
+// Seasonal Category routes
+// Public endpoint - get current seasonal category
+router.get('/get-seasonal-category', getSeasonalCategory);
+// Admin endpoints - set/clear seasonal category
+router.post('/set-seasonal-category', authGuard, setSeasonalCategory);
+router.delete('/clear-seasonal-category', authGuard, clearSeasonalCategory);
 
 
 
