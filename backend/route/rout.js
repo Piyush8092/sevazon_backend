@@ -132,6 +132,11 @@ const { getSeasonalCategory } = require('../controllers/seasonalCategory/getSeas
 const { setSeasonalCategory } = require('../controllers/seasonalCategory/setSeasonalCategory');
 const { clearSeasonalCategory } = require('../controllers/seasonalCategory/clearSeasonalCategory');
 
+// Featured Category controllers
+const getFeaturedCategories = require('../controllers/featuredCategory/getFeaturedCategories');
+const setFeaturedCategory = require('../controllers/featuredCategory/setFeaturedCategory');
+const clearFeaturedCategory = require('../controllers/featuredCategory/clearFeaturedCategory');
+
 // Feedback controllers
 const { createFeedback } = require('../controllers/feedback/createFeedback');
 const { getAllFeedback } = require('../controllers/feedback/getAllFeedback');
@@ -290,12 +295,19 @@ router.get('/get-sub-service-list/:id',GetSubServiceList);
 // http://localhost:3000/api/get-query-service-list?query=Plumbing
 router.get('/get-query-service-list',queryServiceList);
 
-// Seasonal Category routes
+// Seasonal Category routes (Legacy - kept for backward compatibility)
 // Public endpoint - get current seasonal category
 router.get('/get-seasonal-category', getSeasonalCategory);
 // Admin endpoints - set/clear seasonal category
 router.post('/set-seasonal-category', authGuard, setSeasonalCategory);
 router.delete('/clear-seasonal-category', authGuard, clearSeasonalCategory);
+
+// Featured Category routes (New - supports multiple types: seasonal, wedding, education)
+// Public endpoint - get all featured categories
+router.get('/get-featured-categories', getFeaturedCategories);
+// Admin endpoints - set/clear featured category
+router.post('/set-featured-category', authGuard, setFeaturedCategory);
+router.post('/clear-featured-category', authGuard, clearFeaturedCategory);
 
 
 
