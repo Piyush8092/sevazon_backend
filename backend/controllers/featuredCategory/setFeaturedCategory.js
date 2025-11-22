@@ -1,5 +1,5 @@
 const FeaturedCategoryModel = require('../../model/FeaturedCategoryModel');
-const serviceListModel = require('../../model/serviceListModel');
+const serviceListModel = require('../../model/ServiceListModel');
 
 /**
  * Set a featured category for a specific type
