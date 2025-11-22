@@ -2,24 +2,27 @@ let leadModel = require('../../model/leadModel');
 
 const getAllLead = async (req, res) => {
     try {
-        let page = req.query.page || 1;
-        let limit = req.query.limit || 10;
-        const skip = (page - 1) * limit;
-const result = await leadModel
-  .find()
-  .sort({ createdAt: -1 }) // Sort by newest first
-  .skip(skip)
-  .limit(limit)
-  .populate('userId', 'name email phone');
-        const total = await leadModel.countDocuments();
-        const totalPages = Math.ceil(total / limit);
+        // Fetch all leads without pagination
+        const result = await leadModel
+            .find()
+            .sort({ createdAt: -1 }) // Sort by newest first
+            .populate('userId', 'name email phone');
 
-        res.json({message: 'Lead created successfully', status: 200, data: result, success: true, error: false, total, totalPages});
+        const total = await leadModel.countDocuments();
+
+        res.json({
+            message: 'Leads fetched successfully',
+            status: 200,
+            data: result,
+            success: true,
+            error: false,
+            total,
+            totalPages: 1
+        });
     }
     catch (e) {
         res.json({message: 'Something went wrong', status: 500, data: e, success: false, error: true});
-
-        }
+    }
 };
 
 module.exports = { getAllLead };

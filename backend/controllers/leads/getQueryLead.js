@@ -1,45 +1,35 @@
 let leadModel = require('../../model/leadModel');
 
 const getQueryLead = async (req, res) => {
-    try {       
+    try {
         let query = req.query.query;
 
-            if (!query) {
+        if (!query) {
             return res.status(400).json({message: 'Query parameter is required'});
         }
-        let page = req.query.page || 1;
-        let limit = req.query.limit || 10;
-        const skip = (page - 1) * limit;
-        const result = await leadModel.find(
-                {serviceRequire: {$regex: query, $options: 'i'}},
-             ).skip(skip).limit(limit);
+
+        // Fetch all matching leads without pagination
+        const result = await leadModel
+            .find({serviceRequire: {$regex: query, $options: 'i'}})
+            .sort({ createdAt: -1 }) // Sort by newest first
+            .populate('userId', 'name email phone');
+
         const total = await leadModel.countDocuments({
-            
-                serviceRequire: {$regex: query, $options: 'i'}
-            
+            serviceRequire: {$regex: query, $options: 'i'}
         });
-        const totalPages = Math.ceil(total / limit);
 
         if(!result || result.length === 0){
             return res.status(404).json({message: 'No data found'});
         }
 
-        if(page < 1){
-            return res.status(400).json({message: 'Invalid page number'});
-        }
-
-        if(page > totalPages){
-            return res.status(400).json({message: 'Page number exceeds total pages'});
-        }
-
         res.json({
-            message: 'Leads retrieved successfully', 
-            status: 200, 
+            message: 'Leads retrieved successfully',
+            status: 200,
             data: result,
             total,
-            totalPages,
-            currentPage: page,
-            success: true, 
+            totalPages: 1,
+            currentPage: 1,
+            success: true,
             error: false
         });
     }
