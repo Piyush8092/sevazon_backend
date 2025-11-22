@@ -1,12 +1,13 @@
 let leadModel = require('../../model/leadModel');
 
 const getAllLead = async (req, res) => {
-    try {  
+    try {
         let page = req.query.page || 1;
         let limit = req.query.limit || 10;
         const skip = (page - 1) * limit;
 const result = await leadModel
   .find()
+  .sort({ createdAt: -1 }) // Sort by newest first
   .skip(skip)
   .limit(limit)
   .populate('userId', 'name email phone');
