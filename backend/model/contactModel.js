@@ -15,6 +15,11 @@ const contactSchama=new mongoose.Schema({
         type:String,
         required:true
     },
+    allowContact:{
+        type:String,
+        enum: ['phone', 'message'],
+        required:true
+    }
 })
 
   const ContactModel=mongoose.model("ContactModel",contactSchama);

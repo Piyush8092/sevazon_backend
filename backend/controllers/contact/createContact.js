@@ -3,7 +3,7 @@ let contactModel=require('../../model/contactModel');
 const createContact=async(req,res)=>{
     try{
 let payload=req.body;
-if(!payload.name || !payload.email || !payload.subject || !payload.message){
+if(!payload.name || !payload.email || !payload.subject || !payload.message || !payload.allowContact){
     return res.status(400).json({message: 'All fields are required'});
 }
 const newContact=new contactModel(payload);
@@ -15,4 +15,4 @@ res.json({message: 'Contact created successfully', status: 200, data: result, su
     }
 }
 
-module.exports={createContact};
+module.exports={createContact}; 
