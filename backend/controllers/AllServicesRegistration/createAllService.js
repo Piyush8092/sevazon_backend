@@ -49,17 +49,16 @@ const CreateAllServices = async (req, res) => {
           .status(400)
           .json({ message: "Description is required for Service Profile" });
       }
-      if (!payload.experience) {
-        return res
-          .status(400)
-          .json({ message: "Experience is required for Service Profile" });
+      // Experience is optional - convert empty to null
+      if (!payload.experience || payload.experience.trim() === '') {
+        payload.experience = null;
       }
       if (!payload.workServiceImages || payload.workServiceImages.length === 0) {
         return res
           .status(400)
           .json({ message: "Work/Service images are required for Service Profile" });
       }
-   
+
     }
 
     if (payload.profileType === "Business Profile") {

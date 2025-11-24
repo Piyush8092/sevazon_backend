@@ -93,9 +93,7 @@ const profileSchema = new mongoose.Schema({
     },
     experience: {
         type: String,
-        required: function() {
-            return this.profileType === 'Service Profile';
-        },
+        required: false, // Optional field
     },
     establishedInYear: {
         type: String,
