@@ -88,7 +88,7 @@ const profileSchema = new mongoose.Schema({
     },
     locationURL: {
         type: String,
-        required: [true, 'Location URL is required'],
+        required: false, // Made optional - not all users may have location URL
     },
     experience: {
         type: String,

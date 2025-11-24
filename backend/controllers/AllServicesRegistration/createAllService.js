@@ -17,7 +17,6 @@ const CreateAllServices = async (req, res) => {
       !payload.houseNumberBuilding ||
       !payload.selectCategory ||
       !payload.selectSubCategory ||
-      !payload.locationURL ||
       payload.allowCallInApp === undefined ||
       payload.allowCallViaPhone === undefined ||
       payload.allowChat === undefined
@@ -25,6 +24,12 @@ const CreateAllServices = async (req, res) => {
       return res
         .status(400)
         .json({ message: "All required fields must be provided" });
+    }
+
+    // --- Optional field handling ---
+    // Convert empty locationURL to null (locationURL is optional)
+    if (!payload.locationURL || payload.locationURL.trim() === '') {
+      payload.locationURL = null;
     }
 
  
