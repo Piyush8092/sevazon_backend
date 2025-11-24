@@ -14,7 +14,6 @@ const CreateAllServices = async (req, res) => {
       !payload.city ||
       !payload.state ||
       !payload.area ||
-      !payload.houseNumberBuilding ||
       !payload.selectCategory ||
       !payload.selectSubCategory ||
       payload.allowCallInApp === undefined ||
@@ -30,6 +29,16 @@ const CreateAllServices = async (req, res) => {
     // Convert empty locationURL to null (locationURL is optional)
     if (!payload.locationURL || payload.locationURL.trim() === '') {
       payload.locationURL = null;
+    }
+
+    // Convert empty houseNumberBuilding to null (houseNumberBuilding is optional)
+    if (!payload.houseNumberBuilding || payload.houseNumberBuilding.trim() === '') {
+      payload.houseNumberBuilding = null;
+    }
+
+    // Convert empty landmark to null (landmark is optional)
+    if (!payload.landmark || payload.landmark.trim() === '') {
+      payload.landmark = null;
     }
 
  

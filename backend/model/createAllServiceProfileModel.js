@@ -51,10 +51,11 @@ const profileSchema = new mongoose.Schema({
     },
     houseNumberBuilding: {
         type: String,
-        required: [true, 'House number/Building is required'],
+        required: false, // Optional field
     },
     landmark: {
         type: String,
+        required: false, // Optional field
     },
     
     // Category Information
