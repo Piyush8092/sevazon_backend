@@ -98,6 +98,9 @@ const { getSpecificLocalServiceRoute } = require('../controllers/localServices/g
 const { deleteLocalService } = require('../controllers/localServices/deleteLocalService');
 const { LocalServiceCreaterView } = require('../controllers/localServices/LocalServiceCreaterView');
 const { queryLocalServices } = require('../controllers/localServices/queryLocalService');
+const { unifiedSearch } = require('../controllers/search/unifiedSearch');
+const { trackActivity, getUserActivity } = require('../controllers/userActivity/trackActivity');
+const { getRecommendations } = require('../controllers/userActivity/getRecommendations');
 const { updateLocalService } = require('../controllers/localServices/updateLocalService');
 const { getAuthUserDetail } = require('../controllers/user/getAuthUserDetail');
 const { GetSubServiceList } = require('../controllers/CreateAllServices/GetSubServiceList');
@@ -256,6 +259,18 @@ router.get('/auth-user',authGuard,getAuthUserDetail);
 router.post('/send-otp',sendOTP);
 router.post('/verify-otp',verifyOTP);
 router.get('/resend-otp/:phone',getOtp);
+
+// Unified search across all content types
+// api is => http://localhost:3000/api/unified-search?query=Mumbai
+router.get('/unified-search', unifiedSearch);
+
+// User activity tracking and recommendations
+// api is => http://localhost:3000/api/track-activity
+router.post('/track-activity', trackActivity);
+// api is => http://localhost:3000/api/get-user-activity
+router.get('/get-user-activity', getUserActivity);
+// api is => http://localhost:3000/api/get-recommendations
+router.get('/get-recommendations', getRecommendations);
 
 
 
