@@ -24,7 +24,7 @@ app.use(cors({
     "https://loklink-adminportal.vercel.app",
     "https://www.loklink.in",
     "http://localhost:3000",
-    "https://localhost:3000"
+    "http://localhost:3001/login"
   ], 
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],

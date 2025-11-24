@@ -127,6 +127,10 @@ const { updateContact } = require('../controllers/contact/updateContact');
 const { getSpecificContact } = require('../controllers/contact/getSpecificContact');
 const { newsDislike } = require('../controllers/NewsPost/newsDisLike');
 
+// Contact Settings controllers
+const { getContactSettings } = require('../controllers/contactSettings/getContactSettings');
+const { updateContactSettings } = require('../controllers/contactSettings/updateContactSettings');
+
 // Seasonal Category controllers
 const { getSeasonalCategory } = require('../controllers/seasonalCategory/getSeasonalCategory');
 const { setSeasonalCategory } = require('../controllers/seasonalCategory/setSeasonalCategory');
@@ -594,6 +598,10 @@ router.delete('/delete-specific-contact/:id',deleteContact);
 router.get('/get-query-contact',queryContact);
 router.get('/get-specific-contact/:id',getSpecificContact);
 router.put('/update-specific-contact/:id',authGuard,updateContact);
+
+// contact settings (for Contact Us page)
+router.get('/get-contact-settings',getContactSettings); // Public endpoint
+router.put('/update-contact-settings',authGuard,updateContactSettings); // Admin only
 
 // feedback
 router.post('/create-feedback',authGuard,createFeedback);
