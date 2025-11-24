@@ -2,18 +2,33 @@ const FeaturedCategoryModel = require('../../model/FeaturedCategoryModel');
 const serviceListModel = require('../../model/ServiceListModel');
 
 /**
- * Set a featured category for a specific type
+ * Set a featured category collection with subcategories from multiple categories
  * Admin only endpoint - requires authentication
+ *
+ * Request body:
+ * - categoryType: 'seasonal' | 'wedding' | 'education'
+ * - customName: Custom name for the collection (e.g., "Winter Special")
+ * - customDescription: Optional description
+ * - subcategorySelections: Array of { categoryId, subcategoryIds[] }
+ * - startDate, endDate, displayOrder: Optional
  */
 const setFeaturedCategory = async (req, res) => {
   try {
-    const { categoryType, categoryId, subcategoryIds, startDate, endDate, displayOrder } = req.body;
+    const {
+      categoryType,
+      customName,
+      customDescription,
+      subcategorySelections,
+      startDate,
+      endDate,
+      displayOrder
+    } = req.body;
 
     // Validate required fields
-    if (!categoryType || !categoryId) {
+    if (!categoryType || !customName || !subcategorySelections) {
       return res.status(400).json({
         success: false,
-        message: 'Category type and category ID are required',
+        message: 'Category type, custom name, and subcategory selections are required',
       });
     }
 
@@ -26,26 +41,50 @@ const setFeaturedCategory = async (req, res) => {
       });
     }
 
-    // Check if the category exists
-    const category = await serviceListModel.findById(categoryId);
-    if (!category) {
-      return res.status(404).json({
+    // Validate subcategorySelections is an array
+    if (!Array.isArray(subcategorySelections) || subcategorySelections.length === 0) {
+      return res.status(400).json({
         success: false,
-        message: 'Category not found',
+        message: 'At least one subcategory selection is required',
       });
     }
 
-    // Process selected subcategories
-    let selectedSubcategories = [];
-    if (subcategoryIds && Array.isArray(subcategoryIds) && subcategoryIds.length > 0) {
-      // Filter subcategories that exist in the category's subService array
-      selectedSubcategories = category.subService.filter(sub =>
+    // Process subcategories from all selected categories
+    const selectedSubcategories = [];
+
+    for (const selection of subcategorySelections) {
+      const { categoryId, subcategoryIds } = selection;
+
+      if (!categoryId || !Array.isArray(subcategoryIds) || subcategoryIds.length === 0) {
+        continue; // Skip invalid selections
+      }
+
+      // Fetch the category
+      const category = await serviceListModel.findById(categoryId);
+      if (!category) {
+        continue; // Skip if category not found
+      }
+
+      // Find matching subcategories in this category
+      const matchingSubcategories = category.subService.filter(sub =>
         subcategoryIds.includes(sub._id.toString())
       ).map(sub => ({
         _id: sub._id,
         name: sub.name,
         image: sub.image || '',
+        parentCategoryId: category._id,
+        parentCategoryName: category.name,
       }));
+
+      selectedSubcategories.push(...matchingSubcategories);
+    }
+
+    // Validate that we have at least one subcategory
+    if (selectedSubcategories.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'No valid subcategories found. Please select at least one subcategory.',
+      });
     }
 
     // Deactivate any existing featured category of this type
@@ -57,9 +96,8 @@ const setFeaturedCategory = async (req, res) => {
     // Create new featured category
     const featuredCategory = new FeaturedCategoryModel({
       categoryType,
-      categoryId,
-      categoryName: category.name,
-      categoryImage: category.image || '',
+      customName: customName.trim(),
+      customDescription: customDescription?.trim() || '',
       selectedSubcategories,
       isActive: true,
       startDate: startDate || null,
@@ -70,22 +108,16 @@ const setFeaturedCategory = async (req, res) => {
 
     await featuredCategory.save();
 
-    // Populate the category data before sending response
-    await featuredCategory.populate({
-      path: 'categoryId',
-      select: 'name image subService',
-    });
-
     res.status(200).json({
       success: true,
-      message: `Featured category for ${categoryType} set successfully`,
+      message: `Featured category "${customName}" for ${categoryType} set successfully`,
       data: {
         _id: featuredCategory._id,
         categoryType: featuredCategory.categoryType,
-        categoryId: featuredCategory.categoryId._id,
-        categoryName: featuredCategory.categoryName,
-        categoryImage: featuredCategory.categoryImage,
+        customName: featuredCategory.customName,
+        customDescription: featuredCategory.customDescription,
         selectedSubcategories: featuredCategory.selectedSubcategories,
+        subcategoryCount: featuredCategory.selectedSubcategories.length,
         startDate: featuredCategory.startDate,
         endDate: featuredCategory.endDate,
         displayOrder: featuredCategory.displayOrder,

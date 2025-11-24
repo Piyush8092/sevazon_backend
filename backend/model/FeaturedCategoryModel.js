@@ -9,27 +9,22 @@ const featuredCategorySchema = new mongoose.Schema({
     index: true,
   },
 
-  // Reference to the actual category from serviceListModel
-  categoryId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'serviceListModel',
-    required: true,
-  },
-
-  // Store category name for quick access
-  categoryName: {
+  // Custom name for this featured category collection (e.g., "Winter Special", "Monsoon Offers")
+  customName: {
     type: String,
     required: true,
+    trim: true,
   },
 
-  // Store category image for quick access
-  categoryImage: {
+  // Custom description for this featured category collection
+  customDescription: {
     type: String,
     default: '',
+    trim: true,
   },
 
-  // Selected subcategories for this featured category
-  // Stores array of subcategory objects with _id, name, and image
+  // Selected subcategories from ANY category (cross-category selection)
+  // Each subcategory stores its parent category info for reference
   selectedSubcategories: {
     type: [{
       _id: {
@@ -44,8 +39,24 @@ const featuredCategorySchema = new mongoose.Schema({
         type: String,
         default: '',
       },
+      // Parent category information for reference
+      parentCategoryId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'serviceListModel',
+        required: true,
+      },
+      parentCategoryName: {
+        type: String,
+        required: true,
+      },
     }],
     default: [],
+    validate: {
+      validator: function(arr) {
+        return arr.length > 0; // Must have at least one subcategory
+      },
+      message: 'At least one subcategory must be selected',
+    },
   },
 
   // Whether this featured category is currently active
