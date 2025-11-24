@@ -67,6 +67,18 @@ const createProperty = async (req, res) => {
             }
         }
 
+        // Validate phone number when call via phone is enabled
+        if (payload.allowCallViaPhone === true) {
+            if (!payload.phoneNumberForCalls || payload.phoneNumberForCalls.trim() === '') {
+                return res.status(400).json({
+                    message: 'Phone number is required when call via phone is enabled'
+                });
+            }
+        } else {
+            // If call via phone is disabled, set phone number to null
+            payload.phoneNumberForCalls = null;
+        }
+
         let userId = req.user._id;
         if (!userId) {
             return res.status(400).json({message: 'User not authenticated'});
@@ -77,7 +89,7 @@ const createProperty = async (req, res) => {
         const isUserVerified = req.user.isKycVerified || false;
 
         payload.userId = userId;
-        payload.phoneNumberForCalls = req.user.phone;
+        // Note: phoneNumberForCalls is already set from payload (user can use different verified number)
         payload.fullName = req.user.name;
         payload.isVerified = isUserVerified;
 

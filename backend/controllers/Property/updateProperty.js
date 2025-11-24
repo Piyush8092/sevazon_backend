@@ -31,6 +31,9 @@ const updateProperty = async (req, res) => {
             if (!phoneNumber) {
                 return res.status(400).json({message: 'Phone number is required when call via phone is enabled'});
             }
+        } else if (payload.allowCallViaPhone === false) {
+            // If call via phone is disabled, set phone number to null
+            payload.phoneNumberForCalls = null;
         }
 
         // Validate expected price if being updated

@@ -98,6 +98,9 @@ const PropertySchema = new mongoose.Schema({
     },
     phoneNumberForCalls: {
         type: String,
+        required: function() {
+            return this.allowCallViaPhone === true;
+        },
     },
     allowChat: {
         type: Boolean,

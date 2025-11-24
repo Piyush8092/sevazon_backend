@@ -31,7 +31,17 @@ const createJob = async (req, res) => {
             return res.status(400).json({message: 'Sub-category other field is required when Other is selected'});
         }
 
-       
+        // Validate phone number when call via phone is enabled
+        if (payload.allowCallViaPhone === true) {
+            if (!payload.phoneNumberForCalls || payload.phoneNumberForCalls.trim() === '') {
+                return res.status(400).json({
+                    message: 'Phone number is required when call via phone is enabled'
+                });
+            }
+        } else {
+            // If call via phone is disabled, set phone number to null
+            payload.phoneNumberForCalls = null;
+        }
 
         // Validate salary range
         if (payload.salaryFrom >= payload.salaryTo) {
@@ -69,7 +79,7 @@ const createJob = async (req, res) => {
         const isUserVerified = req.user.isKycVerified || false;
 
         payload.userId = userId;
-        payload.phoneNumberForCalls = req.user.phone;
+        // Note: phoneNumberForCalls is already set from payload (user can use different verified number)
         payload.isVerified = isUserVerified;
 
         const newJob = new jobModel(payload);

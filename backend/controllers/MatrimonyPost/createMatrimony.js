@@ -79,7 +79,14 @@ const createMatrimony = async (req, res) => {
 
         payload.userId = userId;
         payload.isVerified = isUserVerified;
-        payload.contactNumber = req.user.phone;
+
+        // Set phoneNo (user's registered phone) - required field
+        payload.phoneNo = req.user.phone;
+
+        // Set contactNumber from payload or use registered phone as fallback
+        if (!payload.contactNumber || payload.contactNumber.trim() === '') {
+            payload.contactNumber = req.user.phone;
+        }
 
         const newMatrimony = new MatrimonyModel(payload);
         const result = await newMatrimony.save();

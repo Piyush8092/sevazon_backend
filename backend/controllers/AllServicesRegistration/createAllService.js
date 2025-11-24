@@ -96,6 +96,18 @@ const CreateAllServices = async (req, res) => {
       });
     }
 
+    // --- Validate phone number when call via phone is enabled ---
+    if (payload.allowCallViaPhone === true) {
+      if (!payload.phoneNumberForCalls || payload.phoneNumberForCalls.trim() === '') {
+        return res.status(400).json({
+          message: 'Phone number is required when call via phone is enabled'
+        });
+      }
+    } else {
+      // If call via phone is disabled, set phone number to null
+      payload.phoneNumberForCalls = null;
+    }
+
     // Verification is optional - users can create profiles without verification
     // Note: Verification status will be tracked separately for display purposes
 
@@ -103,7 +115,7 @@ const CreateAllServices = async (req, res) => {
     payload.userId = req.user._id;
     payload.email = req.user.email;
     payload.yourName = req.user.name;
-    payload.phoneNumberForCalls = req.user.phone;
+    // Note: phoneNumberForCalls is already set from payload (user can use different verified number)
 
     // --- Save profile ---
     const newService = new createServiceModel(payload);

@@ -20,8 +20,15 @@ const createServicesRoute = async (req, res) => {
         }
 
         // Validate phone number when call via phone is enabled
-        if (payload.allowCallViaPhone === true && !payload.phoneNumberForCalls) {
-            return res.status(400).json({message: 'Phone number is required when call via phone is enabled'});
+        if (payload.allowCallViaPhone === true) {
+            if (!payload.phoneNumberForCalls || payload.phoneNumberForCalls.trim() === '') {
+                return res.status(400).json({
+                    message: 'Phone number is required when call via phone is enabled'
+                });
+            }
+        } else {
+            // If call via phone is disabled, set phone number to null
+            payload.phoneNumberForCalls = null;
         }
 
         // Validate pincode format
