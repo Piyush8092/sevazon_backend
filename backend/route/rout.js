@@ -140,6 +140,8 @@ const { clearSeasonalCategory } = require('../controllers/seasonalCategory/clear
 const getFeaturedCategories = require('../controllers/featuredCategory/getFeaturedCategories');
 const setFeaturedCategory = require('../controllers/featuredCategory/setFeaturedCategory');
 const clearFeaturedCategory = require('../controllers/featuredCategory/clearFeaturedCategory');
+const getFeaturedCategoryTypes = require('../controllers/featuredCategory/getFeaturedCategoryTypes');
+const updateFeaturedCategoryType = require('../controllers/featuredCategory/updateFeaturedCategoryType');
 
 // Feedback controllers
 const { createFeedback } = require('../controllers/feedback/createFeedback');
@@ -312,6 +314,9 @@ router.get('/get-featured-categories', getFeaturedCategories);
 // Admin endpoints - set/clear featured category
 router.post('/set-featured-category', authGuard, setFeaturedCategory);
 router.post('/clear-featured-category', authGuard, clearFeaturedCategory);
+// Category type management endpoints
+router.get('/get-featured-category-types', getFeaturedCategoryTypes);
+router.put('/update-featured-category-type', authGuard, updateFeaturedCategoryType);
 
 
 

@@ -8,51 +8,71 @@ const featuredCategorySchema = new mongoose.Schema({
     enum: ['seasonal', 'wedding', 'education'],
     index: true,
   },
-  
+
   // Reference to the actual category from serviceListModel
   categoryId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'serviceListModel',
     required: true,
   },
-  
+
   // Store category name for quick access
   categoryName: {
     type: String,
     required: true,
   },
-  
+
   // Store category image for quick access
   categoryImage: {
     type: String,
     default: '',
   },
-  
+
+  // Selected subcategories for this featured category
+  // Stores array of subcategory objects with _id, name, and image
+  selectedSubcategories: {
+    type: [{
+      _id: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true,
+      },
+      name: {
+        type: String,
+        required: true,
+      },
+      image: {
+        type: String,
+        default: '',
+      },
+    }],
+    default: [],
+  },
+
   // Whether this featured category is currently active
   isActive: {
     type: Boolean,
     default: true,
     index: true,
   },
-  
+
   // Optional: Start date for the featured category
   startDate: {
     type: Date,
     default: null,
   },
-  
+
   // Optional: End date for the featured category
   endDate: {
     type: Date,
     default: null,
   },
-  
+
   // Admin who set this featured category
   setBy: {
     type: String,
     default: 'admin',
   },
-  
+
   // Display order/priority
   displayOrder: {
     type: Number,

@@ -7,7 +7,7 @@ const serviceListModel = require('../../model/ServiceListModel');
  */
 const setFeaturedCategory = async (req, res) => {
   try {
-    const { categoryType, categoryId, startDate, endDate, displayOrder } = req.body;
+    const { categoryType, categoryId, subcategoryIds, startDate, endDate, displayOrder } = req.body;
 
     // Validate required fields
     if (!categoryType || !categoryId) {
@@ -35,6 +35,19 @@ const setFeaturedCategory = async (req, res) => {
       });
     }
 
+    // Process selected subcategories
+    let selectedSubcategories = [];
+    if (subcategoryIds && Array.isArray(subcategoryIds) && subcategoryIds.length > 0) {
+      // Filter subcategories that exist in the category's subService array
+      selectedSubcategories = category.subService.filter(sub =>
+        subcategoryIds.includes(sub._id.toString())
+      ).map(sub => ({
+        _id: sub._id,
+        name: sub.name,
+        image: sub.image || '',
+      }));
+    }
+
     // Deactivate any existing featured category of this type
     await FeaturedCategoryModel.updateMany(
       { categoryType, isActive: true },
@@ -47,6 +60,7 @@ const setFeaturedCategory = async (req, res) => {
       categoryId,
       categoryName: category.name,
       categoryImage: category.image || '',
+      selectedSubcategories,
       isActive: true,
       startDate: startDate || null,
       endDate: endDate || null,
@@ -71,6 +85,7 @@ const setFeaturedCategory = async (req, res) => {
         categoryId: featuredCategory.categoryId._id,
         categoryName: featuredCategory.categoryName,
         categoryImage: featuredCategory.categoryImage,
+        selectedSubcategories: featuredCategory.selectedSubcategories,
         startDate: featuredCategory.startDate,
         endDate: featuredCategory.endDate,
         displayOrder: featuredCategory.displayOrder,

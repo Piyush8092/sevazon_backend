@@ -51,6 +51,7 @@ const getFeaturedCategories = async (req, res) => {
         categoryName: category.categoryName,
         categoryImage: category.categoryImage,
         category: category.categoryId, // Full populated category data
+        selectedSubcategories: category.selectedSubcategories || [],
         startDate: category.startDate,
         endDate: category.endDate,
         displayOrder: category.displayOrder,
