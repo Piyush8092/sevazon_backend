@@ -7,6 +7,10 @@ const cookie=require('cookie-parser');
 const { CreateAdd,GetAllAdds,GetSpecificAdd,UpdateSpecificAdd,DeleteSpecificAdd,queryAdds, AddCreaterView, getAllNotVerifiedAdds, FilterAdds, specificAddAdminView } = require('../controllers/Adds');
  const { CreateAllServices} = require('../controllers/AllServicesRegistration/createAllService');
 const { UpdateSpecificServices } = require('../controllers/AllServicesRegistration/UpdateSpecificServices');
+const { GetAllServiceListName } = require('../controllers/CreateAllServices/GetAllServiceListName');
+const { GetAllServiceListSubName } = require('../controllers/CreateAllServices/GetAllServiceListSubName');
+const { getNonProfileUser } = require('../controllers/user/getNonProfileUser');
+
 const { GetSpecificServices } = require('../controllers/AllServicesRegistration/GetSpecificServices');
 const { FilterServices } = require('../controllers/AllServicesRegistration/FilterServices');
 const { DeleteSpecsificServices } = require('../controllers/AllServicesRegistration/DeleteSpecificServices');
@@ -292,6 +296,9 @@ router.post('/user/follow-editor',authGuard,followEditor);
   //  for bookmark job post
 router.get('/get-bookmark-job-post',authGuard, getBookmarkJobPost);
 
+//fetch non profile user if user has no post and no activity show all user
+router.get('/get-non-profile-user',authGuard,getNonProfileUser);
+
 
 // usermodel releted route 
 // admin Access For Main UserModel Role change ['admin','user'] =>at the time of login user 
@@ -312,6 +319,12 @@ router.put('/update-specific-service-list/:id',authGuard,updateServiceListDetail
 router.delete('/delete-specific-service-list/:id',authGuard,deleteServiceListDetail)
 router.get('/get-specific-service-list/:id',GetSpecificServiceList);
 router.get('/get-sub-service-list/:id',GetSubServiceList);
+
+
+//get all service list catagory name  unique only and catagory wise subcatagory name
+//api is => http://localhost:3000/api/get-all-service-list-name
+router.get('/get-all-service-list-name',GetAllServiceListName);
+ 
 // api name of query service
 // http://localhost:3000/api/get-query-service-list?query=Plumbing
 router.get('/get-query-service-list',queryServiceList);
@@ -801,6 +814,6 @@ router.get('/get-razorpay-key', getRazorpayKey);
 
 // Chat routes
 const chatRoutes = require('./chatRoutes');
-router.use('/chat', chatRoutes);
+  router.use('/chat', chatRoutes);
 
 module.exports=router;
