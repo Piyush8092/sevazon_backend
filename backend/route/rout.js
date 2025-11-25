@@ -799,4 +799,8 @@ router.post('/verify-payment', authGuard, verifyPayment);
 router.get('/get-payment-history', authGuard, getPaymentHistory);
 router.get('/get-razorpay-key', getRazorpayKey);
 
+// Chat routes
+const chatRoutes = require('./chatRoutes');
+router.use('/chat', chatRoutes);
+
 module.exports=router;

@@ -202,10 +202,54 @@ const notificationPreferencesSchema = new mongoose.Schema({
                 default: true
             }
         }
-    }
-}, { 
-    timestamps: true 
+    },
+    // Muted conversations (for chat notifications)
+    mutedConversations: [{
+        conversationId: {
+            type: String,
+            required: true
+        },
+        isMuted: {
+            type: Boolean,
+            default: true
+        },
+        mutedAt: {
+            type: Date,
+            default: Date.now
+        },
+        mutedUntil: {
+            type: Date, // Optional: for temporary muting
+            default: null
+        }
+    }]
+}, {
+    timestamps: true
 });
+
+// Instance method to check if a conversation is muted
+notificationPreferencesSchema.methods.isConversationMuted = function(conversationId) {
+    if (!this.mutedConversations || this.mutedConversations.length === 0) {
+        return false;
+    }
+
+    const mutedConv = this.mutedConversations.find(
+        conv => conv.conversationId === conversationId && conv.isMuted
+    );
+
+    if (!mutedConv) {
+        return false;
+    }
+
+    // Check if temporary mute has expired
+    if (mutedConv.mutedUntil) {
+        const now = new Date();
+        if (now > mutedConv.mutedUntil) {
+            return false; // Mute period has expired
+        }
+    }
+
+    return true;
+};
 
 // Instance method to check if notification should be sent
 notificationPreferencesSchema.methods.shouldSendNotification = function(category, type) {
@@ -213,16 +257,16 @@ notificationPreferencesSchema.methods.shouldSendNotification = function(category
     if (!this.globalSettings.enableNotifications) {
         return false;
     }
-    
+
     // Check if we're in quiet hours
     if (this.globalSettings.quietHours.enabled) {
         const now = new Date();
-        const currentTime = now.getHours().toString().padStart(2, '0') + ':' + 
+        const currentTime = now.getHours().toString().padStart(2, '0') + ':' +
                            now.getMinutes().toString().padStart(2, '0');
-        
+
         const startTime = this.globalSettings.quietHours.startTime;
         const endTime = this.globalSettings.quietHours.endTime;
-        
+
         // Handle quiet hours that span midnight
         if (startTime > endTime) {
             if (currentTime >= startTime || currentTime <= endTime) {
@@ -234,18 +278,18 @@ notificationPreferencesSchema.methods.shouldSendNotification = function(category
             }
         }
     }
-    
+
     // Check category-specific settings
     const categorySettings = this.categories[category];
     if (!categorySettings || !categorySettings.enabled) {
         return false;
     }
-    
+
     // Check type-specific settings
     if (type && categorySettings[type] !== undefined) {
         return categorySettings[type];
     }
-    
+
     return true;
 };
 
