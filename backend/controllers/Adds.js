@@ -1,4 +1,5 @@
  const adModel = require('../model/adModel');
+ const userModel = require('../model/userModel');
  
 // create ads
 const CreateAdd = async (req, res) => {
@@ -21,6 +22,12 @@ const CreateAdd = async (req, res) => {
         
         const newAd = new adModel(payload);
         const result = await newAd.save();
+        let user = await userModel.findById(userId);
+        if(user.AnyServiceCreate === false)
+        {
+          user.AnyServiceCreate = true;
+          await user.save();
+        }
 
         res.json({
             message: 'Ad created successfully', 

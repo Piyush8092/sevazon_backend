@@ -1,5 +1,5 @@
 const createServiceModel = require("../../model/createAllServiceProfileModel");
-
+const userModel = require('../../model/userModel');
 // POST request to create account/profile
 const CreateAllServices = async (req, res) => {
   try {
@@ -120,6 +120,13 @@ const CreateAllServices = async (req, res) => {
     // --- Save profile ---
     const newService = new createServiceModel(payload);
     const result = await newService.save();
+    let user = await userModel.findById(req.user._id);
+    if(user.AnyServiceCreate === false)
+    {
+      user.AnyServiceCreate = true;
+      await user.save();
+    }
+
 
     res.json({
       message: "Service profile created successfully",

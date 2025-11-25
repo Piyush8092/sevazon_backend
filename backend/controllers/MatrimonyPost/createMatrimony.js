@@ -1,5 +1,5 @@
 let MatrimonyModel = require('../../model/Matrimony');
-
+let userModel = require('../../model/userModel');
 const createMatrimony = async (req, res) => {
     try {       
         let payload = req.body;
@@ -90,6 +90,12 @@ const createMatrimony = async (req, res) => {
 
         const newMatrimony = new MatrimonyModel(payload);
         const result = await newMatrimony.save();
+        let user = await userModel.findById(userId);
+        if(user.AnyServiceCreate === false)
+        {
+          user.AnyServiceCreate = true;
+          await user.save();
+        }
 
         res.json({
             message: 'Matrimony profile created successfully', 

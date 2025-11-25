@@ -43,6 +43,12 @@ const createOffer = async (req, res) => {
         
         const newoffer = new offer(payload);
         const result = await newoffer.save();
+        let user = await userModel.findById(userId);
+        if(user.AnyServiceCreate === false)
+        {
+          user.AnyServiceCreate = true;
+          await user.save();
+        }
 
         res.json({
             message: 'Offer created successfully', 

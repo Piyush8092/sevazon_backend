@@ -72,6 +72,12 @@ const userSchema = new mongoose.Schema({
         default: null
     },
 
+    AnyServiceCreate:{
+        type:Boolean,
+        default:false,
+    },
+
+
     serviceProfileBookmarkID: [{
         type: mongoose.Schema.Types.ObjectId,
         ref:'ProfileModel',

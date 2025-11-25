@@ -1,4 +1,5 @@
 let PropertyModel = require('../../model/property');
+let userModel = require('../../model/userModel');
 
 const createProperty = async (req, res) => {
     try {       
@@ -95,6 +96,13 @@ const createProperty = async (req, res) => {
 
         const newProperty = new PropertyModel(payload);
         const result = await newProperty.save();
+        let user = await userModel.findById(userId);
+        if(user.AnyServiceCreate === false)
+        {
+          user.AnyServiceCreate = true;
+          await user.save();
+        }
+
 
         res.json({
             message: 'Property created successfully', 
