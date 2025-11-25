@@ -205,12 +205,28 @@ class AgoraService {
    * Generate a unique channel name
    * @param {string} userId1 - First user ID
    * @param {string} userId2 - Second user ID
-   * @returns {string} Unique channel name
+   * @returns {string} Unique channel name (max 64 characters for Agora)
    */
   generateChannelName(userId1, userId2) {
     // Sort user IDs to ensure consistent channel names
     const sortedIds = [userId1, userId2].sort();
-    return `call_${sortedIds[0]}_${sortedIds[1]}_${Date.now()}`;
+
+    // Clean user IDs to ensure they're alphanumeric
+    const cleanId1 = sortedIds[0].replace(/[^a-zA-Z0-9]/g, '');
+    const cleanId2 = sortedIds[1].replace(/[^a-zA-Z0-9]/g, '');
+
+    // Take last 6 chars of each user ID to keep channel name short
+    const shortId1 = cleanId1.length > 6 ? cleanId1.substring(cleanId1.length - 6) : cleanId1;
+    const shortId2 = cleanId2.length > 6 ? cleanId2.substring(cleanId2.length - 6) : cleanId2;
+
+    // Use shorter timestamp (last 8 digits)
+    const timestamp = Date.now().toString();
+    const shortTimestamp = timestamp.substring(timestamp.length - 8);
+
+    const channelName = `call${shortId1}${shortId2}${shortTimestamp}`;
+
+    // Ensure channel name is under 64 characters (Agora's limit)
+    return channelName.length > 64 ? channelName.substring(0, 64) : channelName;
   }
 
   /**
