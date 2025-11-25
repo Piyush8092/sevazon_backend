@@ -4,7 +4,7 @@ const getAllNews = async (req, res) => {
     try {  let page = req.query.page || 1;
         let limit = req.query.limit || 10;
         const skip = (page - 1) * limit;
-        const result = await NewsPostModel.find().skip(skip).limit(limit).populate('userId', 'name email ');
+        const result = await NewsPostModel.find({userId:{$nin: [req.user._id]}}).skip(skip).limit(limit).populate('userId', 'name email ');
         const total = await NewsPostModel.countDocuments();
          const totalPages = Math.ceil(total / limit);
 

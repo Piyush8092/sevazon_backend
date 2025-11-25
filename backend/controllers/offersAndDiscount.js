@@ -81,7 +81,7 @@ const GetAllOffer = async (req, res) => {
         let limit = parseInt(req.query.limit) || 10;
         const skip = (page - 1) * limit;
         
-        const result = await offer.find().skip(skip).limit(limit);
+        const result = await offer.find(    {userId:{$nin: [req.user._id]}}).skip(skip).limit(limit);
         const total = await offer.countDocuments();
         const totalPages = Math.ceil(total / limit);
         

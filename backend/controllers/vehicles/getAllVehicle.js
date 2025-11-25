@@ -6,7 +6,7 @@ const getAllVehicle = async (req, res) => {
         let page = req.query.page || 1;
         let limit = req.query.limit || 10;
         const skip = (page - 1) * limit;
-        const result = await VehiclesModel.find().skip(skip).limit(limit);
+        const result = await VehiclesModel.find( {userId:{$nin: [req.user._id]}}).skip(skip).limit(limit);
         const total = await VehiclesModel.countDocuments();
         const totalPages = Math.ceil(total / limit);
 

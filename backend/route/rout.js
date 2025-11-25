@@ -342,7 +342,7 @@ router.put('/update-specific-service/:id',authGuard,UpdateSpecificServices);
 router.get('/get-specific-service/:id',GetSpecificServices);
 router.delete('/delete-specific-service/:id',authGuard,DeleteSpecsificServices);
 router.get('/get-specific-service-admin-view/:id',authGuard,AdminSpecificServiceView);
-router.get('/get-all-service',GetAllServices);
+router.get('/get-all-service',authGuard,GetAllServices);
 // api route is http://localhost:3000/api/get-query-service?query=Bengaluru
  router.get('/get-query-service',queryServices);
 // Flexible filtering API - supports multiple optional parameters
@@ -382,7 +382,7 @@ router.get('/get-bookmark-service-profile',authGuard,getBookmarkServiceProfile);
 
 // for job post
 router.post('/create-job',authGuard,createJob);
-router.get('/get-all-job',getAllJob);
+router.get('/get-all-job',authGuard,getAllJob);
 router.get('/get-specific-job/:id',getSpecificJob);
 router.put('/update-specific-job/:id',authGuard,updateJob);
 router.delete('/delete-specific-job/:id',authGuard,deleteJob);
@@ -442,7 +442,7 @@ router.get('/get-user-favourite-job',authGuard,getAllFavouritJob);
 
 // for matrimony post
 router.post('/create-matrimony',authGuard,createMatrimony);
-router.get('/get-all-matrimony',getAllMatrimony);
+router.get('/get-all-matrimony',authGuard,getAllMatrimony);
 router.get('/get-specific-matrimony/:id',getSpecificMatrimony);
 router.put('/update-specific-matrimony/:id',authGuard,updateMatrimony);
 router.delete('/delete-specific-matrimony/:id',authGuard,deleteMatrimony);
@@ -489,7 +489,7 @@ router.get('/get-all-pending-matrimony',authGuard,getPendingMatrimony);
 
 // for propert post. 
 router.post('/create-property',authGuard,createProperty);
-router.get('/get-all-property',getAllProperty); 
+router.get('/get-all-property',authGuard,getAllProperty); 
 router.get('/get-specific-property/:id',getSpecificqueryProperty);
 router.put('/update-specific-property/:id',authGuard,updateProperty);
 router.delete('/delete-specific-property/:id',authGuard,deleteProperty);
@@ -501,7 +501,7 @@ router.get('/get-specific-property-admin-view/:id',authGuard,specificPropertyAdm
 
 // for Offers post
 router.post('/create-offer',authGuard,createOffer);
-router.get('/get-all-offer',GetAllOffer);
+router.get('/get-all-offer',authGuard,GetAllOffer);
 router.get('/get-specific-offer/:id',GetSpecificOffer);
 router.put('/update-specific-offer/:id',authGuard,UpdateSpecificOffer);
 router.delete('/delete-specific-offer/:id',authGuard,DeleteSpecificOffer);
@@ -515,7 +515,7 @@ router.get('/get-specific-offer-admin-view/:id',authGuard,specificOfferAdminView
 
 // for adds post
 router.post('/create-ad',authGuard,CreateAdd);
-router.get('/get-all-ad',GetAllAdds);
+router.get('/get-all-ad',authGuard,GetAllAdds);
 router.get('/get-specific-ad/:id',GetSpecificAdd);
 router.put('/update-specific-ad/:id',authGuard,UpdateSpecificAdd);
 router.delete('/delete-specific-ad/:id',authGuard,DeleteSpecificAdd);
@@ -551,7 +551,7 @@ router.post('/kyc/verify-image', authGuard, verifyDocumentImage);
 
 // news post
 router.post('/create-news',authGuard,createNews);
-router.get('/get-all-news',getAllNews);
+router.get('/get-all-news',authGuard,getAllNews);
 router.get('/get-specific-news/:id',getSpecificNews);
 router.put('/update-specific-news/:id',authGuard,updateNews);
 router.delete('/delete-specific-news/:id',authGuard,deleteNews);
@@ -569,7 +569,7 @@ router.put('/news-dislike/:news_id',authGuard,newsDislike);
 
 // vehicles post
 router.post('/create-vehicle',authGuard,createVehicle);
-router.get('/get-all-vehicle',getAllVehicle);
+router.get('/get-all-vehicle',authGuard,getAllVehicle);
 router.get('/get-specific-vehicle/:id',getSpecificVehicles);
 router.put('/update-specific-vehicle/:id',authGuard,updateVehicle);
 // api is => http://localhost:3000/api/get-query-vehicle?query=2025
@@ -581,7 +581,7 @@ router.get('/get-specific-vehicle-admin-view/:id',authGuard,specificVehiclesAdmi
 
 // local services
 router.post('/create-local-services',authGuard,createServicesRoute);
-router.get('/get-all-local-services',getAllLocalServices);
+router.get('/get-all-local-services',authGuard,getAllLocalServices);
 router.get('/get-specific-local-services/:id',getSpecificLocalServiceRoute);
 router.delete('/delete-specific-local-services/:id',authGuard,deleteLocalService);
 router.get('/get-local-services-creator-view',authGuard,LocalServiceCreaterView);

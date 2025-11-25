@@ -41,24 +41,24 @@ const queryMatrimony = async (req, res) => {
 
     // Partner Requirements (array fields)
     { partnerReligion: { $in: [regexQuery] } },
-    { partnerMotherTongue: regexQuery },  
+    { partnerMotherTongue: regexQuery },
     { partnerMaritalStatus: { $in: [regexQuery] } },
     { partnerCity: { $in: [regexQuery] } },
     { partnerState: { $in: [regexQuery] } },
     { partnerEmploymentType: { $in: [regexQuery] } },
     { partnerRashiAstroDetails: { $in: [regexQuery] } },
-    
-    // Partner Age (min & max numbers)
-    { "partnerAge.min": regexQuery },
-    { "partnerAge.max": regexQuery },
 
-    // Partner Height (string)
+    // Partner Height (string fields only - min and max are strings)
     { "partnerHeight.min": regexQuery },
     { "partnerHeight.max": regexQuery }
+
+    // Note: Removed partnerAge.min and partnerAge.max as they are numeric fields
+    // and cannot be searched with regex patterns
   ]
 };
-
+ 
         const result = await MatrimonyModel.find(searchQuery).skip(skip).limit(limit);
+        console.log('ankur',result)
         const total = await MatrimonyModel.countDocuments(searchQuery);
         const totalPages = Math.ceil(total / limit);
         

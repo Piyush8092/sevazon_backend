@@ -59,7 +59,7 @@ const GetAllAdds = async (req, res) => {
         let limit = parseInt(req.query.limit) || 10;
         const skip = (page - 1) * limit;
         
-        const result = await adModel.find({isVerified: true}).skip(skip).limit(limit);
+        const result = await adModel.find({$and:[{userId:{$nin: [req.user._id]},isVerified:true}]}).skip(skip).limit(limit);
         const total = await adModel.countDocuments();
         const totalPages = Math.ceil(total / limit);
         
