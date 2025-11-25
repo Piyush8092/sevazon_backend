@@ -86,14 +86,34 @@ class AgoraController {
 
       // Send FCM notification to callee about incoming call
       try {
+        // Get caller information to include in notification
+        const User = require('../../model/userModel');
+        let callerName = 'Unknown';
+        let callerAvatar = null;
+        let callerPhone = null;
+
+        try {
+          const caller = await User.findById(callerId).select('name profilePicture phone');
+          if (caller) {
+            callerName = caller.name || 'Unknown';
+            callerAvatar = caller.profilePicture;
+            callerPhone = caller.phone;
+          }
+        } catch (userError) {
+          console.warn('⚠️ Could not fetch caller info:', userError.message);
+        }
+
         await notificationService.sendToUser(
           calleeId,
           'Incoming Call',
-          `You have an incoming ${callType} call`,
+          `${callerName} is calling you`,
           {
-            type: 'incoming_call',
+            type: 'call', // Changed from 'incoming_call' to match Flutter NotificationType enum
             callId: callData.callId,
             callerId: callerId,
+            callerName: callerName,
+            callerAvatar: callerAvatar,
+            callerPhone: callerPhone,
             callType: callType,
             channelName: callData.channelName
           },
@@ -114,7 +134,7 @@ class AgoraController {
             }
           }
         );
-        console.log(`📨 FCM notification sent to ${calleeId} about incoming call`);
+        console.log(`📨 FCM notification sent to ${calleeId} about incoming call from ${callerName}`);
       } catch (notificationError) {
         console.error('❌ Failed to send call notification:', notificationError);
         // Don't fail the call initiation if notification fails
