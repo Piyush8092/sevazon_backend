@@ -39,12 +39,14 @@ class NotificationService {
         // Add Android-specific options
         if (options.android) {
             payload.android = {
-                priority: options.priority || 'high',
-                notification: {
-                    sound: options.sound || 'default',
-                    channelId: options.channelId || 'default',
-                    ...options.android
-                }
+                priority: options.android.priority || options.priority || 'high',
+                ...(options.android.notification && {
+                    notification: {
+                        sound: options.android.notification.sound || options.sound || 'default',
+                        channelId: options.android.notification.channelId || options.channelId || 'default',
+                        ...options.android.notification
+                    }
+                })
             };
         }
 
