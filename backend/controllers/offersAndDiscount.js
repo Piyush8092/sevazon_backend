@@ -256,6 +256,33 @@ const DeleteSpecificOffer = async (req, res) => {
         });
     }
 };
+//total count
+const getTotalOfferCount = async (req, res) => {
+    try {  
+        if(req.user.role !== 'ADMIN'){
+            return res.json({message: 'not auth,something went wrong', status: 500,  success: false, error: true});
+        }
+
+        let totalOfferCount = await offer.countDocuments();
+        res.json({
+            message: 'Total offer count retrieved successfully',
+            status: 200,
+            data: totalOfferCount,
+            success: true,
+            error: false
+        });
+    }
+    catch (e) {
+        res.json({
+            message: 'Something went wrong',
+            status: 500,
+            data: e.message,
+            success: false,
+            error: true
+        });
+    }
+};
+
 
 // query offers
 const queryOffer = async (req, res) => {
@@ -493,4 +520,5 @@ const specificOfferAdminView = async (req, res) => {
 
 
 
-module.exports = { createOffer, GetAllOffer, GetSpecificOffer, specificOfferAdminView,UpdateSpecificOffer, DeleteSpecificOffer, queryOffer, showCreateOfferView ,FilterOffer};
+module.exports = { createOffer, GetAllOffer, GetSpecificOffer, getTotalOfferCount,
+  specificOfferAdminView,UpdateSpecificOffer, DeleteSpecificOffer, queryOffer, showCreateOfferView ,FilterOffer};
