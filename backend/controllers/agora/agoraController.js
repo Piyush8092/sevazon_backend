@@ -73,6 +73,15 @@ class AgoraController {
         });
       }
 
+      // Validate calleeId
+      if (!calleeId || calleeId.trim() === '') {
+        console.error('❌ Invalid calleeId:', calleeId);
+        return res.status(400).json({
+          success: false,
+          message: 'Callee ID is required and cannot be empty'
+        });
+      }
+
       if (callerId === calleeId) {
         return res.status(400).json({
           success: false,
@@ -89,33 +98,53 @@ class AgoraController {
         // Get caller information to include in notification
         const User = require('../../model/userModel');
         let callerName = 'Unknown';
-        let callerAvatar = null;
-        let callerPhone = null;
+        let callerAvatar = '';
+        let callerPhone = '';
 
+        console.log(`🔍 Fetching caller info for callerId: ${callerId}`);
         try {
           const caller = await User.findById(callerId).select('name profilePicture phone');
           if (caller) {
             callerName = caller.name || 'Unknown';
-            callerAvatar = caller.profilePicture;
-            callerPhone = caller.phone;
+            callerAvatar = caller.profilePicture || '';
+            callerPhone = caller.phone || '';
+            console.log(`✅ Caller info found: ${callerName} (${callerPhone})`);
+          } else {
+            console.warn(`⚠️ No caller found with ID: ${callerId}`);
           }
         } catch (userError) {
           console.warn('⚠️ Could not fetch caller info:', userError.message);
         }
 
+        console.log(`🔍 Sending notification to calleeId: ${calleeId}`);
+
+        // Verify callee exists
+        try {
+          const callee = await User.findById(calleeId).select('name');
+          if (callee) {
+            console.log(`✅ Callee found: ${callee.name} (ID: ${calleeId})`);
+          } else {
+            console.error(`❌ Callee not found with ID: ${calleeId}`);
+          }
+        } catch (calleeError) {
+          console.error(`❌ Error checking callee: ${calleeError.message}`);
+        }
+
+        // CRITICAL FIX: FCM data payload must only contain string values
+        // Convert all values to strings to avoid "data must only contain string values" error
         await notificationService.sendToUser(
           calleeId,
           'Incoming Call',
           `${callerName} is calling you`,
           {
             type: 'call', // Changed from 'incoming_call' to match Flutter NotificationType enum
-            callId: callData.callId,
-            callerId: callerId,
-            callerName: callerName,
-            callerAvatar: callerAvatar,
-            callerPhone: callerPhone,
-            callType: callType,
-            channelName: callData.channelName
+            callId: String(callData.callId),
+            callerId: String(callerId),
+            callerName: String(callerName),
+            callerAvatar: String(callerAvatar),
+            callerPhone: String(callerPhone),
+            callType: String(callType),
+            channelName: String(callData.channelName)
           },
           {
             category: 'calls',
