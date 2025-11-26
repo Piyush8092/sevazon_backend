@@ -46,12 +46,21 @@ class AgoraService {
    * @param {string} channelName - The channel name
    * @param {string} userId - The user ID
    * @param {string} role - The user role ('publisher' or 'subscriber')
+   * @param {number} existingUid - Optional existing UID to reuse
    * @returns {Object} Token and channel information
    */
-  generateToken(channelName, userId, role = 'publisher') {
+  generateToken(channelName, userId, role = 'publisher', existingUid = null) {
     try {
-      // Convert string userId to numeric UID
-      const uid = this.generateUid();
+      // Validate inputs
+      if (!channelName || typeof channelName !== 'string') {
+        throw new Error('Invalid channelName: must be a non-empty string');
+      }
+      if (!userId || typeof userId !== 'string') {
+        throw new Error('Invalid userId: must be a non-empty string');
+      }
+
+      // Use existing UID if provided, otherwise generate stable UID from userId
+      const uid = existingUid || this.generateUid(userId);
 
       // For development mode without proper certificate
       if (!this.currentCertificate || this.currentCertificate === 'development_certificate_placeholder') {
@@ -194,11 +203,30 @@ class AgoraService {
   }
 
   /**
-   * Generate a random UID for Agora
-   * @returns {number} Random UID
+   * Generate a stable UID for Agora based on userId
+   * This ensures the same user always gets the same UID for consistency
+   * @param {string} userId - The user ID
+   * @returns {number} Stable UID (1-4294967295)
    */
-  generateUid() {
-    return Math.floor(Math.random() * 1000000) + 1;
+  generateUid(userId) {
+    if (!userId) {
+      // Fallback to random if no userId provided
+      return Math.floor(Math.random() * 1000000) + 1;
+    }
+
+    // Create a stable hash from userId
+    let hash = 0;
+    for (let i = 0; i < userId.length; i++) {
+      const char = userId.charCodeAt(i);
+      hash = ((hash << 5) - hash) + char;
+      hash = hash & hash; // Convert to 32-bit integer
+    }
+
+    // Ensure positive number within Agora's UID range (1 to 2^32-1)
+    const uid = Math.abs(hash) % 4294967295 + 1;
+
+    console.log(`🔢 Generated stable UID ${uid} for userId: ${userId}`);
+    return uid;
   }
 
   /**
@@ -238,13 +266,24 @@ class AgoraService {
    */
   initiateCall(callerId, calleeId, callType = 'voice') {
     try {
+      // Validate inputs
+      if (!callerId || typeof callerId !== 'string') {
+        throw new Error('Invalid callerId: must be a non-empty string');
+      }
+      if (!calleeId || typeof calleeId !== 'string') {
+        throw new Error('Invalid calleeId: must be a non-empty string');
+      }
+      if (!['voice', 'video'].includes(callType)) {
+        throw new Error('Invalid callType: must be "voice" or "video"');
+      }
+
       const callId = uuidv4();
       const channelName = this.generateChannelName(callerId, calleeId);
-      
-      // Generate tokens for both users
+
+      // Generate tokens for both users with stable UIDs
       const callerToken = this.generateToken(channelName, callerId, 'publisher');
       const calleeToken = this.generateToken(channelName, calleeId, 'publisher');
-      
+
       const callData = {
         callId,
         channelName,
@@ -261,12 +300,14 @@ class AgoraService {
         createdAt: new Date(),
         updatedAt: new Date()
       };
-      
+
       // Store call data
       this.activeCalls.set(callId, callData);
-      
-      console.log(`📞 Call initiated: ${callId} (${callType}) from ${callerId} to ${calleeId}`);
-      
+
+      console.log(`📞 CallInitiated: callId=${callId}, type=${callType}, caller=${callerId}, callee=${calleeId}, channel=${channelName}`);
+      console.log(`   - Caller UID: ${callerToken.uid}`);
+      console.log(`   - Callee UID: ${calleeToken.uid}`);
+
       return callData;
     } catch (error) {
       console.error('❌ Error initiating call:', error);
@@ -282,6 +323,14 @@ class AgoraService {
    */
   answerCall(callId, userId) {
     try {
+      // Validate inputs
+      if (!callId || typeof callId !== 'string') {
+        throw new Error('Invalid callId: must be a non-empty string');
+      }
+      if (!userId || typeof userId !== 'string') {
+        throw new Error('Invalid userId: must be a non-empty string');
+      }
+
       let call = this.activeCalls.get(callId);
 
       // If call not found in memory, create a minimal call object
@@ -309,7 +358,7 @@ class AgoraService {
 
       this.activeCalls.set(callId, call);
 
-      console.log(`✅ Call answered: ${callId} by ${userId}`);
+      console.log(`✅ CallAccepted: callId=${callId}, userId=${userId}, channel=${call.channelName || 'unknown'}`);
 
       return call;
     } catch (error) {
@@ -326,6 +375,14 @@ class AgoraService {
    */
   endCall(callId, userId) {
     try {
+      // Validate inputs
+      if (!callId || typeof callId !== 'string') {
+        throw new Error('Invalid callId: must be a non-empty string');
+      }
+      if (!userId || typeof userId !== 'string') {
+        throw new Error('Invalid userId: must be a non-empty string');
+      }
+
       // First check in-memory storage
       let call = this.activeCalls.get(callId);
 
@@ -341,6 +398,12 @@ class AgoraService {
           createdAt: new Date(),
           updatedAt: new Date()
         };
+      }
+
+      // Prevent double-ending
+      if (call.status === 'ended') {
+        console.log(`⚠️ Call ${callId} already ended, skipping duplicate end`);
+        return call;
       }
 
       // Allow either participant to end the call (or allow if caller/callee is unknown)
@@ -364,13 +427,19 @@ class AgoraService {
 
       this.activeCalls.set(callId, call);
 
-      console.log(`📴 Call ended: ${callId} by ${userId}`);
+      console.log(`📴 CallEnded: callId=${callId}, endedBy=${userId}, duration=${call.duration}s`);
 
-      // Remove from active calls after a delay (for cleanup)
-      setTimeout(() => {
-        this.activeCalls.delete(callId);
-        console.log(`🗑️ Call ${callId} removed from active calls`);
-      }, 60000); // 1 minute delay
+      // Remove from active calls after a delay (for cleanup) - only once
+      if (!call._cleanupScheduled) {
+        call._cleanupScheduled = true;
+        setTimeout(() => {
+          const stillExists = this.activeCalls.get(callId);
+          if (stillExists) {
+            this.activeCalls.delete(callId);
+            console.log(`🗑️ Call ${callId} removed from active calls (cleanup)`);
+          }
+        }, 60000); // 1 minute delay
+      }
 
       return call;
     } catch (error) {
@@ -424,23 +493,31 @@ class AgoraService {
    */
   declineCall(callId, userId) {
     try {
+      // Validate inputs
+      if (!callId || typeof callId !== 'string') {
+        throw new Error('Invalid callId: must be a non-empty string');
+      }
+      if (!userId || typeof userId !== 'string') {
+        throw new Error('Invalid userId: must be a non-empty string');
+      }
+
       const call = this.activeCalls.get(callId);
       if (!call) {
         throw new Error('Call not found');
       }
-      
+
       if (call.callee.userId !== userId) {
         throw new Error('Unauthorized to decline this call');
       }
-      
+
       call.status = 'declined';
       call.declinedAt = new Date();
       call.updatedAt = new Date();
-      
+
       this.activeCalls.set(callId, call);
-      
-      console.log(`❌ Call declined: ${callId} by ${userId}`);
-      
+
+      console.log(`❌ CallDeclined: callId=${callId}, userId=${userId}`);
+
       return call;
     } catch (error) {
       console.error('❌ Error declining call:', error);

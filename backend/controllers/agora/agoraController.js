@@ -205,34 +205,45 @@ class AgoraController {
 
       const callData = agoraService.answerCall(callId, userId);
 
-      // CRITICAL FIX: Generate token for the callee (answering user)
-      // The callee needs their own token to join the channel
-      const calleeToken = agoraService.generateToken(
-        callData.channelName,
-        userId,
-        'publisher'
-      );
+      // CRITICAL FIX: DO NOT generate a new token - reuse the existing callee token
+      // The callee token was already generated during initiateCall
+      // Generating a new token creates a different UID which breaks the call flow
 
-      // Update callData with callee's token information
-      callData.callee = {
-        ...callData.callee,
-        ...calleeToken
-      };
+      // If callee token doesn't exist (e.g., server restart), generate it with the same UID
+      if (!callData.callee.token || !callData.callee.uid) {
+        console.warn(`⚠️ Callee token missing for call ${callId}, regenerating with stable UID`);
 
-      console.log(`✅ Generated token for callee ${userId}`);
+        // Generate token with stable UID based on userId
+        const calleeToken = agoraService.generateToken(
+          callData.channelName,
+          userId,
+          'publisher'
+        );
+
+        // Update callData with callee's token information
+        callData.callee = {
+          ...callData.callee,
+          ...calleeToken
+        };
+
+        console.log(`✅ TokenGenerated: userId=${userId}, uid=${calleeToken.uid}, channel=${callData.channelName}`);
+      } else {
+        console.log(`✅ Reusing existing token: userId=${userId}, uid=${callData.callee.uid}, channel=${callData.channelName}`);
+      }
 
       // Notify caller that call was answered
       try {
+        // CRITICAL FIX: Convert all data values to strings for FCM
         await notificationService.sendToUser(
           callData.caller.userId,
           'Call Answered',
           'Your call has been answered',
           {
             type: 'call_answered',
-            callId: callId,
-            channelName: callData.channelName,
-            calleeToken: calleeToken.token,
-            calleeUid: calleeToken.uid
+            callId: String(callId),
+            channelName: String(callData.channelName || ''),
+            calleeToken: String(callData.callee.token || ''),
+            calleeUid: String(callData.callee.uid || '')
           },
           {
             category: 'calls',
@@ -285,13 +296,14 @@ class AgoraController {
 
       // Notify caller that call was declined
       try {
+        // CRITICAL FIX: Convert all data values to strings for FCM
         await notificationService.sendToUser(
           callData.caller.userId,
           'Call Declined',
           'Your call was declined',
           {
             type: 'call_declined',
-            callId: callId
+            callId: String(callId)
           },
           {
             category: 'calls',
@@ -311,9 +323,9 @@ class AgoraController {
 
     } catch (error) {
       console.error('❌ Error in declineCall:', error);
-      const statusCode = error.message.includes('not found') ? 404 : 
+      const statusCode = error.message.includes('not found') ? 404 :
                         error.message.includes('Unauthorized') ? 403 : 500;
-      
+
       res.status(statusCode).json({
         success: false,
         message: 'Failed to decline call',
@@ -343,27 +355,31 @@ class AgoraController {
       const callData = agoraService.endCall(callId, userId);
 
       // Notify the other participant that call ended
-      const otherUserId = callData.caller.userId === userId ? 
+      const otherUserId = callData.caller.userId === userId ?
                          callData.callee.userId : callData.caller.userId;
-      
-      try {
-        await notificationService.sendToUser(
-          otherUserId,
-          'Call Ended',
-          'The call has ended',
-          {
-            type: 'call_ended',
-            callId: callId,
-            duration: callData.duration || 0
-          },
-          {
-            category: 'calls',
-            type: 'call_ended',
-            priority: 'normal'
-          }
-        );
-      } catch (notificationError) {
-        console.error('❌ Failed to send call ended notification:', notificationError);
+
+      // Only send notification if other user is not 'unknown'
+      if (otherUserId && otherUserId !== 'unknown') {
+        try {
+          // CRITICAL FIX: Convert all data values to strings for FCM
+          await notificationService.sendToUser(
+            otherUserId,
+            'Call Ended',
+            'The call has ended',
+            {
+              type: 'call_ended',
+              callId: String(callId),
+              duration: String(callData.duration || 0)
+            },
+            {
+              category: 'calls',
+              type: 'call_ended',
+              priority: 'normal'
+            }
+          );
+        } catch (notificationError) {
+          console.error('❌ Failed to send call ended notification:', notificationError);
+        }
       }
 
       res.status(200).json({
@@ -374,9 +390,9 @@ class AgoraController {
 
     } catch (error) {
       console.error('❌ Error in endCall:', error);
-      const statusCode = error.message.includes('not found') ? 404 : 
+      const statusCode = error.message.includes('not found') ? 404 :
                         error.message.includes('Unauthorized') ? 403 : 500;
-      
+
       res.status(statusCode).json({
         success: false,
         message: 'Failed to end call',

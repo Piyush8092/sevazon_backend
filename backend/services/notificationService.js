@@ -25,13 +25,26 @@ class NotificationService {
 
     // Create notification payload
     createNotificationPayload(title, body, data = {}, options = {}) {
+        // CRITICAL FIX: Convert all data values to strings
+        // FCM requires data payload to only contain string values
+        const stringifiedData = {};
+        for (const [key, value] of Object.entries(data)) {
+            if (value === null || value === undefined) {
+                stringifiedData[key] = '';
+            } else if (typeof value === 'object') {
+                stringifiedData[key] = JSON.stringify(value);
+            } else {
+                stringifiedData[key] = String(value);
+            }
+        }
+
         const payload = {
             notification: {
                 title,
                 body
             },
             data: {
-                ...data,
+                ...stringifiedData,
                 timestamp: Date.now().toString()
             }
         };
@@ -82,7 +95,7 @@ class NotificationService {
         try {
             // Validate userId
             if (!userId || userId === 'unknown') {
-                console.error(`Invalid userId provided to sendToUser: ${userId}`);
+                console.error(`❌ Invalid userId provided to sendToUser: ${userId}`);
                 return { success: false, reason: 'invalid_user_id', error: 'Invalid or missing userId' };
             }
 
@@ -92,17 +105,19 @@ class NotificationService {
             const type = options.type || 'general';
 
             if (!preferences.shouldSendNotification(category, type)) {
-                console.log(`Notification blocked by user preferences: ${userId}, ${category}, ${type}`);
+                console.log(`⚠️ Notification blocked by user preferences: ${userId}, ${category}, ${type}`);
                 return { success: false, reason: 'blocked_by_preferences' };
             }
 
             // Get user's active FCM tokens
             const tokens = await FCMToken.findActiveTokensForUser(userId);
 
-            if (tokens.length === 0) {
-                console.log(`No active FCM tokens found for user: ${userId}`);
+            if (!tokens || tokens.length === 0) {
+                console.log(`⚠️ No active FCM tokens found for user: ${userId}`);
                 return { success: false, reason: 'no_tokens' };
             }
+
+            console.log(`📨 Sending notification to ${tokens.length} device(s) for user: ${userId}`);
 
             const results = [];
             const batchId = uuidv4();
