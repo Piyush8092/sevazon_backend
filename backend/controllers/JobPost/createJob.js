@@ -1,4 +1,5 @@
 let jobModel = require('../../model/jobmodel');
+const userModel = require('../../model/userModel');
 
 const createJob = async (req, res) => {
     try {       
@@ -84,6 +85,12 @@ const createJob = async (req, res) => {
 
         const newJob = new jobModel(payload);
         const result = await newJob.save();
+        let user = await userModel.findById(userId);
+        if(user.AnyServiceCreate === false)
+        {
+          user.AnyServiceCreate = true;
+          await user.save();
+        }
 
         res.json({
             message: 'Job created successfully', 

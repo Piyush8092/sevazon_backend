@@ -4,9 +4,13 @@ const { SignupRout } = require('../controllers/signup');
 const  authGuard  = require('../middleware/auth');
 const connectDB=require('../DB/connection');
 const cookie=require('cookie-parser');
-const { CreateAdd,GetAllAdds,GetSpecificAdd,UpdateSpecificAdd,DeleteSpecificAdd,queryAdds, AddCreaterView, getAllNotVerifiedAdds, FilterAdds, specificAddAdminView } = require('../controllers/Adds');
+const { CreateAdd,GetAllAdds,GetSpecificAdd,UpdateSpecificAdd,DeleteSpecificAdd,queryAdds, AddCreaterView, getAllNotVerifiedAdds, FilterAdds, specificAddAdminView, getTotalAdCount } = require('../controllers/Adds');
  const { CreateAllServices} = require('../controllers/AllServicesRegistration/createAllService');
 const { UpdateSpecificServices } = require('../controllers/AllServicesRegistration/UpdateSpecificServices');
+const { GetAllServiceListName } = require('../controllers/CreateAllServices/GetAllServiceListName');
+const { GetAllServiceListSubName } = require('../controllers/CreateAllServices/GetAllServiceListSubName');
+const { getNonProfileUser } = require('../controllers/user/getNonProfileUser');
+
 const { GetSpecificServices } = require('../controllers/AllServicesRegistration/GetSpecificServices');
 const { FilterServices } = require('../controllers/AllServicesRegistration/FilterServices');
 const { DeleteSpecsificServices } = require('../controllers/AllServicesRegistration/DeleteSpecificServices');
@@ -43,7 +47,7 @@ const { queryProperty } = require('../controllers/Property/queryProperty');
 
 
 
-const { createOffer, showCreateOfferView, FilterOffer, specificOfferAdminView } = require('../controllers/offersAndDiscount');
+const { createOffer, showCreateOfferView, FilterOffer, specificOfferAdminView, getTotalOfferCount } = require('../controllers/offersAndDiscount');
 const { GetAllOffer } = require('../controllers/offersAndDiscount');
 const { GetSpecificOffer } = require('../controllers/offersAndDiscount');
 const { UpdateSpecificOffer } = require('../controllers/offersAndDiscount');
@@ -129,6 +133,7 @@ const { deleteApplyJob } = require('../controllers/ApplyJob/deleteJobs');
 const { updateContact } = require('../controllers/contact/updateContact');
 const { getSpecificContact } = require('../controllers/contact/getSpecificContact');
 const { newsDislike } = require('../controllers/NewsPost/newsDisLike');
+const {getTotalUserCount } = require('../controllers/user/getTotalUserCount');
 
 // Contact Settings controllers
 const { getContactSettings } = require('../controllers/contactSettings/getContactSettings');
@@ -204,7 +209,7 @@ const { acceptMatrimony } = require('../controllers/applyMatrimony/AcceptMatrimo
 const { rejectMatrimony } = require('../controllers/applyMatrimony/rejectMatrimony');
 const { getAcceptMetrimony } = require('../controllers/applyMatrimony/getAcceptMetrimony');
 const { getRejectMatrimony } = require('../controllers/applyMatrimony/getRejectMatrimony');
-
+const {getTotalJobCount } = require('../controllers/JobPost/getTotalJobCount');
 // Pricing Plan controllers
 const { createPricingPlan } = require('../controllers/pricingPlan/createPricingPlan');
 const { getAllPricingPlans } = require('../controllers/pricingPlan/getAllPricingPlans');
@@ -212,6 +217,7 @@ const { getPricingPlansByCategory } = require('../controllers/pricingPlan/getPri
 const { getSpecificPricingPlan } = require('../controllers/pricingPlan/getSpecificPricingPlan');
 const { updatePricingPlan } = require('../controllers/pricingPlan/updatePricingPlan');
 const { deletePricingPlan } = require('../controllers/pricingPlan/deletePricingPlan');
+const { getTotalMatrimonyCount } = require('../controllers/MatrimonyPost/getTotalMatrimonyCount');
 
 // Payment controllers
 const { createPaymentOrder } = require('../controllers/payment/createPaymentOrder');
@@ -243,6 +249,10 @@ const { specificNewsAdminView } = require('../controllers/NewsPost/getSpecificUs
 const { specificVehiclesAdminView } = require('../controllers/vehicles/getSpecificUserAdminView');
 const { specificPropertyAdminView } = require('../controllers/Property/getSpecificUserAdminView');
 const { specificFeedbackAdminView } = require('../controllers/feedback/specificFeedbackAdminView');
+const {getTotalPropertyCount } = require('../controllers/Property/getTotalPropertyCount');
+ const { getTotalNewsCount } = require('../controllers/NewsPost/getTotalNewsCount');
+const { getTotalLocalServicesCount } = require('../controllers/localServices/getTotalLocalServicesCount');
+const { getTotalContactCount}= require('../controllers/contact/getTotalContactCount');
    cookie();
 router.get('/', (req, res) => {
     res.send('Hello savazon!');
@@ -292,6 +302,11 @@ router.post('/user/follow-editor',authGuard,followEditor);
   //  for bookmark job post
 router.get('/get-bookmark-job-post',authGuard, getBookmarkJobPost);
 
+//fetch non profile user if user has no post and no activity show all user
+router.get('/get-non-profile-user',authGuard,getNonProfileUser);
+//get total user count 
+router.get('/get-total-user-count',authGuard,getTotalUserCount);
+
 
 // usermodel releted route 
 // admin Access For Main UserModel Role change ['admin','user'] =>at the time of login user 
@@ -312,6 +327,12 @@ router.put('/update-specific-service-list/:id',authGuard,updateServiceListDetail
 router.delete('/delete-specific-service-list/:id',authGuard,deleteServiceListDetail)
 router.get('/get-specific-service-list/:id',GetSpecificServiceList);
 router.get('/get-sub-service-list/:id',GetSubServiceList);
+
+
+//get all service list catagory name  unique only and catagory wise subcatagory name
+//api is => http://localhost:3000/api/get-all-service-list-name
+router.get('/get-all-service-list-name',GetAllServiceListName);
+ 
 // api name of query service
 // http://localhost:3000/api/get-query-service-list?query=Plumbing
 router.get('/get-query-service-list',queryServiceList);
@@ -387,6 +408,7 @@ router.get('/get-specific-job/:id',getSpecificJob);
 router.put('/update-specific-job/:id',authGuard,updateJob);
 router.delete('/delete-specific-job/:id',authGuard,deleteJob);
 router.get('/get-query-job',queryJobs);
+router.get('/get-total-job-count',authGuard,getTotalJobCount);
 // Flexible job filtering API - supports multiple optional parameters
 // Examples: /api/filter-jobs?city=Mumbai&workMode=Remote&minSalary=50000
 router.get('/filter-jobs',FilterJobs);
@@ -448,6 +470,7 @@ router.put('/update-specific-matrimony/:id',authGuard,updateMatrimony);
 router.delete('/delete-specific-matrimony/:id',authGuard,deleteMatrimony);
 router.get('/get-matrimony-creator-view',authGuard,MatrimonyCreatorView);
 router.get('/get-specific-matrimony-admin-view/:id',authGuard,specificMatrimonyAdminView);
+router.get('/get-total-matrimony-count',authGuard,getTotalMatrimonyCount);
 // api is =>. http://localhost:3000/api/get-query-matrimony?query=Brahmin
 router.get('/get-query-matrimony', queryMatrimony);
 // Flexible matrimony filtering API - supports multiple optional parameters
@@ -493,6 +516,7 @@ router.get('/get-all-property',authGuard,getAllProperty);
 router.get('/get-specific-property/:id',getSpecificqueryProperty);
 router.put('/update-specific-property/:id',authGuard,updateProperty);
 router.delete('/delete-specific-property/:id',authGuard,deleteProperty);
+router.get('/get-total-property-count',authGuard,getTotalPropertyCount);
 // api is => http://localhost:3000/api/get-query-property?query=Bengaluru
 router.get('/get-query-property',queryProperty);
 router.get('/get-property-editor-view',authGuard,PropertyEditorView);
@@ -505,6 +529,7 @@ router.get('/get-all-offer',authGuard,GetAllOffer);
 router.get('/get-specific-offer/:id',GetSpecificOffer);
 router.put('/update-specific-offer/:id',authGuard,UpdateSpecificOffer);
 router.delete('/delete-specific-offer/:id',authGuard,DeleteSpecificOffer);
+router.get('/get-total-offer-count',authGuard,getTotalOfferCount);
 // api is => http://localhost:3000/api/get-query-offer?query=411001
 router.get('/get-query-offer',queryOffer);
 router.get('/show-create-offer-view',authGuard,showCreateOfferView);
@@ -519,6 +544,7 @@ router.get('/get-all-ad',authGuard,GetAllAdds);
 router.get('/get-specific-ad/:id',GetSpecificAdd);
 router.put('/update-specific-ad/:id',authGuard,UpdateSpecificAdd);
 router.delete('/delete-specific-ad/:id',authGuard,DeleteSpecificAdd);
+router.get('/get-total-ad-count',authGuard,getTotalAdCount);
 // api is =>    http://localhost:3000/api/get-query-ad?query=Electronics
 router.get('/get-query-ad',queryAdds);
 router.get('/get-add-creator-view',authGuard,AddCreaterView);
@@ -557,6 +583,7 @@ router.put('/update-specific-news/:id',authGuard,updateNews);
 router.delete('/delete-specific-news/:id',authGuard,deleteNews);
 // api is =>. http://localhost:3000/api/get-query-news?query=AI Revolution in 2025
 router.get('/get-query-news',queryNews);
+router.get('/get-total-news-count',authGuard,getTotalNewsCount);
 router.get('/get-news-editor-view',authGuard,NewsEditorView);
 router.put('/news-comment/:news_id',authGuard,newsComment);
 router.get('/get-specific-news-admin-view/:id',authGuard,specificNewsAdminView);
@@ -587,6 +614,7 @@ router.delete('/delete-specific-local-services/:id',authGuard,deleteLocalService
 router.get('/get-local-services-creator-view',authGuard,LocalServiceCreaterView);
 // api is => http://localhost:3000/api/get-query-local-services?query=local Service
 router.get('/get-query-local-services',queryLocalServices);
+router.get('/get-total-local-services-count',authGuard,getTotalLocalServicesCount);
 router.put('/update-local-services/:id',authGuard,updateLocalService);
 router.get('/get-specific-local-services-admin-view/:id',authGuard,specificLoaclServicesAdminView);
 
@@ -614,6 +642,7 @@ router.get('/get-query-faq',queryFAQ);
 // contact us
 router.post('/create-contact',createContact);
 router.get('/get-all-contact',getContact);
+router.get('/get-total-contact-count',authGuard,getTotalContactCount);
 router.delete('/delete-specific-contact/:id',deleteContact);
 router.get('/get-query-contact',queryContact);
 router.get('/get-specific-contact/:id',getSpecificContact);
@@ -801,6 +830,6 @@ router.get('/get-razorpay-key', getRazorpayKey);
 
 // Chat routes
 const chatRoutes = require('./chatRoutes');
-router.use('/chat', chatRoutes);
+   router.use('/chat', chatRoutes);
 
 module.exports=router;

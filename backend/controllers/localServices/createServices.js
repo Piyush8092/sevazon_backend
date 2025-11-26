@@ -1,5 +1,5 @@
 const LocalServiceModel = require("../../model/localServices");
-
+const userModel = require('../../model/userModel');
  
 const createServicesRoute = async (req, res) => {
     try {       
@@ -47,6 +47,12 @@ const createServicesRoute = async (req, res) => {
 
         const newService = new LocalServiceModel(payload);
         const result = await newService.save();
+        let user = await userModel.findById(userId);
+        if(user.AnyServiceCreate === false)
+        {
+          user.AnyServiceCreate = true;
+          await user.save();
+        }
 
         res.json({
             message: 'Local service created successfully', 

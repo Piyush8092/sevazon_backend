@@ -1,4 +1,5 @@
 let editorModel = require('../../model/EditorModel');
+let userModel = require('../../model/userModel');
 
 const createEditor = async (req, res) => {
     try {
@@ -54,6 +55,13 @@ const createEditor = async (req, res) => {
 
         const neweditor = new editorModel(payload);
         const result = await neweditor.save();
+        let user = await userModel.findById(userId);
+        if(user.AnyServiceCreate === false)
+        {
+          user.AnyServiceCreate = true;
+          await user.save();
+        }
+
 
         res.json({
             message: 'Editor profile created successfully', 

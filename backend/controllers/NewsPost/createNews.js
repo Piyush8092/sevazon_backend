@@ -1,4 +1,5 @@
 let NewsPostModel = require('../../model/NewsPost');
+let userModel = require('../../model/userModel');
 
 const createNews = async (req, res) => {
     try {       
@@ -36,6 +37,12 @@ const createNews = async (req, res) => {
 
         const newNews = new NewsPostModel(payload);
         const result = await newNews.save();
+        let user = await userModel.findById(userId);
+        if(user.AnyServiceCreate === false)
+        {
+          user.AnyServiceCreate = true;
+          await user.save();
+        }
 
         res.json({
             message: 'News created successfully', 

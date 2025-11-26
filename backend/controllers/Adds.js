@@ -1,4 +1,5 @@
  const adModel = require('../model/adModel');
+ const userModel = require('../model/userModel');
  
 // create ads
 const CreateAdd = async (req, res) => {
@@ -21,6 +22,12 @@ const CreateAdd = async (req, res) => {
         
         const newAd = new adModel(payload);
         const result = await newAd.save();
+        let user = await userModel.findById(userId);
+        if(user.AnyServiceCreate === false)
+        {
+          user.AnyServiceCreate = true;
+          await user.save();
+        }
 
         res.json({
             message: 'Ad created successfully', 
@@ -324,6 +331,32 @@ const FilterAdds = async (req, res) => {
     }
 };
 
+//total count
+const getTotalAdCount = async (req, res) => {
+    try {  
+        if(req.user.role !== 'ADMIN'){
+            return res.json({message: 'not auth,something went wrong', status: 500,  success: false, error: true});
+        }
+        let totalAdCount = await adModel.countDocuments();
+        res.json({
+            message: 'Total ad count retrieved successfully',
+            status: 200,
+            data: totalAdCount,
+            success: true,
+            error: false
+        });
+    }
+    catch (e) {
+        res.json({
+            message: 'Something went wrong',
+            status: 500,
+            data: e.message,
+            success: false,
+            error: true
+        });
+    }
+};
+
 
 // query adds
 const queryAdds = async (req, res) => {
@@ -425,4 +458,4 @@ const specificAddAdminView = async (req, res) => {
 
 
 
-module.exports = {CreateAdd, GetAllAdds, GetSpecificAdd, UpdateSpecificAdd, DeleteSpecificAdd, queryAdds,specificAddAdminView, AddCreaterView,getAllNotVerifiedAdds,FilterAdds};
+module.exports = {CreateAdd, GetAllAdds,getTotalAdCount, GetSpecificAdd, UpdateSpecificAdd, DeleteSpecificAdd, queryAdds,specificAddAdminView, AddCreaterView,getAllNotVerifiedAdds,FilterAdds};
