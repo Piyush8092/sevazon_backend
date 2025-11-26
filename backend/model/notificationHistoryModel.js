@@ -93,7 +93,7 @@ const notificationHistorySchema = new mongoose.Schema({
             type: String,
             enum: ['job', 'property', 'service', 'news', 'booking', 'payment', 'chat', 'user']
         },
-        entityId: mongoose.Schema.Types.ObjectId
+        entityId: mongoose.Schema.Types.Mixed  // Can be ObjectId or String (for chat conversations)
     },
     
     // Sender information (for notifications triggered by other users)
