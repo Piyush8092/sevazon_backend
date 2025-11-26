@@ -67,9 +67,13 @@ let NewsSchame=new mongoose.Schema({
         shares:{
             type:Number,
             default:0
+        },
+        location:{
+            type:String,
+            required:[true,'Location/State is required'],
         }
     }
-    
+
     ,{timestamps:true});
     
     const NewsPostModel = mongoose.model('NewsPostModel', NewsSchame);

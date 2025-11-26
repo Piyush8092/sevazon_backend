@@ -2,12 +2,12 @@ let NewsPostModel = require('../../model/NewsPost');
 let userModel = require('../../model/userModel');
 
 const createNews = async (req, res) => {
-    try {       
+    try {
         let payload = req.body;
-        
+
         // Validate all required fields according to new model
-        if (!payload.title || !payload.description || !payload.hashtag || !payload.content) {
-            return res.status(400).json({message: 'Title, description, hashtag and content are required'});
+        if (!payload.title || !payload.description || !payload.hashtag || !payload.content || !payload.location) {
+            return res.status(400).json({message: 'Title, description, hashtag, content and location are required'});
         }
 
         // Validate newsImages array
