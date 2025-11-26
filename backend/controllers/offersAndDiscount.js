@@ -15,8 +15,7 @@ const createOffer = async (req, res) => {
   {
             return res.status(400).json({message: 'All required fields must be provided'});
         }
-
-        // Validate sub-category other when needed
+         // Validate sub-category other when needed
         if (payload.selectSubCategory === 'Other' && !payload.subCategoryOther) {
             return res.status(400).json({message: 'Sub-Category Other is required when Other is selected'});
         }
@@ -33,17 +32,20 @@ const createOffer = async (req, res) => {
             payload.phoneNumberForCalls = null;
         }
 
+ 
         // Validate images array
         if (payload.offerDiscountImages && (!Array.isArray(payload.offerDiscountImages) || payload.offerDiscountImages.length > 2)) {
             return res.status(400).json({message: 'Maximum 2 offer discount images are allowed'});
         }
 
         payload.userId = req.user._id;
+ 
         payload.isVerified = true;
         
         const newoffer = new offer(payload);
         const result = await newoffer.save();
-        let user = await userModel.findById(userId);
+
+         let user = await userModel.findById(req.user._id);
         if(user.AnyServiceCreate === false)
         {
           user.AnyServiceCreate = true;

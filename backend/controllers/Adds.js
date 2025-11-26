@@ -22,7 +22,7 @@ const CreateAdd = async (req, res) => {
         
         const newAd = new adModel(payload);
         const result = await newAd.save();
-        let user = await userModel.findById(userId);
+        let user = await userModel.findById(req.user._id);
         if(user.AnyServiceCreate === false)
         {
           user.AnyServiceCreate = true;
