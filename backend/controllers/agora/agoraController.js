@@ -233,8 +233,10 @@ class AgoraController {
 
       // Notify caller that call was answered
       try {
+        console.log(`📨 Preparing to send 'call_answered' notification to caller: ${callData.caller.userId}`);
+
         // CRITICAL FIX: Convert all data values to strings for FCM
-        await notificationService.sendToUser(
+        const notificationResult = await notificationService.sendToUser(
           callData.caller.userId,
           'Call Answered',
           'Your call has been answered',
@@ -251,8 +253,17 @@ class AgoraController {
             priority: 'high'
           }
         );
+
+        if (notificationResult.success) {
+          console.log(`✅ 'call_answered' notification sent successfully to caller: ${callData.caller.userId} - Delivered to ${notificationResult.successCount}/${notificationResult.totalTokens} devices`);
+        } else {
+          console.error(`❌ Failed to send 'call_answered' notification to caller: ${callData.caller.userId} - Reason: ${notificationResult.reason || notificationResult.error}`);
+          if (notificationResult.reason === 'no_tokens') {
+            console.error(`   ⚠️ CRITICAL: Caller has no FCM tokens! User needs to login/refresh app.`);
+          }
+        }
       } catch (notificationError) {
-        console.error('❌ Failed to send call answered notification:', notificationError);
+        console.error(`❌ Exception while sending call answered notification to caller ${callData.caller.userId}:`, notificationError);
       }
 
       res.status(200).json({
@@ -296,8 +307,10 @@ class AgoraController {
 
       // Notify caller that call was declined
       try {
+        console.log(`📨 Preparing to send 'call_declined' notification to caller: ${callData.caller.userId}`);
+
         // CRITICAL FIX: Convert all data values to strings for FCM
-        await notificationService.sendToUser(
+        const notificationResult = await notificationService.sendToUser(
           callData.caller.userId,
           'Call Declined',
           'Your call was declined',
@@ -311,8 +324,14 @@ class AgoraController {
             priority: 'normal'
           }
         );
+
+        if (notificationResult.success) {
+          console.log(`✅ 'call_declined' notification sent successfully to caller: ${callData.caller.userId}`);
+        } else {
+          console.error(`❌ Failed to send 'call_declined' notification to caller: ${callData.caller.userId} - Reason: ${notificationResult.reason || notificationResult.error}`);
+        }
       } catch (notificationError) {
-        console.error('❌ Failed to send call declined notification:', notificationError);
+        console.error(`❌ Exception while sending call declined notification:`, notificationError);
       }
 
       res.status(200).json({
@@ -361,8 +380,10 @@ class AgoraController {
       // Only send notification if other user is not 'unknown'
       if (otherUserId && otherUserId !== 'unknown') {
         try {
+          console.log(`📨 Preparing to send 'call_ended' notification to other user: ${otherUserId}`);
+
           // CRITICAL FIX: Convert all data values to strings for FCM
-          await notificationService.sendToUser(
+          const notificationResult = await notificationService.sendToUser(
             otherUserId,
             'Call Ended',
             'The call has ended',
@@ -377,9 +398,17 @@ class AgoraController {
               priority: 'normal'
             }
           );
+
+          if (notificationResult.success) {
+            console.log(`✅ 'call_ended' notification sent successfully to user: ${otherUserId}`);
+          } else {
+            console.error(`❌ Failed to send 'call_ended' notification to user: ${otherUserId} - Reason: ${notificationResult.reason || notificationResult.error}`);
+          }
         } catch (notificationError) {
-          console.error('❌ Failed to send call ended notification:', notificationError);
+          console.error(`❌ Exception while sending call ended notification:`, notificationError);
         }
+      } else {
+        console.log(`⚠️ Skipping 'call_ended' notification - other user is unknown`);
       }
 
       res.status(200).json({

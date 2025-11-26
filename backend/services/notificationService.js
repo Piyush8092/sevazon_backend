@@ -110,14 +110,17 @@ class NotificationService {
             }
 
             // Get user's active FCM tokens
+            console.log(`🔍 Looking up FCM tokens for user: ${userId}`);
             const tokens = await FCMToken.findActiveTokensForUser(userId);
 
             if (!tokens || tokens.length === 0) {
-                console.log(`⚠️ No active FCM tokens found for user: ${userId}`);
-                return { success: false, reason: 'no_tokens' };
+                console.error(`❌ No active FCM tokens found for user: ${userId} - Notification type: ${type}`);
+                console.error(`   ⚠️ User needs to login/refresh app to register FCM token`);
+                return { success: false, reason: 'no_tokens', error: 'No active FCM tokens found' };
             }
 
-            console.log(`📨 Sending notification to ${tokens.length} device(s) for user: ${userId}`);
+            console.log(`📨 FCM tokens available: ${tokens.length} for user: ${userId}`);
+            console.log(`📨 Sending ${type} notification to ${tokens.length} device(s) for user: ${userId}`);
 
             const results = [];
             const batchId = uuidv4();

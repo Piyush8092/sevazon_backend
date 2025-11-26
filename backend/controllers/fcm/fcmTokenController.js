@@ -7,8 +7,11 @@ const registerToken = async (req, res) => {
         const { token, deviceInfo } = req.body;
         const userId = req.user._id;
 
+        console.log(`📥 FCM Token Registration Request - User: ${userId}, Device: ${deviceInfo?.deviceId || 'unknown'}`);
+
         // Validate required fields
         if (!token) {
+            console.error(`❌ FCM token missing for user: ${userId}`);
             return res.status(400).json({
                 message: 'FCM token is required',
                 status: 400,
@@ -18,6 +21,7 @@ const registerToken = async (req, res) => {
         }
 
         if (!deviceInfo || !deviceInfo.deviceId || !deviceInfo.deviceType) {
+            console.error(`❌ Device info missing for user: ${userId}`);
             return res.status(400).json({
                 message: 'Device information (deviceId and deviceType) is required',
                 status: 400,
@@ -28,6 +32,7 @@ const registerToken = async (req, res) => {
 
         // Validate FCM token format
         if (!isValidFCMToken(token)) {
+            console.error(`❌ Invalid FCM token format for user: ${userId}`);
             return res.status(400).json({
                 message: 'Invalid FCM token format',
                 status: 400,
@@ -39,6 +44,7 @@ const registerToken = async (req, res) => {
         // Validate device type
         const validDeviceTypes = ['android', 'ios', 'web'];
         if (!validDeviceTypes.includes(deviceInfo.deviceType)) {
+            console.error(`❌ Invalid device type for user: ${userId} - ${deviceInfo.deviceType}`);
             return res.status(400).json({
                 message: 'Invalid device type. Must be one of: android, ios, web',
                 status: 400,
@@ -53,6 +59,7 @@ const registerToken = async (req, res) => {
         if (existingToken) {
             // If token exists but for different user, deactivate old and create new
             if (existingToken.userId.toString() !== userId.toString()) {
+                console.log(`⚠️ Token exists for different user, deactivating old token - Old User: ${existingToken.userId}, New User: ${userId}`);
                 await existingToken.deactivate();
                 existingToken = null;
             } else {
@@ -61,6 +68,10 @@ const registerToken = async (req, res) => {
                 existingToken.isActive = true;
                 existingToken.lastUsed = new Date();
                 await existingToken.save();
+
+                // Get total active tokens for this user
+                const totalTokens = await FCMToken.countDocuments({ userId, isActive: true });
+                console.log(`✅ FCM token updated for user: ${userId} - Total active tokens: ${totalTokens}`);
 
                 return res.json({
                     message: 'FCM token updated successfully',
@@ -85,11 +96,15 @@ const registerToken = async (req, res) => {
                 oldToken: existingDeviceToken.token,
                 updatedAt: new Date()
             });
-            
+
             existingDeviceToken.token = token;
             existingDeviceToken.deviceInfo = deviceInfo;
             existingDeviceToken.lastUsed = new Date();
             await existingDeviceToken.save();
+
+            // Get total active tokens for this user
+            const totalTokens = await FCMToken.countDocuments({ userId, isActive: true });
+            console.log(`✅ FCM token refreshed for existing device - User: ${userId}, Device: ${deviceInfo.deviceId}, Total active tokens: ${totalTokens}`);
 
             return res.json({
                 message: 'FCM token updated for existing device',
@@ -109,6 +124,10 @@ const registerToken = async (req, res) => {
 
         await newToken.save();
 
+        // Get total active tokens for this user
+        const totalTokens = await FCMToken.countDocuments({ userId, isActive: true });
+        console.log(`✅ Saving FCM token for user ${userId} - Device: ${deviceInfo.deviceId}, Type: ${deviceInfo.deviceType}, Total active tokens: ${totalTokens}`);
+
         res.json({
             message: 'FCM token registered successfully',
             status: 200,
@@ -118,8 +137,8 @@ const registerToken = async (req, res) => {
         });
 
     } catch (error) {
-        console.error('Error registering FCM token:', error);
-        
+        console.error(`❌ Error registering FCM token for user ${req.user?._id}:`, error);
+
         // Handle duplicate key error
         if (error.code === 11000) {
             return res.status(409).json({
@@ -146,6 +165,8 @@ const removeToken = async (req, res) => {
         const { token, deviceId } = req.body;
         const userId = req.user._id;
 
+        console.log(`🗑️ FCM Token Removal Request - User: ${userId}, Device: ${deviceId || 'unknown'}`);
+
         let query = { userId, isActive: true };
 
         if (token) {
@@ -153,6 +174,7 @@ const removeToken = async (req, res) => {
         } else if (deviceId) {
             query['deviceInfo.deviceId'] = deviceId;
         } else {
+            console.error(`❌ Token removal failed - no token or deviceId provided for user: ${userId}`);
             return res.status(400).json({
                 message: 'Either token or deviceId is required',
                 status: 400,
@@ -164,6 +186,7 @@ const removeToken = async (req, res) => {
         const fcmToken = await FCMToken.findOne(query);
 
         if (!fcmToken) {
+            console.log(`⚠️ FCM token not found for removal - User: ${userId}`);
             return res.status(404).json({
                 message: 'FCM token not found',
                 status: 404,
@@ -174,6 +197,10 @@ const removeToken = async (req, res) => {
 
         await fcmToken.deactivate();
 
+        // Get remaining active tokens for this user
+        const remainingTokens = await FCMToken.countDocuments({ userId, isActive: true });
+        console.log(`✅ FCM token removed for user: ${userId} - Remaining active tokens: ${remainingTokens}`);
+
         res.json({
             message: 'FCM token removed successfully',
             status: 200,
@@ -182,7 +209,7 @@ const removeToken = async (req, res) => {
         });
 
     } catch (error) {
-        console.error('Error removing FCM token:', error);
+        console.error(`❌ Error removing FCM token for user ${req.user?._id}:`, error);
         res.status(500).json({
             message: 'Internal server error',
             status: 500,
@@ -198,18 +225,22 @@ const getUserTokens = async (req, res) => {
     try {
         const userId = req.user._id;
 
+        console.log(`🔍 Retrieving FCM tokens for user: ${userId}`);
         const tokens = await FCMToken.findActiveTokensForUser(userId);
+
+        console.log(`✅ Found ${tokens.length} active FCM token(s) for user: ${userId}`);
 
         res.json({
             message: 'FCM tokens retrieved successfully',
             status: 200,
             data: tokens,
+            count: tokens.length,
             success: true,
             error: false
         });
 
     } catch (error) {
-        console.error('Error retrieving FCM tokens:', error);
+        console.error(`❌ Error retrieving FCM tokens for user ${req.user?._id}:`, error);
         res.status(500).json({
             message: 'Internal server error',
             status: 500,
