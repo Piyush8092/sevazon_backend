@@ -429,7 +429,7 @@ router.get('/get-job-creator-view',authGuard,getJobCreaterView);
 router.get('/get-all-job-admin-view/:id',authGuard,AdminJobView);
 
 
-// job Apply
+// job Apply api is => http://localhost:3000/api/apply-job/650666666666666666666666      body pass=>  {"title":"test","fullName":"test","qualification":"test","gender":"Male","pincode":"123456","city":"test","state":"test","address":"test","contactNumber":"1234567890"}
 router.post('/apply-job/:job_id',authGuard,ApplyedJob);
 // admin view
 router.get('/get-all-job-appliation',authGuard,getAllApplyJob);
@@ -446,7 +446,7 @@ router.get('/get-all-accepted-applications', authGuard, getAcceptedApplications)
 router.get('/get-all-rejected-applications', authGuard, getRejectedApplications);
 router.get('/get-all-pending-applications',authGuard,getpendingApplications);
  
-// for update pass payload value  =>  { "accept_status":"Accepted"}
+// for update pass payload value  =>  { "accept_status":"Accepted"} or  { "accept_status":"Rejected"}
 router.put('/update-job-application/:apply_id',authGuard,updateApplyStatusByCreater);
 
 // job applicant view

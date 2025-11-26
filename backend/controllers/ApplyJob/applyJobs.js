@@ -34,6 +34,7 @@ const ApplyedJob = async (req, res) => {
         payload.ApplyuserId = req.user._id;
         payload.jobId = id;
         payload.job_creatorId = ExistJob.userId;
+        payload.accept_status = 'Pending';
         
         const result = await ApplyModel.create(payload);
         res.json({message: 'Job application submitted successfully', status: 200, data: result, success: true, error: false});
