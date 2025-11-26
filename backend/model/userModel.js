@@ -42,6 +42,11 @@ const userSchema = new mongoose.Schema({
         default: false
     },
 
+    primiumUser: {
+        type: Boolean,
+        default: false
+    },
+
     // KYC Verification Fields
     panNumber: {
         type: String,

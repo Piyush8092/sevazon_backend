@@ -25,11 +25,22 @@ const createPricingPlan = async (req, res) => {
 
         // Create new pricing plan
         const newPlan = new PricingPlan(payload);
-        await newPlan.save();
+       let result = await newPlan.save();
+       if(result.PaymentType === 'paid')
+       {
+         let user = await userModel.findById(req.user._id);
+         if(user.primiumUser === false)
+         {
+          user.primiumUser = true;
+          await user.save();
+         }
+       }
+
+        
 
         res.status(201).json({
             message: 'Pricing plan created successfully',
-            data: newPlan
+            data: result
         });
     } catch (error) {
         console.error('Error creating pricing plan:', error);

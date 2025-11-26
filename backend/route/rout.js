@@ -230,6 +230,8 @@ const { getPaymentHistory } = require('../controllers/payment/getPaymentHistory'
 const { getRazorpayKey } = require('../controllers/payment/getRazorpayKey');
 
  cookie();
+ const { getAllPrimiumUser } = require('../controllers/user/getAllPrimiumUser');
+
 const { UpdateReportAndBlock } = require('../controllers/AllServicesRegistration/UpdateReportAndBlock');
  const { UpdateServiceProfileBookMark } = require('../controllers/AllServicesRegistration/UpdateServiceProfileBookMark');
 const { getBookmarkServiceProfile } = require('../controllers/user/getBookmarkServiceProfile');
@@ -307,6 +309,8 @@ router.post('/user/update-fcm-token',authGuard,updateFcmToken);
 router.delete('/user/remove-fcm-token',authGuard,removeFcmToken);
 router.get('/user/fcm-status/:userId',authGuard,getFcmStatus);
 router.post('/user/report-device',reportDevice);
+// get all primium user 
+router.get('/get-all-primium-user',authGuard,getAllPrimiumUser);
   
   //  for bookmark job post
 router.get('/get-bookmark-job-post',authGuard, getBookmarkJobPost);
@@ -839,6 +843,6 @@ router.get('/get-razorpay-key', getRazorpayKey);
 
 // Chat routes
 const chatRoutes = require('./chatRoutes');
-   router.use('/chat', chatRoutes);
+    router.use('/chat', chatRoutes);
 
 module.exports=router;
