@@ -114,6 +114,31 @@ ServiceReportAndBlockID: [{
             type: String,
         }
     }],
+
+    // FCM Tokens for push notifications (supports multiple devices)
+    fcmTokens: [{
+        token: {
+            type: String,
+            required: true
+        },
+        deviceId: {
+            type: String,
+            required: true
+        },
+        deviceType: {
+            type: String,
+            enum: ['android', 'ios', 'web'],
+            default: 'android'
+        },
+        addedAt: {
+            type: Date,
+            default: Date.now
+        },
+        lastUsed: {
+            type: Date,
+            default: Date.now
+        }
+    }],
 }, { timestamps: true });
 
 /**

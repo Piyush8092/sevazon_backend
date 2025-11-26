@@ -2,6 +2,7 @@ const { getMessaging } = require('../config/firebase');
 const FCMToken = require('../model/fcmTokenModel');
 const NotificationHistory = require('../model/notificationHistoryModel');
 const NotificationPreferences = require('../model/notificationPreferencesModel');
+const User = require('../model/userModel');
 const crypto = require('crypto');
 
 // Helper function to generate UUID v4
@@ -109,9 +110,23 @@ class NotificationService {
                 return { success: false, reason: 'blocked_by_preferences' };
             }
 
-            // Get user's active FCM tokens
+            // Get user's FCM tokens from user document
             console.log(`🔍 Looking up FCM tokens for user: ${userId}`);
-            const tokens = await FCMToken.findActiveTokensForUser(userId);
+            const user = await User.findById(userId).select('fcmTokens');
+
+            if (!user) {
+                console.error(`❌ User not found: ${userId}`);
+                return { success: false, reason: 'user_not_found', error: 'User not found' };
+            }
+
+            // Get valid tokens from user's fcmTokens array
+            let tokens = [];
+            if (user.fcmTokens && Array.isArray(user.fcmTokens)) {
+                // Filter out null, undefined, or empty tokens
+                tokens = user.fcmTokens
+                    .filter(t => t && t.token && t.token.trim() !== '')
+                    .map(t => t.token);
+            }
 
             if (!tokens || tokens.length === 0) {
                 console.error(`❌ No active FCM tokens found for user: ${userId} - Notification type: ${type}`);
@@ -125,16 +140,16 @@ class NotificationService {
             const results = [];
             const batchId = uuidv4();
 
-            for (const tokenDoc of tokens) {
+            for (const token of tokens) {
                 const result = await this.sendToToken(
-                    tokenDoc.token,
+                    token,
                     title,
                     body,
                     data,
                     {
                         ...options,
                         userId,
-                        fcmTokenId: tokenDoc._id,
+                        fcmTokenId: null, // No separate token document ID
                         batchId
                     }
                 );
