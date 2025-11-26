@@ -111,36 +111,63 @@ class NotificationService {
             }
 
             // Get user's FCM tokens from user document
-            console.log(`🔍 Looking up FCM tokens for user: ${userId}`);
-            const user = await User.findById(userId).select('fcmTokens');
+            console.log(`🔍 Attempting notification to user ${userId}`);
+            console.log(`   - Notification type: ${type}`);
+            console.log(`   - Title: ${title}`);
+
+            const user = await User.findById(userId).select('fcmTokens name email phone');
 
             if (!user) {
                 console.error(`❌ User not found: ${userId}`);
+                console.error(`   ⚠️ Cannot send notification - user does not exist`);
                 return { success: false, reason: 'user_not_found', error: 'User not found' };
             }
 
+            console.log(`✅ User found: ${user.name || 'N/A'} (${user.email || user.phone || 'N/A'})`);
+
             // Get valid tokens from user's fcmTokens array
             let tokens = [];
+            let tokenDetails = [];
             if (user.fcmTokens && Array.isArray(user.fcmTokens)) {
                 // Filter out null, undefined, or empty tokens
-                tokens = user.fcmTokens
-                    .filter(t => t && t.token && t.token.trim() !== '')
-                    .map(t => t.token);
+                const validTokens = user.fcmTokens.filter(t => t && t.token && t.token.trim() !== '');
+                tokens = validTokens.map(t => t.token);
+                tokenDetails = validTokens.map(t => ({
+                    token: t.token,
+                    deviceId: t.deviceId,
+                    deviceType: t.deviceType,
+                    lastUsed: t.lastUsed
+                }));
             }
 
+            console.log(`📊 Tokens available: ${tokens.length}`);
+
             if (!tokens || tokens.length === 0) {
-                console.error(`❌ No active FCM tokens found for user: ${userId} - Notification type: ${type}`);
+                console.error(`❌ No active FCM tokens found for user: ${userId}`);
+                console.error(`   - Notification type: ${type}`);
+                console.error(`   - User: ${user.name || 'N/A'} (${user.email || user.phone || 'N/A'})`);
+                console.error(`   ⚠️ No valid tokens → notify client to re-register`);
                 console.error(`   ⚠️ User needs to login/refresh app to register FCM token`);
                 return { success: false, reason: 'no_tokens', error: 'No active FCM tokens found' };
             }
 
-            console.log(`📨 FCM tokens available: ${tokens.length} for user: ${userId}`);
-            console.log(`📨 Sending ${type} notification to ${tokens.length} device(s) for user: ${userId}`);
+            console.log(`📨 Sending ${type} notification to ${tokens.length} device(s)`);
+            tokenDetails.forEach((td, index) => {
+                console.log(`   ${index + 1}. Device: ${td.deviceType || 'unknown'} (${td.deviceId || 'unknown'})`);
+                console.log(`      Token: ${td.token.substring(0, 30)}...`);
+                console.log(`      Last used: ${td.lastUsed ? new Date(td.lastUsed).toISOString() : 'N/A'}`);
+            });
 
             const results = [];
             const batchId = uuidv4();
+            const invalidTokens = [];
 
-            for (const token of tokens) {
+            for (let i = 0; i < tokens.length; i++) {
+                const token = tokens[i];
+                const tokenDetail = tokenDetails[i];
+
+                console.log(`📤 Sending to token ${i + 1}/${tokens.length}: ${token.substring(0, 30)}...`);
+
                 const result = await this.sendToToken(
                     token,
                     title,
@@ -150,17 +177,53 @@ class NotificationService {
                         ...options,
                         userId,
                         fcmTokenId: null, // No separate token document ID
-                        batchId
+                        batchId,
+                        deviceId: tokenDetail.deviceId,
+                        deviceType: tokenDetail.deviceType
                     }
                 );
+
                 results.push(result);
+
+                if (result.success) {
+                    console.log(`   ✅ Sent successfully to ${tokenDetail.deviceType || 'unknown'} device`);
+                } else {
+                    console.error(`   ❌ Failed to send to ${tokenDetail.deviceType || 'unknown'} device`);
+                    console.error(`      Error: ${result.error}`);
+
+                    // Check if token is invalid
+                    if (result.error && (
+                        result.error.includes('invalid-registration-token') ||
+                        result.error.includes('registration-token-not-registered')
+                    )) {
+                        console.error(`   🗑️ Token invalid → marking for removal`);
+                        invalidTokens.push(token);
+                    }
+                }
             }
 
+            // Remove invalid tokens from user document
+            if (invalidTokens.length > 0) {
+                console.log(`🗑️ Removing ${invalidTokens.length} invalid token(s) from user ${userId}`);
+                try {
+                    await User.findByIdAndUpdate(userId, {
+                        $pull: { fcmTokens: { token: { $in: invalidTokens } } }
+                    });
+                    console.log(`   ✅ Invalid tokens removed successfully`);
+                } catch (error) {
+                    console.error(`   ❌ Failed to remove invalid tokens:`, error.message);
+                }
+            }
+
+            const successCount = results.filter(r => r.success).length;
+            console.log(`📊 Notification batch complete: ${successCount}/${tokens.length} successful`);
+
             return {
-                success: true,
+                success: successCount > 0,
                 results,
                 totalTokens: tokens.length,
-                successCount: results.filter(r => r.success).length
+                successCount: successCount,
+                invalidTokensRemoved: invalidTokens.length
             };
 
         } catch (error) {

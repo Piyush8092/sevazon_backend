@@ -55,7 +55,14 @@ const LoginRout = async (req, res) => {
         // Handle FCM token if provided in request body
         const { fcmToken, deviceId, deviceType } = payload;
         if (fcmToken && deviceId) {
-            console.log(`📥 FCM Token provided during login - User: ${existingUser._id}, Device: ${deviceId}`);
+            const timestamp = new Date();
+
+            console.log(`📥 FCM Token Registration During Login`);
+            console.log(`   - userId: ${existingUser._id}`);
+            console.log(`   - token: ${fcmToken.substring(0, 30)}...`);
+            console.log(`   - deviceId: ${deviceId}`);
+            console.log(`   - deviceType: ${deviceType || 'android'}`);
+            console.log(`   - timestamp: ${timestamp.toISOString()}`);
 
             // Initialize fcmTokens array if it doesn't exist
             if (!existingUser.fcmTokens) {
@@ -70,12 +77,14 @@ const LoginRout = async (req, res) => {
 
             if (existingTokenIndex !== -1) {
                 // Update existing token
-                existingUser.fcmTokens[existingTokenIndex].lastUsed = new Date();
+                existingUser.fcmTokens[existingTokenIndex].lastUsed = timestamp;
+                existingUser.fcmTokens[existingTokenIndex].updatedAt = timestamp;
                 existingUser.fcmTokens[existingTokenIndex].deviceId = deviceId;
                 if (deviceType) {
                     existingUser.fcmTokens[existingTokenIndex].deviceType = deviceType;
                 }
-                console.log(`✅ FCM token updated during login for user: ${existingUser._id}`);
+                console.log(`✅ FCM token updated (existing token)`);
+                console.log(`   - Updated timestamp: ${timestamp.toISOString()}`);
             } else {
                 // Check if device already has a different token
                 const existingDeviceIndex = existingUser.fcmTokens.findIndex(t => t.deviceId === deviceId);
@@ -83,12 +92,15 @@ const LoginRout = async (req, res) => {
                 if (existingDeviceIndex !== -1) {
                     // Replace old token for this device
                     console.log(`🔄 Replacing old FCM token for device: ${deviceId}`);
+                    console.log(`   - Old token: ${existingUser.fcmTokens[existingDeviceIndex].token.substring(0, 30)}...`);
+                    console.log(`   - New token: ${fcmToken.substring(0, 30)}...`);
                     existingUser.fcmTokens[existingDeviceIndex] = {
                         token: fcmToken,
                         deviceId: deviceId,
                         deviceType: deviceType || 'android',
-                        addedAt: new Date(),
-                        lastUsed: new Date()
+                        addedAt: timestamp,
+                        lastUsed: timestamp,
+                        updatedAt: timestamp
                     };
                 } else {
                     // Add new token
@@ -96,10 +108,14 @@ const LoginRout = async (req, res) => {
                         token: fcmToken,
                         deviceId: deviceId,
                         deviceType: deviceType || 'android',
-                        addedAt: new Date(),
-                        lastUsed: new Date()
+                        addedAt: timestamp,
+                        lastUsed: timestamp,
+                        updatedAt: timestamp
                     });
-                    console.log(`✅ Saving FCM token during login for user ${existingUser._id} - Device: ${deviceId}, Total tokens: ${existingUser.fcmTokens.length}`);
+                    console.log(`✅ New FCM token registered during login`);
+                    console.log(`   - Token: ${fcmToken.substring(0, 30)}...`);
+                    console.log(`   - Device: ${deviceId}`);
+                    console.log(`   - Timestamp: ${timestamp.toISOString()}`);
                 }
             }
 

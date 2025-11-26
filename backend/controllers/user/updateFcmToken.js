@@ -14,24 +14,20 @@ const updateFcmToken = async (req, res) => {
     try {
         const { fcmToken, deviceId, deviceType = 'android' } = req.body;
         const userId = req.user._id;
+        const timestamp = new Date().toISOString();
 
-        console.log(`📥 FCM Token Update Request - User: ${userId}, Device: ${deviceId || 'unknown'}`);
+        console.log(`📥 FCM Token Registration Request`);
+        console.log(`   - userId: ${userId}`);
+        console.log(`   - token: ${fcmToken ? fcmToken.substring(0, 30) + '...' : 'null'}`);
+        console.log(`   - deviceId: ${deviceId || 'null'}`);
+        console.log(`   - deviceType: ${deviceType}`);
+        console.log(`   - timestamp: ${timestamp}`);
 
         // Validate required fields
         if (!fcmToken || fcmToken.trim() === '') {
             console.error(`❌ FCM token missing for user: ${userId}`);
             return res.status(400).json({
                 message: 'FCM token is required',
-                status: 400,
-                success: false,
-                error: true
-            });
-        }
-
-        if (!deviceId || deviceId.trim() === '') {
-            console.error(`❌ Device ID missing for user: ${userId}`);
-            return res.status(400).json({
-                message: 'Device ID is required',
                 status: 400,
                 success: false,
                 error: true
@@ -74,44 +70,60 @@ const updateFcmToken = async (req, res) => {
         const existingTokenIndex = user.fcmTokens.findIndex(t => t.token === fcmToken);
 
         if (existingTokenIndex !== -1) {
-            // Token exists - update lastUsed timestamp and device info
-            user.fcmTokens[existingTokenIndex].lastUsed = new Date();
-            user.fcmTokens[existingTokenIndex].deviceId = deviceId;
+            // Token exists - update timestamps and device info
+            const now = new Date();
+            user.fcmTokens[existingTokenIndex].lastUsed = now;
+            user.fcmTokens[existingTokenIndex].updatedAt = now;
+            user.fcmTokens[existingTokenIndex].deviceId = deviceId || user.fcmTokens[existingTokenIndex].deviceId;
             user.fcmTokens[existingTokenIndex].deviceType = deviceType;
-            
-            console.log(`✅ FCM token updated for user: ${userId} - Device: ${deviceId}, Total tokens: ${user.fcmTokens.length}`);
+
+            console.log(`✅ FCM token updated (existing token)`);
+            console.log(`   - User: ${userId}`);
+            console.log(`   - Device: ${deviceId || 'null'}`);
+            console.log(`   - Updated timestamp: ${now.toISOString()}`);
+            console.log(`   - Total tokens: ${user.fcmTokens.length}`);
         } else {
             // Check if this device already has a different token
-            const existingDeviceIndex = user.fcmTokens.findIndex(t => t.deviceId === deviceId);
-            
+            const existingDeviceIndex = deviceId ? user.fcmTokens.findIndex(t => t.deviceId === deviceId) : -1;
+
             if (existingDeviceIndex !== -1) {
                 // Replace old token for this device
+                const now = new Date();
                 console.log(`🔄 Replacing old token for device: ${deviceId}`);
                 user.fcmTokens[existingDeviceIndex] = {
                     token: fcmToken,
                     deviceId: deviceId,
                     deviceType: deviceType,
-                    addedAt: new Date(),
-                    lastUsed: new Date()
+                    addedAt: now,
+                    lastUsed: now,
+                    updatedAt: now
                 };
+                console.log(`   - New token registered: ${fcmToken.substring(0, 30)}...`);
+                console.log(`   - Timestamp: ${now.toISOString()}`);
             } else {
                 // Add new token
+                const now = new Date();
                 user.fcmTokens.push({
                     token: fcmToken,
-                    deviceId: deviceId,
+                    deviceId: deviceId || null,
                     deviceType: deviceType,
-                    addedAt: new Date(),
-                    lastUsed: new Date()
+                    addedAt: now,
+                    lastUsed: now,
+                    updatedAt: now
                 });
+                console.log(`✅ New FCM token registered`);
+                console.log(`   - User: ${userId}`);
+                console.log(`   - Token: ${fcmToken.substring(0, 30)}...`);
+                console.log(`   - Device: ${deviceId || 'null'}`);
+                console.log(`   - Type: ${deviceType}`);
+                console.log(`   - Timestamp: ${now.toISOString()}`);
             }
-
-            console.log(`✅ Saving FCM token for user ${userId} - Device: ${deviceId}, Type: ${deviceType}, Total tokens: ${user.fcmTokens.length}`);
         }
 
         // Save user
         await user.save();
 
-        console.log(`📱 User ${userId} has ${user.fcmTokens.length} active FCM token(s)`);
+        console.log(`📱 User ${userId} now has ${user.fcmTokens.length} active FCM token(s)`);
 
         res.json({
             message: 'FCM token updated successfully',
@@ -123,7 +135,8 @@ const updateFcmToken = async (req, res) => {
                     deviceId: t.deviceId,
                     deviceType: t.deviceType,
                     addedAt: t.addedAt,
-                    lastUsed: t.lastUsed
+                    lastUsed: t.lastUsed,
+                    updatedAt: t.updatedAt
                 }))
             },
             success: true,

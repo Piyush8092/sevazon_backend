@@ -91,6 +91,8 @@ const { verifyUserKyc } = require('../controllers/user/verifyUserKyc');
 const { followEditor } = require('../controllers/user/followEditor');
 const { updateFcmToken } = require('../controllers/user/updateFcmToken');
 const { removeFcmToken } = require('../controllers/user/removeFcmToken');
+const { getFcmStatus } = require('../controllers/user/getFcmStatus');
+const { reportDevice } = require('../controllers/user/reportDevice');
 const { createVehicle } = require('../controllers/vehicles/createVehicals');
 const { getAllVehicle } = require('../controllers/vehicles/getAllVehicle');
 const { getSpecificVehicles } = require('../controllers/vehicles/getSpecificVehicles');
@@ -303,6 +305,8 @@ router.post('/user/follow-editor',authGuard,followEditor);
 // FCM Token Management
 router.post('/user/update-fcm-token',authGuard,updateFcmToken);
 router.delete('/user/remove-fcm-token',authGuard,removeFcmToken);
+router.get('/user/fcm-status/:userId',authGuard,getFcmStatus);
+router.post('/user/report-device',reportDevice);
   
   //  for bookmark job post
 router.get('/get-bookmark-job-post',authGuard, getBookmarkJobPost);

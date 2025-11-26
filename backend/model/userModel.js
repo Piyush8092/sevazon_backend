@@ -123,7 +123,7 @@ ServiceReportAndBlockID: [{
         },
         deviceId: {
             type: String,
-            required: true
+            default: null
         },
         deviceType: {
             type: String,
@@ -135,6 +135,10 @@ ServiceReportAndBlockID: [{
             default: Date.now
         },
         lastUsed: {
+            type: Date,
+            default: Date.now
+        },
+        updatedAt: {
             type: Date,
             default: Date.now
         }
