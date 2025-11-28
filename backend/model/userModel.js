@@ -148,6 +148,34 @@ ServiceReportAndBlockID: [{
             default: Date.now
         }
     }],
+
+    // Account Blocking/Ban Fields
+    isBlocked: {
+        type: Boolean,
+        default: false
+    },
+    accountStatus: {
+        type: String,
+        enum: ['active', 'blocked', 'suspended', 'deleted'],
+        default: 'active'
+    },
+    blockedReason: {
+        type: String,
+        default: null
+    },
+    blockedAt: {
+        type: Date,
+        default: null
+    },
+    blockedBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'user',
+        default: null
+    },
+    profileImage: {
+        type: String,
+        default: null
+    },
 }, { timestamps: true });
 
 /**

@@ -93,6 +93,9 @@ const { updateFcmToken } = require('../controllers/user/updateFcmToken');
 const { removeFcmToken } = require('../controllers/user/removeFcmToken');
 const { getFcmStatus } = require('../controllers/user/getFcmStatus');
 const { reportDevice } = require('../controllers/user/reportDevice');
+const { reportUser } = require('../controllers/user/reportUser');
+const { getAllReports } = require('../controllers/user/getAllReports');
+const { blockUser, unblockUser } = require('../controllers/user/blockUser');
 const { createVehicle } = require('../controllers/vehicles/createVehicals');
 const { getAllVehicle } = require('../controllers/vehicles/getAllVehicle');
 const { getSpecificVehicles } = require('../controllers/vehicles/getSpecificVehicles');
@@ -309,7 +312,14 @@ router.post('/user/update-fcm-token',authGuard,updateFcmToken);
 router.delete('/user/remove-fcm-token',authGuard,removeFcmToken);
 router.get('/user/fcm-status/:userId',authGuard,getFcmStatus);
 router.post('/user/report-device',reportDevice);
-// get all primium user 
+
+// User Report and Block Management
+router.post('/report-user',authGuard,reportUser);
+router.get('/admin/reports',authGuard,getAllReports);
+router.put('/admin/block-user/:id',authGuard,blockUser);
+router.put('/admin/unblock-user/:id',authGuard,unblockUser);
+
+// get all primium user
 router.get('/get-all-primium-user',authGuard,getAllPrimiumUser);
   
   //  for bookmark job post

@@ -28,12 +28,23 @@ const LoginRout = async (req, res) => {
         if (!existingUser) {
             return res.status(400).json({ message: 'Invalid credentials' });
         }
-        
+
+        // Check if user account is blocked
+        if (existingUser.isBlocked || existingUser.accountStatus === 'blocked') {
+            return res.status(403).json({
+                message: 'Your account has been blocked. Please contact support for assistance.',
+                status: 403,
+                error: true,
+                success: false,
+                blockedReason: existingUser.blockedReason || 'Account blocked by administrator'
+            });
+        }
+
         const isMatch = await bcrypt.compare(payload.password, existingUser.password);
         if (!isMatch) {
             return res.status(400).json({ message: 'Invalid credentials' });
         }
-        
+
         let token = jwt.sign(
             { id: existingUser._id },
             process.env.SECRET_KEY || 'me333enneffiimsqoqomcngfehdj3idss',

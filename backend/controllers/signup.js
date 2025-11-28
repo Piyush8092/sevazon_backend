@@ -33,17 +33,35 @@ const SignupRout = async (req, res) => {
             }
         }
 
-        // check if user exists
+        // check if user exists or is blocked
         let ExistUser = null;
         if (payload.email) {
             ExistUser = await user.findOne({ email: payload.email });
             if (ExistUser) {
+                // Check if the existing user is blocked
+                if (ExistUser.isBlocked || ExistUser.accountStatus === 'blocked') {
+                    return res.status(403).json({
+                        message: 'This email is associated with a blocked account. Please contact support.',
+                        status: 403,
+                        error: true,
+                        success: false
+                    });
+                }
                 return res.status(400).json({ message: 'User already exists' });
             }
         }
         if (payload.phone) {
             ExistUser = await user.findOne({ phone: payload.phone });
             if (ExistUser) {
+                // Check if the existing user is blocked
+                if (ExistUser.isBlocked || ExistUser.accountStatus === 'blocked') {
+                    return res.status(403).json({
+                        message: 'This phone number is associated with a blocked account. Please contact support.',
+                        status: 403,
+                        error: true,
+                        success: false
+                    });
+                }
                 return res.status(400).json({ message: 'User already exists' });
             }
         }
