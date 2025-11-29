@@ -263,7 +263,7 @@ const {getTotalPropertyCount } = require('../controllers/Property/getTotalProper
 const { getTotalLocalServicesCount } = require('../controllers/localServices/getTotalLocalServicesCount');
 const { getTotalContactCount}= require('../controllers/contact/getTotalContactCount');
 
-// const { getAllUserService } = require('../controllers/AllServicesRegistration/getAllUserService');
+const { getAllServiceUser } = require('../controllers/AllServicesRegistration/getAlluserService');
 const { ALLuserJob } = require('../controllers/JobPost/ALLuserJob');
 const { getAllMatrimonyUser } = require('../controllers/MatrimonyPost/getAllMatrimonyUser');
 const { getAllPropertyUser } = require('../controllers/Property/getAllPropertyUser');
@@ -274,7 +274,8 @@ const { sendNotificationToMatrimonyPoster } = require('../controllers/MatrimonyP
 const { sendNotificationToPropertyPoster } = require('../controllers/Property/sendNotificationToPropertyPoster');
  const { sendNotificationToNewsPoster } = require('../controllers/NewsPost/sendNotificationToNewsPoster');
  const { sendNotificationToLocalServicesPoster } = require('../controllers/localServices/sendNotificationToLocalServicesPoster');
-// const { sendNotificationToServicePoster } = require('../controllers/AllServicesRegistration/sendNotificationToServicePoster');
+const { sendNotificationToServicePoster } = require('../controllers/AllServicesRegistration/sendNotificationToServicePoster');
+const { getspecificJobApplyAdminView } = require('../controllers/ApplyJob/getspecificJobApplyAdminView');
 
    cookie();
 router.get('/', (req, res) => {
@@ -401,7 +402,7 @@ router.get('/get-specific-service/:id',GetSpecificServices);
 router.delete('/delete-specific-service/:id',authGuard,DeleteSpecsificServices);
 router.get('/get-specific-service-admin-view/:id',authGuard,AdminSpecificServiceView);
 router.get('/get-all-service',authGuard,GetAllServices);
-// router.get('/get-all-user-service',getAllUserService);
+router.get('/get-all-user-service',getAllServiceUser);
 // api route is http://localhost:3000/api/get-query-service?query=Bengaluru
  router.get('/get-query-service',queryServices);
 // Flexible filtering API - supports multiple optional parameters
@@ -417,7 +418,7 @@ router.get('/get-service-creator-view',authGuard,getServiceCreaterView);
 router.put('/update-specific-service-important-link/:id',authGuard,updateImportantLink);
 router.put('/update-specific-service-time-slot/:id',authGuard,updateTimeSlot);
 //seND notification to service post user 
-// router.get('/send-notification-to-service-poster',authGuard,sendNotificationToServicePoster);
+router.get('/send-notification-to-service-poster',authGuard,sendNotificationToServicePoster);
 
 
 // for report and block
@@ -465,6 +466,8 @@ router.post('/apply-job/:job_id',authGuard,ApplyedJob);
 router.get('/get-all-job-appliation',authGuard,getAllApplyJob);
 // any one can see specific apply job
 router.get('/get-specific-apply-job/:apply_id',getSpecificApplyJob);
+//get all application of job creater and admin view
+router.get('/get-all-apply-job-admin-view/:job_id',authGuard,getspecificJobApplyAdminView);
 
  
 // router.get('/applier-view',authGuard,getApplyedJob);
@@ -892,7 +895,7 @@ router.get('/get-razorpay-key', getRazorpayKey);
 
 // Chat routes
 const chatRoutes = require('./chatRoutes');
-        
+         
     router.use('/chat', chatRoutes);
 
 module.exports=router;

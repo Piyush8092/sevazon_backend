@@ -1,5 +1,5 @@
 let createServiceModel = require('../../model/createAllServiceProfileModel');
-
+let userModel = require('../../model/userModel');
 const sendNotificationToServicePoster = async (req, res) => {
         try {
             if (req.user.role !== 'ADMIN') {
@@ -10,7 +10,7 @@ const sendNotificationToServicePoster = async (req, res) => {
                     error: true
                 });
             }
-            // Get all users used in create service profile table
+             // Get all users used in create service profile table
             const serviceUsers = await createServiceModel.distinct("userId");
             // Find only users not used in create service profile model
             const result = await userModel.find(

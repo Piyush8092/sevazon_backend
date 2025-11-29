@@ -1,4 +1,5 @@
  let createServiceModel = require('../../model/createAllServiceProfileModel');
+ 
 const getAllServiceUser = async (req, res) => {
     try {  
          let page = req.query.page || 1;
