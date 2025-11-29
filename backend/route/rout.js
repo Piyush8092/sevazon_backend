@@ -4,7 +4,7 @@ const { SignupRout } = require('../controllers/signup');
 const  authGuard  = require('../middleware/auth');
 const connectDB=require('../DB/connection');
 const cookie=require('cookie-parser');
-const { CreateAdd,GetAllAdds,GetSpecificAdd,UpdateSpecificAdd,DeleteSpecificAdd,queryAdds, AddCreaterView, getAllNotVerifiedAdds, FilterAdds, specificAddAdminView, getTotalAdCount } = require('../controllers/Adds');
+const { CreateAdd,GetAllAdds,GetSpecificAdd,UpdateSpecificAdd,DeleteSpecificAdd,queryAdds, AddCreaterView, getAllNotVerifiedAdds, FilterAdds, specificAddAdminView, getTotalAdCount, getAllAdUser } = require('../controllers/Adds');
  const { CreateAllServices} = require('../controllers/AllServicesRegistration/createAllService');
 const { UpdateSpecificServices } = require('../controllers/AllServicesRegistration/UpdateSpecificServices');
 const { GetAllServiceListName } = require('../controllers/CreateAllServices/GetAllServiceListName');
@@ -47,7 +47,7 @@ const { queryProperty } = require('../controllers/Property/queryProperty');
 
 
 
-const { createOffer, showCreateOfferView, FilterOffer, specificOfferAdminView, getTotalOfferCount } = require('../controllers/offersAndDiscount');
+const { createOffer, showCreateOfferView, FilterOffer, specificOfferAdminView, getTotalOfferCount, getAllOfferUser } = require('../controllers/offersAndDiscount');
 const { GetAllOffer } = require('../controllers/offersAndDiscount');
 const { GetSpecificOffer } = require('../controllers/offersAndDiscount');
 const { UpdateSpecificOffer } = require('../controllers/offersAndDiscount');
@@ -262,6 +262,15 @@ const {getTotalPropertyCount } = require('../controllers/Property/getTotalProper
  const { getTotalNewsCount } = require('../controllers/NewsPost/getTotalNewsCount');
 const { getTotalLocalServicesCount } = require('../controllers/localServices/getTotalLocalServicesCount');
 const { getTotalContactCount}= require('../controllers/contact/getTotalContactCount');
+
+const { getAllUserService } = require('../controllers/AllServicesRegistration/getAllUserService');
+const { ALLuserJob } = require('../controllers/JobPost/ALLuserJob');
+const { getAllMatrimonyUser } = require('../controllers/MatrimonyPost/getAllMatrimonyUser');
+const { getAllPropertyUser } = require('../controllers/Property/getAllPropertyUser');
+const { getAllNewsUser } = require('../controllers/NewsPost/getAllNewsUser');
+const { getAllLocalServicesUser } = require('../controllers/localServices/getAllLocalServicesUser');
+const { sendNotificationToJobPoster } = require('../controllers/JobPost/sendNotificationToJobPoster');
+
    cookie();
 router.get('/', (req, res) => {
     res.send('Hello savazon!');
@@ -387,6 +396,7 @@ router.get('/get-specific-service/:id',GetSpecificServices);
 router.delete('/delete-specific-service/:id',authGuard,DeleteSpecsificServices);
 router.get('/get-specific-service-admin-view/:id',authGuard,AdminSpecificServiceView);
 router.get('/get-all-service',authGuard,GetAllServices);
+router.get('/get-all-user-service',getAllUserService);
 // api route is http://localhost:3000/api/get-query-service?query=Bengaluru
  router.get('/get-query-service',queryServices);
 // Flexible filtering API - supports multiple optional parameters
@@ -430,6 +440,7 @@ router.get('/get-all-job',authGuard,getAllJob);
 router.get('/get-specific-job/:id',getSpecificJob);
 router.put('/update-specific-job/:id',authGuard,updateJob);
 router.delete('/delete-specific-job/:id',authGuard,deleteJob);
+router.get('/get-all-user-job',ALLuserJob);
 router.get('/get-query-job',queryJobs);
 router.get('/get-total-job-count',authGuard,getTotalJobCount);
 // Flexible job filtering API - supports multiple optional parameters
@@ -437,6 +448,8 @@ router.get('/get-total-job-count',authGuard,getTotalJobCount);
 router.get('/filter-jobs',FilterJobs);
 router.get('/get-job-creator-view',authGuard,getJobCreaterView);
 router.get('/get-all-job-admin-view/:id',authGuard,AdminJobView);
+//send notification userId who not crate job post 
+router.get('/send-notification-to-job-poster',authGuard,sendNotificationToJobPoster);
 
 
 // job Apply api is => http://localhost:3000/api/apply-job/650666666666666666666666      body pass=>  {"title":"test","fullName":"test","qualification":"test","gender":"Male","pincode":"123456","city":"test","state":"test","address":"test","contactNumber":"1234567890"}
@@ -494,6 +507,7 @@ router.delete('/delete-specific-matrimony/:id',authGuard,deleteMatrimony);
 router.get('/get-matrimony-creator-view',authGuard,MatrimonyCreatorView);
 router.get('/get-specific-matrimony-admin-view/:id',authGuard,specificMatrimonyAdminView);
 router.get('/get-total-matrimony-count',authGuard,getTotalMatrimonyCount);
+router.get('/get-all-matrimon-user',getAllMatrimonyUser);
 // api is =>. http://localhost:3000/api/get-query-matrimony?query=Brahmin
 router.get('/get-query-matrimony', queryMatrimony);
 // Flexible matrimony filtering API - supports multiple optional parameters
@@ -540,6 +554,8 @@ router.get('/get-specific-property/:id',getSpecificqueryProperty);
 router.put('/update-specific-property/:id',authGuard,updateProperty);
 router.delete('/delete-specific-property/:id',authGuard,deleteProperty);
 router.get('/get-total-property-count',authGuard,getTotalPropertyCount);
+router.get('/get-all-property-user', getAllPropertyUser);
+
 // api is => http://localhost:3000/api/get-query-property?query=Bengaluru
 router.get('/get-query-property',queryProperty);
 router.get('/get-property-editor-view',authGuard,PropertyEditorView);
@@ -553,6 +569,7 @@ router.get('/get-specific-offer/:id',GetSpecificOffer);
 router.put('/update-specific-offer/:id',authGuard,UpdateSpecificOffer);
 router.delete('/delete-specific-offer/:id',authGuard,DeleteSpecificOffer);
 router.get('/get-total-offer-count',authGuard,getTotalOfferCount);
+router.get('/get-all-offer-user', getAllOfferUser);
 // api is => http://localhost:3000/api/get-query-offer?query=411001
 router.get('/get-query-offer',queryOffer);
 router.get('/show-create-offer-view',authGuard,showCreateOfferView);
@@ -568,6 +585,7 @@ router.get('/get-specific-ad/:id',GetSpecificAdd);
 router.put('/update-specific-ad/:id',authGuard,UpdateSpecificAdd);
 router.delete('/delete-specific-ad/:id',authGuard,DeleteSpecificAdd);
 router.get('/get-total-ad-count',authGuard,getTotalAdCount);
+router.get('/get-all-ad-user', getAllAdUser);
 // api is =>    http://localhost:3000/api/get-query-ad?query=Electronics
 router.get('/get-query-ad',queryAdds);
 router.get('/get-add-creator-view',authGuard,AddCreaterView);
@@ -608,6 +626,7 @@ router.delete('/delete-specific-news/:id',authGuard,deleteNews);
 router.get('/get-query-news',queryNews);
 router.get('/get-total-news-count',authGuard,getTotalNewsCount);
 router.get('/get-news-editor-view',authGuard,NewsEditorView);
+router.get('/get-all-news-user', getAllNewsUser);
 router.put('/news-comment/:news_id',authGuard,newsComment);
 router.get('/get-specific-news-admin-view/:id',authGuard,specificNewsAdminView);
 router.put('/news-like/:news_id',authGuard,newsLike);
@@ -638,6 +657,7 @@ router.get('/get-local-services-creator-view',authGuard,LocalServiceCreaterView)
 // api is => http://localhost:3000/api/get-query-local-services?query=local Service
 router.get('/get-query-local-services',queryLocalServices);
 router.get('/get-total-local-services-count',authGuard,getTotalLocalServicesCount);
+router.get('/get-all-local-services-user', getAllLocalServicesUser);
 router.put('/update-local-services/:id',authGuard,updateLocalService);
 router.get('/get-specific-local-services-admin-view/:id',authGuard,specificLoaclServicesAdminView);
 
@@ -649,7 +669,7 @@ router.put('/update-specific-lead/:id',authGuard,updateLead);
 router.delete('/delete-specific-lead/:id',authGuard,deleteLead);
 router.get('/get-query-lead',getQueryLead);
 router.get('/get-lead-creator-view',authGuard,getLeadCreaterView);
-router.get('/get-all-job-admin-view/:user_id',authGuard,AdminLeadView);
+ router.get('/get-all-job-admin-view/:user_id',authGuard,AdminLeadView);
 
 // FAQ route
 router.post('/create-faq',authGuard,createFaq);
@@ -853,6 +873,7 @@ router.get('/get-razorpay-key', getRazorpayKey);
 
 // Chat routes
 const chatRoutes = require('./chatRoutes');
+  
     router.use('/chat', chatRoutes);
 
 module.exports=router;

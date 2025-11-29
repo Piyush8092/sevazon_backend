@@ -125,6 +125,27 @@ const GetSpecificAdd = async (req, res) => {
     }
 };
 
+//get all adds by user id 
+const getAllAdUser = async (req, res) => {
+    try {  
+        let page = req.query.page || 1;
+        let limit = req.query.limit || 10;
+        const skip = (page - 1) * limit;
+
+        const result = await adModel.find().skip(skip).limit(limit);
+
+        const total = await adModel.countDocuments({userId: req.user._id});
+        const totalPages = Math.ceil(total / limit);
+
+        res.json({message: 'Ads retrieved successfully', status: 200, data: result, success: true, error: false, total, totalPages});
+    }
+    catch (e) {
+        res.json({message: 'Something went wrong', status: 500, data: e, success: false, error: true});
+
+        }
+};
+
+
 // update specific add
 const UpdateSpecificAdd = async (req, res) => {
     try {       
@@ -458,4 +479,4 @@ const specificAddAdminView = async (req, res) => {
 
 
 
-module.exports = {CreateAdd, GetAllAdds,getTotalAdCount, GetSpecificAdd, UpdateSpecificAdd, DeleteSpecificAdd, queryAdds,specificAddAdminView, AddCreaterView,getAllNotVerifiedAdds,FilterAdds};
+module.exports = {CreateAdd,getAllAdUser, GetAllAdds,getTotalAdCount, GetSpecificAdd, UpdateSpecificAdd, DeleteSpecificAdd, queryAdds,specificAddAdminView, AddCreaterView,getAllNotVerifiedAdds,FilterAdds};

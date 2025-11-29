@@ -81,6 +81,36 @@ const createOffer = async (req, res) => {
         });
     }
 };
+//all user offer
+let     getAllOfferUser = async (req, res) => {
+    try {  
+        let page = req.query.page || 1;
+        let limit = req.query.limit || 10;
+        const skip = (page - 1) * limit;
+        const result = await offer.find().skip(skip).limit(limit);
+        const total = await offer.countDocuments();
+        const totalPages = Math.ceil(total / limit);
+        
+        res.json({
+            message: 'Offers retrieved successfully', 
+            status: 200, 
+            data: result, 
+            total,
+            totalPages,
+            currentPage: page,
+            success: true, 
+            error: false
+        });
+    } catch (e) {
+        res.json({
+            message: 'Something went wrong', 
+            status: 500, 
+            data: e.message, 
+            success: false, 
+            error: true
+        });
+    }
+};
 
 // get all offers
 const GetAllOffer = async (req, res) => {
@@ -522,5 +552,5 @@ const specificOfferAdminView = async (req, res) => {
 
 
 
-module.exports = { createOffer, GetAllOffer, GetSpecificOffer, getTotalOfferCount,
+module.exports = { createOffer, GetAllOffer, getAllOfferUser,    GetSpecificOffer, getTotalOfferCount,
   specificOfferAdminView,UpdateSpecificOffer, DeleteSpecificOffer, queryOffer, showCreateOfferView ,FilterOffer};
