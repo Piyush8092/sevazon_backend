@@ -4,7 +4,7 @@ const { SignupRout } = require('../controllers/signup');
 const  authGuard  = require('../middleware/auth');
 const connectDB=require('../DB/connection');
 const cookie=require('cookie-parser');
-const { CreateAdd,GetAllAdds,GetSpecificAdd,UpdateSpecificAdd,DeleteSpecificAdd,queryAdds, AddCreaterView, getAllNotVerifiedAdds, FilterAdds, specificAddAdminView, getTotalAdCount, getAllAdUser } = require('../controllers/Adds');
+const { CreateAdd,GetAllAdds,GetSpecificAdd,UpdateSpecificAdd,DeleteSpecificAdd,queryAdds, AddCreaterView, getAllNotVerifiedAdds, FilterAdds, specificAddAdminView, getTotalAdCount, getAllAdUser, sendNotificationToAddPoster } = require('../controllers/Adds');
  const { CreateAllServices} = require('../controllers/AllServicesRegistration/createAllService');
 const { UpdateSpecificServices } = require('../controllers/AllServicesRegistration/UpdateSpecificServices');
 const { GetAllServiceListName } = require('../controllers/CreateAllServices/GetAllServiceListName');
@@ -47,7 +47,7 @@ const { queryProperty } = require('../controllers/Property/queryProperty');
 
 
 
-const { createOffer, showCreateOfferView, FilterOffer, specificOfferAdminView, getTotalOfferCount, getAllOfferUser } = require('../controllers/offersAndDiscount');
+const { createOffer, showCreateOfferView, FilterOffer, specificOfferAdminView, getTotalOfferCount, getAllOfferUser, sendNotificationToOfferPoster } = require('../controllers/offersAndDiscount');
 const { GetAllOffer } = require('../controllers/offersAndDiscount');
 const { GetSpecificOffer } = require('../controllers/offersAndDiscount');
 const { UpdateSpecificOffer } = require('../controllers/offersAndDiscount');
@@ -272,6 +272,9 @@ const { getAllLocalServicesUser } = require('../controllers/localServices/getAll
 const { sendNotificationToJobPoster } = require('../controllers/JobPost/sendNotificationToJobPoster');
 const { sendNotificationToMatrimonyPoster } = require('../controllers/MatrimonyPost/sendNotificationToMatrimonyPoster');
 const { sendNotificationToPropertyPoster } = require('../controllers/Property/sendNotificationToPropertyPoster');
+ const { sendNotificationToNewsPoster } = require('../controllers/NewsPost/sendNotificationToNewsPoster');
+ const { sendNotificationToLocalServicesPoster } = require('../controllers/localServices/sendNotificationToLocalServicesPoster');
+// const { sendNotificationToServicePoster } = require('../controllers/AllServicesRegistration/sendNotificationToServicePoster');
 
    cookie();
 router.get('/', (req, res) => {
@@ -413,6 +416,8 @@ router.get('/get-specific-service-rating',authGuard,getRatting);
 router.get('/get-service-creator-view',authGuard,getServiceCreaterView);
 router.put('/update-specific-service-important-link/:id',authGuard,updateImportantLink);
 router.put('/update-specific-service-time-slot/:id',authGuard,updateTimeSlot);
+//seND notification to service post user 
+// router.get('/send-notification-to-service-poster',authGuard,sendNotificationToServicePoster);
 
 
 // for report and block
@@ -576,6 +581,8 @@ router.put('/update-specific-offer/:id',authGuard,UpdateSpecificOffer);
 router.delete('/delete-specific-offer/:id',authGuard,DeleteSpecificOffer);
 router.get('/get-total-offer-count',authGuard,getTotalOfferCount);
 router.get('/get-all-offer-user', getAllOfferUser);
+router.get('/send-notification-to-offer-poster',authGuard,sendNotificationToOfferPoster);
+
 // api is => http://localhost:3000/api/get-query-offer?query=411001
 router.get('/get-query-offer',queryOffer);
 router.get('/show-create-offer-view',authGuard,showCreateOfferView);
@@ -599,6 +606,7 @@ router.get('/get-all-not-verified-adds',authGuard,getAllNotVerifiedAdds);
 // api is => http://localhost:3000/api/filter-adds?category=Electronics&route=Mobiles&position=Top&isActive=true&validTill=2025-12-31&location=Bengaluru&isVerified=true&search=iPhone
 router.get('/filter-adds',FilterAdds);
 router.get('/get-specific-ad-admin-view/:id',authGuard,specificAddAdminView);
+router.get('/send-notification-to-ad-poster',authGuard,sendNotificationToAddPoster);
 
 
 
@@ -637,6 +645,8 @@ router.put('/news-comment/:news_id',authGuard,newsComment);
 router.get('/get-specific-news-admin-view/:id',authGuard,specificNewsAdminView);
 router.put('/news-like/:news_id',authGuard,newsLike);
 router.put('/news-dislike/:news_id',authGuard,newsDislike);
+//send notification to news post user 
+router.get('/send-notification-to-news-poster',authGuard,sendNotificationToNewsPoster);
 
  
 
@@ -666,6 +676,9 @@ router.get('/get-total-local-services-count',authGuard,getTotalLocalServicesCoun
 router.get('/get-all-local-services-user', getAllLocalServicesUser);
 router.put('/update-local-services/:id',authGuard,updateLocalService);
 router.get('/get-specific-local-services-admin-view/:id',authGuard,specificLoaclServicesAdminView);
+//seND notification to local services post user 
+router.get('/send-notification-to-local-services-poster',authGuard,sendNotificationToLocalServicesPoster);
+
 
 //leads
 router.post('/create-lead',authGuard,createLead);
@@ -879,7 +892,7 @@ router.get('/get-razorpay-key', getRazorpayKey);
 
 // Chat routes
 const chatRoutes = require('./chatRoutes');
-    
+        
     router.use('/chat', chatRoutes);
 
 module.exports=router;

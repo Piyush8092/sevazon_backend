@@ -549,8 +549,45 @@ const specificOfferAdminView = async (req, res) => {
         }
 
 };
+//send notification userId who not crate offer post 
+const sendNotificationToOfferPoster = async (req, res) => {
+    try {
+        if (req.user.role !== 'ADMIN') {
+            return res.json({
+                message: 'Not authorized',
+                status: 500,
+                success: false,
+                error: true
+            });
+        }
+        // Get all users used in offer table
+        const offerUsers = await offer.distinct("userId");
+        // Find only users not used in offer model
+        const result = await userModel.find(
+            { _id: { $nin: offerUsers } },
+            { _id: 1, name: 1, email: 1, phone: 1 }  // return only 4 fields
+        );
+        res.json({
+            message: 'Users without offer fetched',
+            status: 200,
+            data: result,
+            success: true,
+            error: false
+        });
+    }
+    catch (error) {
+        console.error('Error:', error);
+        res.status(500).json({
+            message: 'Internal server error',
+            status: 500,
+            data: error.message,
+            success: false,
+            error: true
+        });
+    }
+};
 
 
 
-module.exports = { createOffer, GetAllOffer, getAllOfferUser,    GetSpecificOffer, getTotalOfferCount,
+module.exports = { createOffer, GetAllOffer, getAllOfferUser, sendNotificationToOfferPoster,   GetSpecificOffer, getTotalOfferCount,
   specificOfferAdminView,UpdateSpecificOffer, DeleteSpecificOffer, queryOffer, showCreateOfferView ,FilterOffer};
