@@ -20,7 +20,7 @@ if(result.profileType === 'Service Profile'){
 if(result.profileType === 'Business Profile'){
     GetID='B'+result._id;
 }
-res.json({message: 'Job created successfully', status: 200, data: {...result, GetID},result, success: true, error: false});
+res.json({message: 'Job created successfully', status: 200, data: {GetID,result}, success: true, error: false});
 
     } catch (e) {
         res.json({message: 'Something went wrong', status: 500, data: e, success: false, error: true});

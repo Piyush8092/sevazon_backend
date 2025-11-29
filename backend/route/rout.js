@@ -654,6 +654,9 @@ router.get('/send-notification-to-news-poster',authGuard,sendNotificationToNewsP
  
 
 
+ 
+
+
 
 // vehicles post
 router.post('/create-vehicle',authGuard,createVehicle);
