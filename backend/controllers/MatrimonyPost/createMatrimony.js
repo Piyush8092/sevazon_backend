@@ -4,6 +4,11 @@ const createMatrimony = async (req, res) => {
     try {       
         let payload = req.body;
         
+    let usersId = req.user._id;
+    let ExistMatrimony=await MatrimonyModel.findOne({userId:usersId});
+    if(ExistMatrimony){
+        return res.status(400).json({message: 'You have already created a matrimony profile'});
+    }
         // Validate all required fields - handle arrays properly
         if (!payload.profileCreatedFor || !payload.fullName || !payload.dateOfBirth || 
             !payload.gender || !payload.motherTongue || !Array.isArray(payload.motherTongue) || payload.motherTongue.length === 0 ||
