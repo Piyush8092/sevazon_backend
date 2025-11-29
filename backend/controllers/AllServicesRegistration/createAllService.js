@@ -72,16 +72,8 @@ const CreateAllServices = async (req, res) => {
           .status(400)
           .json({ message: "Business summary is required for Business Profile" });
       }
-      if (!payload.establishedInYear) {
-        return res
-          .status(400)
-          .json({ message: "Established in year is required for Business Profile" });
-      }
-      if (!payload.timing) {
-        return res
-          .status(400)
-          .json({ message: "Business timing is required for Business Profile" });
-      }
+     
+      
       if (!payload.catalogImages || payload.catalogImages.length === 0) {
         return res
           .status(400)

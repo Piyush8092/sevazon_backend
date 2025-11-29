@@ -97,20 +97,15 @@ const profileSchema = new mongoose.Schema({
     },
     establishedInYear: {
         type: String,
-        required: function() {
-            return this.profileType === 'Business Profile';
-        },
+         
     },
     timing: {
         type: String,
-        required: function() {
-            return this.profileType === 'Business Profile';
-        },
+        
     },
     email: {
         type: String,
-        required: [true, 'Email is required'],
-        validate: {
+         validate: {
             validator: function(v) {
                 return /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(v);
             },
