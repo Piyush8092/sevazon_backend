@@ -134,7 +134,7 @@ const getAllAdUser = async (req, res) => {
 
         const result = await adModel.find().skip(skip).limit(limit);
 
-        const total = await adModel.countDocuments({userId: req.user._id});
+        const total = await adModel.countDocuments();
         const totalPages = Math.ceil(total / limit);
 
         res.json({message: 'Ads retrieved successfully', status: 200, data: result, success: true, error: false, total, totalPages});
