@@ -263,7 +263,7 @@ const {getTotalPropertyCount } = require('../controllers/Property/getTotalProper
 const { getTotalLocalServicesCount } = require('../controllers/localServices/getTotalLocalServicesCount');
 const { getTotalContactCount}= require('../controllers/contact/getTotalContactCount');
 
-const { getAllUserService } = require('../controllers/AllServicesRegistration/getAllUserService');
+const { getAllUserService } = require('../controllers/AllServicesRegistration/GetAllUserService');
 const { ALLuserJob } = require('../controllers/JobPost/ALLuserJob');
 const { getAllMatrimonyUser } = require('../controllers/MatrimonyPost/getAllMatrimonyUser');
 const { getAllPropertyUser } = require('../controllers/Property/getAllPropertyUser');
