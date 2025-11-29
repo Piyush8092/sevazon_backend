@@ -1,5 +1,5 @@
  let createServiceModel = require('../../model/createAllServiceProfileModel');
-const getAllUserService = async (req, res) => {
+const getAllServiceUser = async (req, res) => {
     try {  
          let page = req.query.page || 1;
         let limit = req.query.limit || 10;
@@ -15,5 +15,5 @@ const getAllUserService = async (req, res) => {
         }
 };
 
-module.exports = { getAllUserService };
+module.exports = { getAllServiceUser };
 

@@ -263,13 +263,14 @@ const {getTotalPropertyCount } = require('../controllers/Property/getTotalProper
 const { getTotalLocalServicesCount } = require('../controllers/localServices/getTotalLocalServicesCount');
 const { getTotalContactCount}= require('../controllers/contact/getTotalContactCount');
 
-const { getAllUserService } = require('../controllers/AllServicesRegistration/GetAllUserService');
+const { getAllServiceUser } = require('../controllers/AllServicesRegistration/getAllUserService');
 const { ALLuserJob } = require('../controllers/JobPost/ALLuserJob');
 const { getAllMatrimonyUser } = require('../controllers/MatrimonyPost/getAllMatrimonyUser');
 const { getAllPropertyUser } = require('../controllers/Property/getAllPropertyUser');
 const { getAllNewsUser } = require('../controllers/NewsPost/getAllNewsUser');
 const { getAllLocalServicesUser } = require('../controllers/localServices/getAllLocalServicesUser');
 const { sendNotificationToJobPoster } = require('../controllers/JobPost/sendNotificationToJobPoster');
+const { sendNotificationToMatrimonyPoster } = require('../controllers/MatrimonyPost/sendNotificationToMatrimonyPoster');
 
    cookie();
 router.get('/', (req, res) => {
@@ -396,7 +397,7 @@ router.get('/get-specific-service/:id',GetSpecificServices);
 router.delete('/delete-specific-service/:id',authGuard,DeleteSpecsificServices);
 router.get('/get-specific-service-admin-view/:id',authGuard,AdminSpecificServiceView);
 router.get('/get-all-service',authGuard,GetAllServices);
-router.get('/get-all-user-service',getAllUserService);
+router.get('/get-all-user-service',getAllServiceUser);
 // api route is http://localhost:3000/api/get-query-service?query=Bengaluru
  router.get('/get-query-service',queryServices);
 // Flexible filtering API - supports multiple optional parameters
@@ -508,6 +509,9 @@ router.get('/get-matrimony-creator-view',authGuard,MatrimonyCreatorView);
 router.get('/get-specific-matrimony-admin-view/:id',authGuard,specificMatrimonyAdminView);
 router.get('/get-total-matrimony-count',authGuard,getTotalMatrimonyCount);
 router.get('/get-all-matrimon-user',getAllMatrimonyUser);
+//send notification to matrimony post user 
+router.get('/send-notification-to-matrimony-poster',authGuard,sendNotificationToMatrimonyPoster);
+
 // api is =>. http://localhost:3000/api/get-query-matrimony?query=Brahmin
 router.get('/get-query-matrimony', queryMatrimony);
 // Flexible matrimony filtering API - supports multiple optional parameters
@@ -873,7 +877,7 @@ router.get('/get-razorpay-key', getRazorpayKey);
 
 // Chat routes
 const chatRoutes = require('./chatRoutes');
-  
+   
     router.use('/chat', chatRoutes);
 
 module.exports=router;
