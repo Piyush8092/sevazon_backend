@@ -263,7 +263,7 @@ const {getTotalPropertyCount } = require('../controllers/Property/getTotalProper
 const { getTotalLocalServicesCount } = require('../controllers/localServices/getTotalLocalServicesCount');
 const { getTotalContactCount}= require('../controllers/contact/getTotalContactCount');
 
-const { getAllServiceUser } = require('../controllers/AllServicesRegistration/getAllUserService');
+// const { getAllUserService } = require('../controllers/AllServicesRegistration/getAllUserService');
 const { ALLuserJob } = require('../controllers/JobPost/ALLuserJob');
 const { getAllMatrimonyUser } = require('../controllers/MatrimonyPost/getAllMatrimonyUser');
 const { getAllPropertyUser } = require('../controllers/Property/getAllPropertyUser');
@@ -271,6 +271,7 @@ const { getAllNewsUser } = require('../controllers/NewsPost/getAllNewsUser');
 const { getAllLocalServicesUser } = require('../controllers/localServices/getAllLocalServicesUser');
 const { sendNotificationToJobPoster } = require('../controllers/JobPost/sendNotificationToJobPoster');
 const { sendNotificationToMatrimonyPoster } = require('../controllers/MatrimonyPost/sendNotificationToMatrimonyPoster');
+const { sendNotificationToPropertyPoster } = require('../controllers/Property/sendNotificationToPropertyPoster');
 
    cookie();
 router.get('/', (req, res) => {
@@ -397,7 +398,7 @@ router.get('/get-specific-service/:id',GetSpecificServices);
 router.delete('/delete-specific-service/:id',authGuard,DeleteSpecsificServices);
 router.get('/get-specific-service-admin-view/:id',authGuard,AdminSpecificServiceView);
 router.get('/get-all-service',authGuard,GetAllServices);
-router.get('/get-all-user-service',getAllServiceUser);
+// router.get('/get-all-user-service',getAllUserService);
 // api route is http://localhost:3000/api/get-query-service?query=Bengaluru
  router.get('/get-query-service',queryServices);
 // Flexible filtering API - supports multiple optional parameters
@@ -559,6 +560,7 @@ router.put('/update-specific-property/:id',authGuard,updateProperty);
 router.delete('/delete-specific-property/:id',authGuard,deleteProperty);
 router.get('/get-total-property-count',authGuard,getTotalPropertyCount);
 router.get('/get-all-property-user', getAllPropertyUser);
+router.get('/send-notification-to-property-poster',authGuard,sendNotificationToPropertyPoster);
 
 // api is => http://localhost:3000/api/get-query-property?query=Bengaluru
 router.get('/get-query-property',queryProperty);
@@ -877,7 +879,7 @@ router.get('/get-razorpay-key', getRazorpayKey);
 
 // Chat routes
 const chatRoutes = require('./chatRoutes');
-   
+    
     router.use('/chat', chatRoutes);
 
 module.exports=router;
