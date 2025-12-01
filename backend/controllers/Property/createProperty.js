@@ -2,18 +2,27 @@ let PropertyModel = require('../../model/property');
 let userModel = require('../../model/userModel');
 
 const createProperty = async (req, res) => {
-    try {       
+    try {
         let payload = req.body;
-        
+
+        // Check if BHK is required based on property type
+        const residentialProperties = ['Flat', 'House', 'Apartment', 'flat', 'house', 'apartment'];
+        const isBhkRequired = residentialProperties.includes(payload.property);
+
         // Validate all required fields
-        if (!payload.type || !payload.property || 
-            !payload.propertyType || !payload.bhk || !payload.areaSqft || 
-            !payload.facing || !payload.expectedPrice || !payload.description || 
-            !payload.furnishing || !payload.possession || !payload.postedBy || 
+        if (!payload.type || !payload.property ||
+            !payload.propertyType || !payload.areaSqft ||
+            !payload.facing || !payload.expectedPrice || !payload.description ||
+            !payload.furnishing || !payload.possession || !payload.postedBy ||
              !payload.pincode || !payload.address ||
-            payload.allowCallInApp === undefined ||  
+            payload.allowCallInApp === undefined ||
             payload.allowChat === undefined) {
             return res.status(400).json({message: 'All required fields must be provided'});
+        }
+
+        // Validate BHK only for residential properties
+        if (isBhkRequired && !payload.bhk) {
+            return res.status(400).json({message: 'BHK is required for residential properties (Flat, House, Apartment)'});
         }
 
         // Validate array fields

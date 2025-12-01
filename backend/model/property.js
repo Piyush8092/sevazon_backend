@@ -25,7 +25,11 @@ const PropertySchema = new mongoose.Schema({
     },
     bhk: {
         type: String,
-        required: [true, 'BHK is required'],
+        // BHK is only required for residential properties (Flat, House, Apartment)
+        required: function() {
+            const residentialProperties = ['Flat', 'House', 'Apartment', 'flat', 'house', 'apartment'];
+            return residentialProperties.includes(this.property);
+        },
     },
     areaSqft: {
         type: Number,
