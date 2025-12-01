@@ -116,6 +116,7 @@ const CreateAllServices = async (req, res) => {
     if(user.AnyServiceCreate === false)
     {
       user.AnyServiceCreate = true;
+      user.serviceIdOrBusinesId=result._id
       await user.save();
     }
 

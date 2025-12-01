@@ -24,6 +24,9 @@ const userSchema = new mongoose.Schema({
       default: undefined, // prevents saving null
 
     },
+    serviceIdOrBusinesId:{
+           type: String,
+    },
     password: {
         type: String,
         required: [true, 'Password is required'],
