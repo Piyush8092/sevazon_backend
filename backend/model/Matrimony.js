@@ -6,7 +6,11 @@ const MatrimonySchema = new mongoose.Schema({
         ref: 'user',
         required: [true, 'User is required'],
     },
-
+profileId:{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'createAllServiceProfileModel',
+    
+   },
     applyMatrimony: [{
     applyUserId: {
         type: mongoose.Schema.Types.ObjectId,

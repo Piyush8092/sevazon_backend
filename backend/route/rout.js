@@ -165,6 +165,7 @@ const { getSpecificFeedback } = require('../controllers/feedback/getSpecificFeed
 const { updateFeedback } = require('../controllers/feedback/updateFeedback');
 const { deleteFeedback } = require('../controllers/feedback/deleteFeedback');
 const { queryFeedback } = require('../controllers/feedback/queryFeedback');
+const { getAllUserForNotification } = require('../controllers/user/getAllUserForNotification');
 
 // Import FCM routes
 const fcmRoutes = require('./fcmRoutes');
@@ -313,6 +314,8 @@ router.get('/get-recommendations', getRecommendations);
 // user releted route =>service profile releretd route
 router.get('/get-user-detail',authGuard,getUserDetail);
 router.get('/get-all-user',authGuard,getAuthUserDetail);
+//get all user for notification
+router.get('/get-all-user-for-notification',authGuard,getAllUserForNotification);
 router.get('/get-specific-user/:id',authGuard,getSpecificUser);
 router.delete('/delete-user/:id',authGuard,deleteUser);
 // update service profile => normal user
@@ -652,6 +655,19 @@ router.put('/news-dislike/:news_id',authGuard,newsDislike);
 router.get('/send-notification-to-news-poster',authGuard,sendNotificationToNewsPoster);
 
  
+//report  send => any user 
+// router.put('/update-specific-news-report-block/:id',authGuard,UpdateReportAndBlockNews);
+
+// //block by user => can block any news
+// router.put('/block-news/:id',authGuard,blockNews);
+// //get all block news by user
+// router.get('/get-block-news-user-view',authGuard,getBlockNewsUserView);
+// //get all block news by admin
+// router.get('/get-block-news-admin-view',authGuard,getBlockNewsAdminView);
+// //bookmark => the news
+// router.put('/bookmark-news/:id',authGuard,bookmarkNews);
+// //get all bookmark news by user
+// router.get('/get-bookmark-news-user-view',authGuard,getBookmarkNewsUserView);
 
 
  
@@ -898,7 +914,7 @@ router.get('/get-razorpay-key', getRazorpayKey);
 
 // Chat routes
 const chatRoutes = require('./chatRoutes');
-         
+          
     router.use('/chat', chatRoutes);
 
 module.exports=router;

@@ -7,6 +7,11 @@ const PropertySchema = new mongoose.Schema({
         required: [true, 'User is required'],
     },
     
+      profileId:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'createAllServiceProfileModel',
+        
+       },
     // Property Type Selection
     type: {
         type: String,

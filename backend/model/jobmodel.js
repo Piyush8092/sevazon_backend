@@ -6,7 +6,11 @@ const jobSchema = new mongoose.Schema({
         ref: 'user',
         required: [true, 'User is required'],
     },
-   
+   profileId:{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'createAllServiceProfileModel',
+    
+   },
     title: {
         type: String,
         required: [true, 'Title is required'],
@@ -60,7 +64,7 @@ const jobSchema = new mongoose.Schema({
     },
     requiredExperience: {
         type: String,
-        required: [true, 'Required experience is required'],
+        // required: [true, 'Required experience is required'],
     },
     workShift: {
         type: [String],

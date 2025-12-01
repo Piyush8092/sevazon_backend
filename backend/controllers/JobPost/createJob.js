@@ -9,7 +9,7 @@ const createJob = async (req, res) => {
         if ( !payload.title || !payload.yourNameBusinessInstituteFirmCompany || 
             !payload.selectCategory || !payload.selectSubCategory || !payload.address || 
             !payload.pincode || !payload.description || !payload.salaryFrom || 
-            !payload.salaryTo || !payload.salaryPer || !payload.requiredExperience || 
+            !payload.salaryTo || !payload.salaryPer || 
             !payload.workShift || !payload.workMode || !payload.workType ||
             payload.allowCallInApp === undefined  || 
             payload.allowChat === undefined) {

@@ -31,6 +31,28 @@ let NewsSchame=new mongoose.Schema({
                 message: 'Minimum 1 and maximum 5 news images are required'
             }
         },
+        NewsReport:[{
+            report:{
+               type:String,
+               required:[true,'Report is required'],
+             },
+            reportAndBlockID: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref:'user',
+            }
+        
+        }],
+        NewsBlock:[{
+            block:{
+               type:String,
+               required:[true,'Report is required'],
+             },
+            reportAndBlockID: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref:'user',
+            }
+        
+        }],
         newsVideo:{
             type:String,
         },

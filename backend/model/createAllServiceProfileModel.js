@@ -25,8 +25,8 @@ const profileSchema = new mongoose.Schema({
     },
    serviceType: {
     type: String,
-    enum: ['premium', 'featured'],
-     default: 'featured'
+    enum: ['premium', 'featured','null'],
+     default: 'null'
 },
      gender: {
         type: String,

@@ -6,6 +6,11 @@ const offerSchema = new mongoose.Schema({
         type: String,
         required: [true, 'Title is required'],
     },  
+    profileId:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'createAllServiceProfileModel',
+        
+       },
     yourNameBusinessInstituteFirmOrganisation: {
         type: String,
         required: [true, 'Your Name/business/institute/firm/organisation is required'],

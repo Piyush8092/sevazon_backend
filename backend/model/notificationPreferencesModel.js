@@ -37,6 +37,10 @@ const notificationPreferencesSchema = new mongoose.Schema({
             }
         }
     },
+    image:{
+        type: String,
+        default: null
+    },
     // Category-specific preferences
     categories: {
         // Chat and messaging
