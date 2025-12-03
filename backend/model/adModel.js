@@ -51,6 +51,10 @@ const adSchema = new mongoose.Schema({
         type: String,
         // required: [true, 'Location is required'],
     },
+    pincode: {
+        type: String,
+        // Location-based filtering - pincode where the ad should be displayed
+    },
     adImages: {
         type: [String],
         validate: {

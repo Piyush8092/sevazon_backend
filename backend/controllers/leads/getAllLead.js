@@ -1,8 +1,23 @@
 let leadModel = require('../../model/leadModel');
 
+/**
+ * Helper function to calculate distance between two pincodes
+ * Uses numerical difference as a simple approximation
+ * @param {string} pincode1 - First pincode
+ * @param {string} pincode2 - Second pincode
+ * @returns {number} - Distance (numerical difference)
+ */
+const calculatePincodeDistance = (pincode1, pincode2) => {
+    if (!pincode1 || !pincode2) return Infinity;
+    const num1 = parseInt(pincode1);
+    const num2 = parseInt(pincode2);
+    if (isNaN(num1) || isNaN(num2)) return Infinity;
+    return Math.abs(num1 - num2);
+};
+
 const getAllLead = async (req, res) => {
     try {
-        let pincode = req.query.pincode; // Optional filter by pincode for location-based filtering
+        let pincode = req.query.pincode; // Optional filter by pincode for location-based filtering and sorting
 
         // Fetch all leads without pagination
         let result = await leadModel
@@ -10,10 +25,16 @@ const getAllLead = async (req, res) => {
             .sort({ createdAt: -1 }) // Sort by newest first
             .populate('userId', 'name email phone pincode'); // Include pincode in populated user data
 
-        // Filter by pincode if provided (location-based filtering)
-        // Since leads don't have their own pincode, we filter based on the creator's (userId) pincode
+        // Sort by distance from user's pincode if provided (nearest first)
+        // Since leads don't have their own pincode, we sort based on the creator's (userId) pincode
         if (pincode) {
-            result = result.filter(lead => lead.userId && lead.userId.pincode === pincode);
+            result = result.sort((a, b) => {
+                const pincodeA = a.userId?.pincode;
+                const pincodeB = b.userId?.pincode;
+                const distanceA = calculatePincodeDistance(pincode, pincodeA);
+                const distanceB = calculatePincodeDistance(pincode, pincodeB);
+                return distanceA - distanceB;
+            });
         }
 
         const total = result.length;

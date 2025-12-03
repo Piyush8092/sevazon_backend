@@ -1,6 +1,21 @@
  const adModel = require('../model/adModel');
  const userModel = require('../model/userModel');
- 
+
+/**
+ * Helper function to calculate distance between two pincodes
+ * Uses numerical difference as a simple approximation
+ * @param {string} pincode1 - First pincode
+ * @param {string} pincode2 - Second pincode
+ * @returns {number} - Distance (numerical difference)
+ */
+const calculatePincodeDistance = (pincode1, pincode2) => {
+    if (!pincode1 || !pincode2) return Infinity;
+    const num1 = parseInt(pincode1);
+    const num2 = parseInt(pincode2);
+    if (isNaN(num1) || isNaN(num2)) return Infinity;
+    return Math.abs(num1 - num2);
+};
+
 // create ads
 const CreateAdd = async (req, res) => {
     try {
@@ -148,7 +163,7 @@ const getAllAdUser = async (req, res) => {
         let page = req.query.page || 1;
         let limit = req.query.limit || 10;
         let placementPage = req.query.placementPage; // Optional filter by placement page
-        let pincode = req.query.pincode; // Optional filter by pincode for location-based ads
+        let pincode = req.query.pincode; // Optional filter by pincode for location-based ads and sorting
         const skip = (page - 1) * limit;
 
         // Build query filter
@@ -159,15 +174,22 @@ const getAllAdUser = async (req, res) => {
             queryFilter.placementPages = placementPage;
         }
 
-        // Filter by pincode if provided (location-based ad filtering)
+        // Fetch all results without pincode filtering (we'll sort by distance instead)
+        let result = await adModel.find(queryFilter);
+
+        // Sort by distance from user's pincode if provided (nearest first)
         if (pincode) {
-            queryFilter.pincode = pincode;
+            result = result.sort((a, b) => {
+                const distanceA = calculatePincodeDistance(pincode, a.pincode);
+                const distanceB = calculatePincodeDistance(pincode, b.pincode);
+                return distanceA - distanceB;
+            });
         }
 
-        const result = await adModel.find(queryFilter).skip(skip).limit(limit);
-
-        const total = await adModel.countDocuments(queryFilter);
+        // Apply pagination after sorting
+        const total = result.length;
         const totalPages = Math.ceil(total / limit);
+        result = result.slice(skip, skip + parseInt(limit));
 
         res.json({message: 'Ads retrieved successfully', status: 200, data: result, success: true, error: false, total, totalPages});
     }
@@ -338,7 +360,7 @@ const FilterAdds = async (req, res) => {
             route,          // selectSubCategory (legacy)
             position,       // selectSubCategory (legacy)
             placementPage,  // NEW: filter by placement page
-            pincode,        // NEW: filter by pincode for location-based ads
+            pincode,        // NEW: filter by pincode for location-based ads and sorting
             isActive,       // selectSubCategory
             validTill,      // selectSubCategory
             location,       // selectSubCategory
@@ -361,10 +383,9 @@ const FilterAdds = async (req, res) => {
         if (placementPage) {
             filter.placementPages = placementPage;
         }
-        // Filter by pincode for location-based ads
-        if (pincode) {
-            filter.pincode = pincode;
-        }
+        // Note: We don't filter by exact pincode match anymore
+        // Instead, we fetch all results and sort by distance
+
         // Legacy filters - kept for backward compatibility
         if (route) {
             filter.route = route;
@@ -393,37 +414,55 @@ const FilterAdds = async (req, res) => {
         const limitNum = parseInt(limit);
         const skip = (pageNum - 1) * limitNum;
 
-        // Sorting setup
-        const sortObj = {};
-        sortObj[sortBy] = sortOrder === 'asc' ? 1 : -1;
-
-        // Execute query with filters, pagination, and sorting
-        const result = await adModel
+        // Execute query with filters and populate
+        let result = await adModel
             .find(filter)
-            .populate('userId', 'name email phone profileImage')
-            .sort(sortObj)
-            .skip(skip)
-            .limit(limitNum);
-            const total = await adModel.countDocuments(filter);
-            const totalPages = Math.ceil(total / limitNum);
+            .populate('userId', 'name email phone profileImage');
+
+        // Sort by distance from user's pincode if provided (nearest first)
+        if (pincode) {
+            result = result.sort((a, b) => {
+                const distanceA = calculatePincodeDistance(pincode, a.pincode);
+                const distanceB = calculatePincodeDistance(pincode, b.pincode);
+                return distanceA - distanceB;
+            });
+        } else {
+            // Apply default sorting if no pincode provided
+            const sortObj = {};
+            sortObj[sortBy] = sortOrder === 'asc' ? 1 : -1;
+            result = result.sort((a, b) => {
+                const aVal = a[sortBy];
+                const bVal = b[sortBy];
+                if (sortOrder === 'asc') {
+                    return aVal > bVal ? 1 : -1;
+                } else {
+                    return aVal < bVal ? 1 : -1;
+                }
+            });
+        }
+
+        // Apply pagination after sorting
+        const total = result.length;
+        const totalPages = Math.ceil(total / limitNum);
+        result = result.slice(skip, skip + limitNum);
 
         res.json({
-            message: 'Adds retrieved successfully', 
-            status: 200, 
+            message: 'Adds retrieved successfully',
+            status: 200,
             data: result,
             total,
             totalPages,
             currentPage: pageNum,
-            success: true, 
+            success: true,
             error: false
         });
     }
     catch (e) {
         res.json({
-            message: 'Something went wrong', 
-            status: 500, 
-            data: e.message, 
-            success: false, 
+            message: 'Something went wrong',
+            status: 500,
+            data: e.message,
+            success: false,
             error: true
         });
     }

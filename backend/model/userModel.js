@@ -190,6 +190,10 @@ newsBlockID: [{
         type: String,
         default: null
     },
+    pincode: {
+        type: String,
+        default: null
+    },
 }, { timestamps: true });
 
 /**
