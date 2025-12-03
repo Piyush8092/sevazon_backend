@@ -1,17 +1,18 @@
 let createServiceModel = require('../../model/createAllServiceProfileModel');
 
 const queryServices = async (req, res) => {
-    try {       
+    try {
         let query = req.query.query;
         if (!query) {
             return res.status(400).json({message: 'Query parameter is required'});
         }
-        
+
         let regexQuery = new RegExp(query, 'i');
         let page = parseInt(req.query.page) || 1;
         let limit = parseInt(req.query.limit) || 10;
+        let pincode = req.query.pincode; // Optional filter by pincode for location-based filtering
         const skip = (page - 1) * limit;
-        
+
         // Search across multiple fields based on the model
         const searchQuery = {
             $or: [
@@ -33,11 +34,16 @@ const queryServices = async (req, res) => {
                 { catalogImages: regexQuery },
                 { timeSlot: regexQuery },
                 { importantLink: regexQuery },
-               
+
 
             ]
         };
-        
+
+        // Add pincode filter if provided (location-based filtering)
+        if (pincode) {
+            searchQuery.pincode = pincode;
+        }
+
         const result = await createServiceModel.find(searchQuery).skip(skip).limit(limit);
         const total = await createServiceModel.countDocuments(searchQuery);
         const totalPages = Math.ceil(total / limit);

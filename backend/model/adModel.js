@@ -1,10 +1,10 @@
 let mongoose = require('mongoose');
- 
-const adSchema = new mongoose.Schema({   
+
+const adSchema = new mongoose.Schema({
     title: {
         type: String,
         // required: [true, 'Title is required'],
-    },  
+    },
     description: {
         type: String,
         // required: [true, 'Description is required'],
@@ -16,12 +16,19 @@ const adSchema = new mongoose.Schema({
     },
     isVerified: {
         type: Boolean,
-        default: false 
+        default: false
     },
     category: {
         type: String,
         // required: [true, 'Category is required'],
     },
+    // User-controlled placement pages - where the ad should be displayed
+    placementPages: {
+        type: [String],
+        enum: ['home', 'news', 'service', 'property', 'job', 'matrimony', 'vehicle', 'offer', 'editor'],
+        default: ['home']
+    },
+    // Legacy fields - kept for backward compatibility but no longer used for placement control
     route:{
         type: String,
         //give all get route of backend as enum

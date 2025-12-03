@@ -3,13 +3,28 @@
  
 // create ads
 const CreateAdd = async (req, res) => {
-    try {       
+    try {
         let payload = req.body;
-        
-     
+
+
         // Validate images array
         if (!payload.adImages || !Array.isArray(payload.adImages) || payload.adImages.length < 1 || payload.adImages.length > 5) {
             return res.status(400).json({message: 'Minimum 1 and maximum 5 ad images are required'});
+        }
+
+        // Validate placementPages if provided
+        if (payload.placementPages) {
+            if (!Array.isArray(payload.placementPages) || payload.placementPages.length === 0) {
+                return res.status(400).json({message: 'placementPages must be a non-empty array'});
+            }
+            const validPages = ['home', 'news', 'service', 'property', 'job', 'matrimony', 'vehicle', 'offer', 'editor'];
+            const invalidPages = payload.placementPages.filter(page => !validPages.includes(page));
+            if (invalidPages.length > 0) {
+                return res.status(400).json({message: `Invalid placement pages: ${invalidPages.join(', ')}`});
+            }
+        } else {
+            // Default to home page if not specified
+            payload.placementPages = ['home'];
         }
 
         // Verification is optional - set isVerified based on user's KYC status
@@ -18,8 +33,10 @@ const CreateAdd = async (req, res) => {
 
         payload.userId = req.user._id;
         payload.isVerified = isUserVerified;
+        // User-controlled placement - no admin approval needed for placement
+        // Status is set to Pending for content review, but placement is user-controlled
         payload.status = 'Pending';
-        
+
         const newAd = new adModel(payload);
         const result = await newAd.save();
         let user = await userModel.findById(req.user._id);
@@ -30,10 +47,10 @@ const CreateAdd = async (req, res) => {
         }
 
         res.json({
-            message: 'Ad created successfully', 
-            status: 200, 
-            data: result, 
-            success: true, 
+            message: 'Ad created successfully',
+            status: 200,
+            data: result,
+            success: true,
             error: false
         });
 
@@ -125,16 +142,31 @@ const GetSpecificAdd = async (req, res) => {
     }
 };
 
-//get all adds by user id 
+//get all adds by user id
 const getAllAdUser = async (req, res) => {
-    try {  
+    try {
         let page = req.query.page || 1;
         let limit = req.query.limit || 10;
+        let placementPage = req.query.placementPage; // Optional filter by placement page
+        let pincode = req.query.pincode; // Optional filter by pincode for location-based ads
         const skip = (page - 1) * limit;
 
-        const result = await adModel.find().skip(skip).limit(limit);
+        // Build query filter
+        let queryFilter = { status: 'Approved', isActive: true };
 
-        const total = await adModel.countDocuments();
+        // Filter by placement page if provided
+        if (placementPage) {
+            queryFilter.placementPages = placementPage;
+        }
+
+        // Filter by pincode if provided (location-based ad filtering)
+        if (pincode) {
+            queryFilter.pincode = pincode;
+        }
+
+        const result = await adModel.find(queryFilter).skip(skip).limit(limit);
+
+        const total = await adModel.countDocuments(queryFilter);
         const totalPages = Math.ceil(total / limit);
 
         res.json({message: 'Ads retrieved successfully', status: 200, data: result, success: true, error: false, total, totalPages});
@@ -303,8 +335,10 @@ const FilterAdds = async (req, res) => {
         // Extract query parameters
         const {
             category,       // selectCategory
-            route,          // selectSubCategory
-            position,       // selectSubCategory
+            route,          // selectSubCategory (legacy)
+            position,       // selectSubCategory (legacy)
+            placementPage,  // NEW: filter by placement page
+            pincode,        // NEW: filter by pincode for location-based ads
             isActive,       // selectSubCategory
             validTill,      // selectSubCategory
             location,       // selectSubCategory
@@ -323,6 +357,15 @@ const FilterAdds = async (req, res) => {
         if (category) {
             filter.category = category;
         }
+        // Filter by placement page (user-controlled)
+        if (placementPage) {
+            filter.placementPages = placementPage;
+        }
+        // Filter by pincode for location-based ads
+        if (pincode) {
+            filter.pincode = pincode;
+        }
+        // Legacy filters - kept for backward compatibility
         if (route) {
             filter.route = route;
         }

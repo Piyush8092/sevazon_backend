@@ -2,13 +2,21 @@ let leadModel = require('../../model/leadModel');
 
 const getAllLead = async (req, res) => {
     try {
+        let pincode = req.query.pincode; // Optional filter by pincode for location-based filtering
+
         // Fetch all leads without pagination
-        const result = await leadModel
+        let result = await leadModel
             .find()
             .sort({ createdAt: -1 }) // Sort by newest first
-            .populate('userId', 'name email phone');
+            .populate('userId', 'name email phone pincode'); // Include pincode in populated user data
 
-        const total = await leadModel.countDocuments();
+        // Filter by pincode if provided (location-based filtering)
+        // Since leads don't have their own pincode, we filter based on the creator's (userId) pincode
+        if (pincode) {
+            result = result.filter(lead => lead.userId && lead.userId.pincode === pincode);
+        }
+
+        const total = result.length;
 
         res.json({
             message: 'Leads fetched successfully',

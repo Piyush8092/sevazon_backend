@@ -3,14 +3,24 @@ const createServiceModel = require("../../model/createAllServiceProfileModel");
 
 // get all services
 const GetAllServices = async (req, res) => {
-    try {  
+    try {
         let page = req.query.page || 1;
         let limit = req.query.limit || 10;
+        let pincode = req.query.pincode; // Optional filter by pincode for location-based filtering
         const skip = (page - 1) * limit;
-        const result = await createServiceModel.find({userId:{$nin: [req.user._id]}}).skip(skip).limit(limit).populate('userId', 'name email phone');
-        const total = await createServiceModel.countDocuments();
+
+        // Build query filter - exclude current user's services
+        let queryFilter = {userId:{$nin: [req.user._id]}};
+
+        // Filter by pincode if provided (location-based filtering)
+        if (pincode) {
+            queryFilter.pincode = pincode;
+        }
+
+        const result = await createServiceModel.find(queryFilter).skip(skip).limit(limit).populate('userId', 'name email phone');
+        const total = await createServiceModel.countDocuments(queryFilter);
         const totalPages = Math.ceil(total / limit);
-        res.json({message: 'Job created successfully', status: 200, data: result, success: true, error: false, total, totalPages});
+        res.json({message: 'Services retrieved successfully', status: 200, data: result, success: true, error: false, total, totalPages});
     } catch (e) {
         res.json({message: 'Something went wrong', status: 500, data: e, success: false, error: true});
 
