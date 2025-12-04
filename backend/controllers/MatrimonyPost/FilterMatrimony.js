@@ -212,6 +212,7 @@ const FilterMatrimony = async (req, res) => {
         const result = await MatrimonyModel
             .find(filter)
             .populate('userId', 'name email phone profileImage')
+            .populate('applyMatrimony.applyUserId', '_id name email phone')
             .sort(sortObj)
             .skip(skip)
             .limit(limitNum);

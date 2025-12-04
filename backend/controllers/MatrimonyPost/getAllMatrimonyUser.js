@@ -1,12 +1,18 @@
 let MatrimonyModel = require('../../model/Matrimony');
 
 const getAllMatrimonyUser = async (req, res) => {
-    try {  
+    try {
         let page = req.query.page || 1;
 
         let limit = req.query.limit || 10;
         const skip = (page - 1) * limit;
-        const result = await MatrimonyModel.find().skip(skip).limit(limit);
+
+        // Populate applyMatrimony.applyUserId to include user IDs for frontend checking
+        const result = await MatrimonyModel.find()
+            .populate('applyMatrimony.applyUserId', '_id name email phone')
+            .skip(skip)
+            .limit(limit);
+
         const total = await MatrimonyModel.countDocuments();
         const totalPages = Math.ceil(total / limit);
 
