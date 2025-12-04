@@ -11,14 +11,28 @@ try{
     if(ExistMatrimony.userId.toString() === userId.toString() ){
         return res.status(400).json({message: 'You cannot apply to your own profile'});
     }
-    let existingApplication = await MatrimonyModel.findOne({
-        'applyMatrimony.applyUserId': userId,
-        'applyMatrimony.applyMatrimonyStatus': true,
-    });
-    if(existingApplication){
-        return res.status(400).json({message: 'You have already applied to this profile'});
+
+    // Check if user has already applied to THIS specific profile
+    const existingApplicationIndex = ExistMatrimony.applyMatrimony.findIndex(
+        app => app.applyUserId.toString() === userId.toString()
+    );
+
+    if(existingApplicationIndex !== -1){
+        const existingApp = ExistMatrimony.applyMatrimony[existingApplicationIndex];
+
+        // If the previous application was rejected, remove it and allow re-applying
+        if(existingApp.reject === true || existingApp.status === 'Rejected'){
+            ExistMatrimony.applyMatrimony.splice(existingApplicationIndex, 1);
+            // Continue to add new application below
+        }
+        // If the application is pending or accepted, don't allow duplicate
+        else if(existingApp.status === 'Pending' || existingApp.accept === true || existingApp.status === 'Accepted'){
+            return res.status(400).json({message: 'You have already applied to this profile'});
+        }
     }
-    ExistMatrimony.applyMatrimony.push({applyUserId: userId, applyMatrimonyStatus: true, status: 'Pending'});
+
+    // Add new application
+    ExistMatrimony.applyMatrimony.push({applyUserId: userId, applyMatrimonyStatus: true, status: 'Pending', reject: false, accept: false});
 
     await ExistMatrimony.save();
     res.json({message: 'Matrimony application submitted successfully', status: 200, data: ExistMatrimony, success: true, error: false});
