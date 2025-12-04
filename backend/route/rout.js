@@ -217,6 +217,8 @@ const { acceptMatrimony } = require('../controllers/applyMatrimony/AcceptMatrimo
 const { rejectMatrimony } = require('../controllers/applyMatrimony/rejectMatrimony');
 const { getAcceptMetrimony } = require('../controllers/applyMatrimony/getAcceptMetrimony');
 const { getRejectMatrimony } = require('../controllers/applyMatrimony/getRejectMatrimony');
+const { getSentMatrimony } = require('../controllers/applyMatrimony/getSentMatrimony');
+const { cancelMatrimonyRequest } = require('../controllers/applyMatrimony/cancelMatrimonyRequest');
 const {getTotalJobCount } = require('../controllers/JobPost/getTotalJobCount');
 // Pricing Plan controllers
 const { createPricingPlan } = require('../controllers/pricingPlan/createPricingPlan');
@@ -549,9 +551,11 @@ router.get('/get-bookmark-Matrimony-profile',authGuard,getBookmarkMatrimonyProfi
 
 
 // for apply matrimony
-//api is => http://localhost:3000/api/apply-matrimony/matrimony_id    
+//api is => http://localhost:3000/api/apply-matrimony/matrimony_id
 router.post('/apply-matrimony/:id',authGuard,applyMatrimony);
+router.delete('/cancel-matrimony-request/:id',authGuard,cancelMatrimonyRequest);
 router.get('/get-all-apply-matrimony',authGuard,getAllApplyApplication);
+router.get('/get-all-sent-matrimony',authGuard,getSentMatrimony);
 router.get('/get-specific-apply-matrimony/:id',getSpecificApplyMatrimony);
 //pass body {"accept":true}
 router.put('/accept-matrimony/:id/:index',authGuard,acceptMatrimony);
