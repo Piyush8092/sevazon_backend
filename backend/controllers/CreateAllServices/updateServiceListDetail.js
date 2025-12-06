@@ -22,7 +22,7 @@ const updateServiceListDetail = async (req, res) => {
                 name: payload.newSubService.name,
                 image: payload.newSubService.image
             };
-            if (newSubService.name && newSubService.image) {
+            if (newSubService.name && newSubService.name.trim()) {
                 existService.subService.push(newSubService);
                 payload.subService = existService.subService;
             }
@@ -32,7 +32,7 @@ const updateServiceListDetail = async (req, res) => {
             payload.subService = existService.subService;
         } else if (payload.operation === 'update_subcategory' && payload.subServiceIndex !== undefined && payload.updatedSubService) {
             // Update specific subcategory
-            if (payload.updatedSubService.name && payload.updatedSubService.image) {
+            if (payload.updatedSubService.name && payload.updatedSubService.name.trim()) {
                 existService.subService[payload.subServiceIndex] = {
                     name: payload.updatedSubService.name,
                     image: payload.updatedSubService.image
@@ -46,7 +46,7 @@ const updateServiceListDetail = async (req, res) => {
                     name: item.name,
                     image: item.image,
                 }))
-                .filter((item) => item.name && item.image);
+                .filter((item) => item.name && item.name.trim());
         }
 
         // Remove operation field before update

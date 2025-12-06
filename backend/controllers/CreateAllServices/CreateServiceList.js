@@ -25,7 +25,7 @@ if(ExistService){
                     name: item.name,
                     image: item.image,
                 }))
-                .filter((item) => item.name && item.image);
+                .filter((item) => item.name && item.name.trim());
         } else {
             payload.subService = [];
         }
