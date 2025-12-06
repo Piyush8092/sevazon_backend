@@ -1,6 +1,6 @@
-const user = require('./model/userModel');
-const TempSignup = require('./model/tempSignupModel');
-const otpModel = require('./model/otpModel');
+const user = require('../model/userModel');
+const TempSignup = require('../model/tempSignupModel');
+const otpModel = require('../model/otpModel');
 const jwt = require('jsonwebtoken');
 
 /**
