@@ -118,6 +118,7 @@ const { GetSubServiceList } = require('../controllers/CreateAllServices/GetSubSe
 const { sendOTP } = require('../controllers/otp/sendOTP');
 const { verifyOTP } = require('../controllers/otp/verifyOTP');
 const { getOtp } = require('../controllers/otp/getOtp');
+const { verifySignupOTP } = require('../controllers/verifySignupOTP');
 const { updateLike } = require('../controllers/AllServicesRegistration/updatelike');
 const { updateDislike } = require('../controllers/AllServicesRegistration/updateDislike');
 const { UpdateReview } = require('../controllers/AllServicesRegistration/UpdateReview');
@@ -296,6 +297,9 @@ router.get('/auth-user',authGuard,getAuthUserDetail);
 router.post('/send-otp',sendOTP);
 router.post('/verify-otp',verifyOTP);
 router.get('/resend-otp/:phone',getOtp);
+
+// for signup with OTP verification
+router.post('/verify-signup-otp',verifySignupOTP);
 
 // Unified search across all content types
 // api is => http://localhost:3000/api/unified-search?query=Mumbai

@@ -11,7 +11,8 @@
     "test:agora": "node scripts/testAgoraService.js",
     "test:agora:dev": "node scripts/testAgoraDevMode.js",
     "test:agora:routes": "jest tests/agoraRoutes.functional.test.js",
-    "test:agora:routes:watch": "jest tests/agoraRoutes.functional.test.js --watch"
+    "test:agora:routes:watch": "jest tests/agoraRoutes.functional.test.js --watch",
+    "test:fast2sms": "node scripts/testFast2SMS.js"
   },
   "repository": {
     "type": "git",
