@@ -12,13 +12,14 @@ class Fast2SMSService {
         this.apiKey = process.env.FAST2SMS_API_KEY || 'ysJkdiu9PUmTNhgnKfOHYaDj8BW7I5Ew0QtzLF4MXxrlceqoZv21NUDRczmSjp6ZyPXBHTr7ou45e0OM';
         this.baseUrl = 'https://www.fast2sms.com/dev';
         this.senderId = process.env.FAST2SMS_SENDER_ID || ''; // Optional sender ID
-        
+
         // Create axios instance with default configuration
+        // NOTE: For GET requests, authorization must be sent as query parameter
+        // For POST requests, authorization must be sent in header
         this.client = axios.create({
             baseURL: this.baseUrl,
             timeout: 30000, // 30 seconds timeout
             headers: {
-                'authorization': this.apiKey,
                 'Content-Type': 'application/json',
             },
         });
@@ -82,7 +83,9 @@ class Fast2SMSService {
 
             // Prepare request parameters - using 'q' route (quick transactional route)
             // This route doesn't require DLT registration and works for testing
+            // IMPORTANT: For GET requests, authorization must be included as a query parameter
             const params = {
+                authorization: this.apiKey, // API key as query parameter for GET requests
                 route: 'q', // Quick transactional route (use 'dlt' for production with registered templates)
                 message: message,
                 language: 'english',
@@ -92,6 +95,7 @@ class Fast2SMSService {
 
             console.log(`📱 Sending SMS with params:`, {
                 ...params,
+                authorization: this.apiKey ? `${this.apiKey.substring(0, 10)}...` : 'Not set', // Masked for security
                 numbers: `${cleanedPhone.substring(0, 3)}****${cleanedPhone.substring(7)}` // Masked for security
             });
 
