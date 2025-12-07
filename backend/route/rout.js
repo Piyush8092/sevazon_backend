@@ -239,6 +239,8 @@ const { createPaymentOrder } = require('../controllers/payment/createPaymentOrde
 const { verifyPayment } = require('../controllers/payment/verifyPayment');
 const { getPaymentHistory } = require('../controllers/payment/getPaymentHistory');
 const { getRazorpayKey } = require('../controllers/payment/getRazorpayKey');
+const { getUserActiveSubscriptions } = require('../controllers/payment/getUserActiveSubscriptions');
+const { checkFeatureAccess } = require('../controllers/payment/checkFeatureAccess');
 
  cookie();
  const { getAllPrimiumUser } = require('../controllers/user/getAllPrimiumUser');
@@ -919,6 +921,10 @@ router.post('/create-payment-order', authGuard, createPaymentOrder);
 router.post('/verify-payment', authGuard, verifyPayment);
 router.get('/get-payment-history', authGuard, getPaymentHistory);
 router.get('/get-razorpay-key', getRazorpayKey);
+
+// User subscription and feature access routes
+router.get('/user/active-subscriptions', authGuard, getUserActiveSubscriptions);
+router.post('/user/check-feature-access', authGuard, checkFeatureAccess);
 
 // Chat routes
 const chatRoutes = require('./chatRoutes');
