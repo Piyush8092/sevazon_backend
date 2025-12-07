@@ -1,4 +1,5 @@
 let leadModel = require('../../model/leadModel');
+let userModel = require('../../model/userModel');
 
 /**
  * Helper function to calculate distance between two pincodes
@@ -17,6 +18,30 @@ const calculatePincodeDistance = (pincode1, pincode2) => {
 
 const getAllLead = async (req, res) => {
     try {
+        // Check if user has created a Service/Business profile
+        const userId = req.user._id;
+        const user = await userModel.findById(userId);
+
+        if (!user) {
+            return res.status(404).json({
+                message: 'User not found',
+                status: 404,
+                success: false,
+                error: true
+            });
+        }
+
+        // Verify user has Service/Business profile
+        if (!user.AnyServiceCreate) {
+            return res.status(403).json({
+                message: 'You need to create a Service/Business profile to view leads',
+                status: 403,
+                success: false,
+                error: true,
+                requiresProfile: true
+            });
+        }
+
         let pincode = req.query.pincode; // Optional filter by pincode for location-based filtering and sorting
 
         // Fetch all leads without pagination
