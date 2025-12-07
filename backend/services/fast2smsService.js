@@ -80,13 +80,13 @@ class Fast2SMSService {
             // Prepare SMS message
             const message = `Your OTP for Sevazon verification is ${otp}. Valid for 5 minutes. Do not share with anyone.`;
 
-            // Prepare request parameters for DLT route
+            // Prepare request parameters - using 'q' route (quick transactional route)
+            // This route doesn't require DLT registration and works for testing
             const params = {
-                route: 'dlt',
-                sender_id: this.senderId,
+                route: 'q', // Quick transactional route (use 'dlt' for production with registered templates)
                 message: message,
-                variables_values: otp, // For DLT template variables
-                flash: '0', // 0 for normal SMS, 1 for flash SMS
+                language: 'english',
+                flash: 0, // 0 for normal SMS, 1 for flash SMS
                 numbers: cleanedPhone,
             };
 
