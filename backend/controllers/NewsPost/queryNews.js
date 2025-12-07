@@ -1,4 +1,5 @@
 let NewsPostModel = require('../../model/NewsPost');
+let userModel = require('../../model/userModel');
 
 const queryNews = async (req, res) => {
     try {
@@ -33,6 +34,15 @@ const queryNews = async (req, res) => {
         // Add category filter if provided
         if (category && category !== 'All') {
             searchQuery.category = category;
+        }
+
+        // Get user's blocked authors list (if authenticated)
+        if (req.user && req.user._id) {
+            const user = await userModel.findById(req.user._id).select('blockedNewsAuthors');
+            if (user && user.blockedNewsAuthors && user.blockedNewsAuthors.length > 0) {
+                // Exclude news from blocked authors
+                searchQuery.userId = {$nin: user.blockedNewsAuthors};
+            }
         }
 
         const result = await NewsPostModel.find(searchQuery).skip(skip).limit(limit).populate('userId', 'name email ');

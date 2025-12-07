@@ -64,6 +64,7 @@ const { createNews } = require('../controllers/NewsPost/createNews');
 const { getAllNews } = require('../controllers/NewsPost/getAllNews');
 const { getSpecificNews } = require('../controllers/NewsPost/getSpecificNews');
 const { updateNews } = require('../controllers/NewsPost/updateNews');
+const { blockNewsAuthor, unblockNewsAuthor } = require('../controllers/NewsPost/blockNewsAuthor');
 const { deleteNews } = require('../controllers/NewsPost/deleteNews');
 const {  queryNews } = require('../controllers/NewsPost/queryNews');
 const { updateFollower } = require('../controllers/newsEditor/updateFollower');
@@ -142,6 +143,9 @@ const { updateContact } = require('../controllers/contact/updateContact');
 const { getSpecificContact } = require('../controllers/contact/getSpecificContact');
 const { newsDislike } = require('../controllers/NewsPost/newsDisLike');
 const {getTotalUserCount } = require('../controllers/user/getTotalUserCount');
+const { UpdateReportAndBlockNews } = require('../controllers/NewsPost/UpdateReportAndBlockNews');
+const { bookmarkNews } = require('../controllers/NewsPost/bookmarkNews');
+const { getBookmarkNewsUserView } = require('../controllers/NewsPost/getBookmarkNewsUserView');
 
 // Contact Settings controllers
 const { getContactSettings } = require('../controllers/contactSettings/getContactSettings');
@@ -659,23 +663,19 @@ router.put('/news-comment/:news_id',authGuard,newsComment);
 router.get('/get-specific-news-admin-view/:id',authGuard,specificNewsAdminView);
 router.put('/news-like/:news_id',authGuard,newsLike);
 router.put('/news-dislike/:news_id',authGuard,newsDislike);
-//send notification to news post user 
+//send notification to news post user
 router.get('/send-notification-to-news-poster',authGuard,sendNotificationToNewsPoster);
 
- 
-//report  send => any user 
-// router.put('/update-specific-news-report-block/:id',authGuard,UpdateReportAndBlockNews);
+// Block/Unblock news author (prevents seeing all news from this author)
+router.put('/block-news-author/:newsId',authGuard,blockNewsAuthor);
+router.put('/unblock-news-author/:authorId',authGuard,unblockNewsAuthor);
 
-// //block by user => can block any news
-// router.put('/block-news/:id',authGuard,blockNews);
-// //get all block news by user
-// router.get('/get-block-news-user-view',authGuard,getBlockNewsUserView);
-// //get all block news by admin
-// router.get('/get-block-news-admin-view',authGuard,getBlockNewsAdminView);
-// //bookmark => the news
-// router.put('/bookmark-news/:id',authGuard,bookmarkNews);
-// //get all bookmark news by user
-// router.get('/get-bookmark-news-user-view',authGuard,getBookmarkNewsUserView);
+// Report news (sends report to admin for review)
+router.put('/update-specific-news-report-block/:id',authGuard,UpdateReportAndBlockNews);
+
+// Bookmark/Save news
+router.put('/bookmark-news/:id',authGuard,bookmarkNews);
+router.get('/get-bookmark-news-user-view',authGuard,getBookmarkNewsUserView);
 
 
  

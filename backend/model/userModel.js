@@ -122,6 +122,11 @@ newsBlockID: [{
         type: mongoose.Schema.Types.ObjectId,
         ref:'NewsPost',
     }],
+    // Blocked news authors - prevents seeing news from these authors
+    blockedNewsAuthors: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref:'user',
+    }],
     // Following/Followers for news editors
     followingEditors: [{
         editorId: {

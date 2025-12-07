@@ -1,4 +1,5 @@
 let NewsPostModel = require('../../model/NewsPost');
+let userModel = require('../../model/userModel');
 
 const getAllNews = async (req, res) => {
     try {
@@ -19,6 +20,20 @@ const getAllNews = async (req, res) => {
         // Add location filter if provided
         if (location) {
             queryFilter.location = location;
+        }
+
+        // Get user's blocked authors list
+        if (req.user && req.user._id) {
+            const user = await userModel.findById(req.user._id).select('blockedNewsAuthors');
+            if (user && user.blockedNewsAuthors && user.blockedNewsAuthors.length > 0) {
+                // Exclude news from blocked authors
+                if (queryFilter.userId) {
+                    // Merge with existing userId filter
+                    queryFilter.userId.$nin = [...(queryFilter.userId.$nin || []), ...user.blockedNewsAuthors];
+                } else {
+                    queryFilter.userId = {$nin: user.blockedNewsAuthors};
+                }
+            }
         }
 
         const result = await NewsPostModel.find(queryFilter).skip(skip).limit(limit).populate('userId', 'name email profileImage');
