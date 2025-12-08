@@ -85,6 +85,17 @@ const userSchema = new mongoose.Schema({
         default:false,
     },
 
+    // Free post limit tracking (unified across all post types: jobs, matrimony, property, offers)
+    freePostsUsed: {
+        type: Number,
+        default: 0,
+        min: [0, 'Free posts used cannot be negative']
+    },
+    freePostLimit: {
+        type: Number,
+        default: 10, // Users get 10 free posts total across all categories
+        min: [0, 'Free post limit cannot be negative']
+    },
 
     serviceProfileBookmarkID: [{
         type: mongoose.Schema.Types.ObjectId,

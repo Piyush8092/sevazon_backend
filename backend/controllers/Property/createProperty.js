@@ -106,18 +106,41 @@ const createProperty = async (req, res) => {
         const newProperty = new PropertyModel(payload);
         const result = await newProperty.save();
         let user = await userModel.findById(userId);
-        if(user.AnyServiceCreate === false)
-        {
+
+        // Update user flags and free post counter
+        let userUpdated = false;
+        if(user.AnyServiceCreate === false) {
           user.AnyServiceCreate = true;
+          userUpdated = true;
+        }
+
+        // Increment free post counter if user doesn't have an active subscription
+        // Check if user has any active 'post' category subscription
+        const Payment = require('../../model/paymentModel');
+        const now = new Date();
+        const activePostSubscription = await Payment.findOne({
+            userId: userId,
+            status: 'success',
+            planCategory: 'post',
+            endDate: { $gt: now }
+        });
+
+        // If no active subscription, increment free post counter
+        if (!activePostSubscription) {
+            user.freePostsUsed = (user.freePostsUsed || 0) + 1;
+            userUpdated = true;
+            console.log(`📊 Free post used: ${user.freePostsUsed}/${user.freePostLimit || 10}`);
+        }
+
+        if (userUpdated) {
           await user.save();
         }
 
-
         res.json({
-            message: 'Property created successfully', 
-            status: 200, 
-            data: result, 
-            success: true, 
+            message: 'Property created successfully',
+            status: 200,
+            data: result,
+            success: true,
             error: false
         });
 
