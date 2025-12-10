@@ -5,13 +5,14 @@ const createPricingPlan = async (req, res) => {
         const payload = req.body;
 
         // Validate required fields
-        if (!payload.title || !payload.category || 
-            payload.price1 === undefined || payload.price2 === undefined || 
-            payload.originalPrice === undefined || 
-            payload.duration1 === undefined || payload.duration2 === undefined || 
-            payload.perMonth === undefined || !payload.features || payload.features.length === 0) {
-            return res.status(400).json({ 
-                message: 'All required fields must be provided (title, category, price1, price2, originalPrice, duration1, duration2, perMonth, features)' 
+        if (!payload.title || !payload.category ||
+            payload.price1 === undefined || payload.price2 === undefined ||
+            payload.originalPrice === undefined ||
+            payload.duration1 === undefined || payload.duration2 === undefined ||
+            payload.perMonth === undefined || payload.GSTPercentage === undefined ||
+            !payload.features || payload.features.length === 0) {
+            return res.status(400).json({
+                message: 'All required fields must be provided (title, category, price1, price2, originalPrice, duration1, duration2, perMonth, GSTPercentage, features)'
             });
         }
 
@@ -25,18 +26,7 @@ const createPricingPlan = async (req, res) => {
 
         // Create new pricing plan
         const newPlan = new PricingPlan(payload);
-       let result = await newPlan.save();
-       if(result.PaymentType === 'paid')
-       {
-         let user = await userModel.findById(req.user._id);
-         if(user.primiumUser === false)
-         {
-          user.primiumUser = true;
-          await user.save();
-         }
-       }
-
-        
+        const result = await newPlan.save();
 
         res.status(201).json({
             message: 'Pricing plan created successfully',
