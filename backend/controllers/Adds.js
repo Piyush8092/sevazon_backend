@@ -93,31 +93,54 @@ const CreateAdd = async (req, res) => {
 
 // get all adds
 const GetAllAdds = async (req, res) => {
-    try {  
+    try {
         let page = parseInt(req.query.page) || 1;
         let limit = parseInt(req.query.limit) || 10;
         const skip = (page - 1) * limit;
-        
-        const result = await adModel.find({$and:[{userId:{$nin: [req.user._id]},isVerified:true}]}).skip(skip).limit(limit);
-        const total = await adModel.countDocuments();
+
+        // Build query filter
+        let queryFilter = {
+            $and: [
+                { userId: { $nin: [req.user._id] } },
+                { isVerified: true }
+            ]
+        };
+
+        // Filter by ad plan type if specified (e.g., 'banner' for home page)
+        if (req.query.adPlanType) {
+            queryFilter.$and.push({ adPlanType: req.query.adPlanType });
+        }
+
+        // Filter by placement page if specified
+        if (req.query.placementPage) {
+            queryFilter.$and.push({ placementPages: req.query.placementPage });
+        }
+
+        // Filter by pincode for location-based ads if specified
+        if (req.query.pincode) {
+            queryFilter.$and.push({ pincode: req.query.pincode });
+        }
+
+        const result = await adModel.find(queryFilter).skip(skip).limit(limit);
+        const total = await adModel.countDocuments(queryFilter);
         const totalPages = Math.ceil(total / limit);
-        
+
         res.json({
-            message: 'Ads retrieved successfully', 
-            status: 200, 
-            data: result, 
+            message: 'Ads retrieved successfully',
+            status: 200,
+            data: result,
             total,
             totalPages,
             currentPage: page,
-            success: true, 
+            success: true,
             error: false
         });
     } catch (e) {
         res.json({
-            message: 'Something went wrong', 
-            status: 500, 
-            data: e.message, 
-            success: false, 
+            message: 'Something went wrong',
+            status: 500,
+            data: e.message,
+            success: false,
             error: true
         });
     }

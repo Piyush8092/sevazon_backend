@@ -22,6 +22,13 @@ const adSchema = new mongoose.Schema({
         type: String,
         // required: [true, 'Category is required'],
     },
+    // Ad plan type - which pricing plan the user selected
+    adPlanType: {
+        type: String,
+        enum: ['banner', 'full-page', 'video-banner', 'full-page-video'],
+        default: 'banner',
+        required: [true, 'Ad plan type is required'],
+    },
     // User-controlled placement pages - where the ad should be displayed
     placementPages: {
         type: [String],
