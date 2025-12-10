@@ -14,6 +14,11 @@ const adSchema = new mongoose.Schema({
         ref: 'user',
         required: [true, 'User is required'],
     },
+    paymentId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Payment',
+        // Payment reference - links ad to the payment record
+    },
     isVerified: {
         type: Boolean,
         default: false

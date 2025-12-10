@@ -42,15 +42,58 @@ const CreateAdd = async (req, res) => {
             payload.placementPages = ['home'];
         }
 
-        // Verification is optional - set isVerified based on user's KYC status
-        // This allows unverified users to post, but marks their posts accordingly
-        const isUserVerified = req.user.isKycVerified || false;
-
+        // All ads start as unverified and require admin approval
+        // This ensures quality control regardless of user's KYC status
         payload.userId = req.user._id;
-        payload.isVerified = isUserVerified;
+        payload.isVerified = false; // Always false until admin approves
         // User-controlled placement - no admin approval needed for placement
         // Status is set to Pending for content review, but placement is user-controlled
         payload.status = 'Pending';
+
+        // Store payment reference if provided (optional for backward compatibility)
+        // Frontend should send paymentId after successful payment verification
+        if (payload.paymentId) {
+            // Validate that the payment exists and belongs to the user
+            const Payment = require('../model/paymentModel');
+            const payment = await Payment.findById(payload.paymentId);
+
+            if (!payment) {
+                return res.status(400).json({
+                    message: 'Invalid payment reference',
+                    status: 400,
+                    success: false,
+                    error: true
+                });
+            }
+
+            if (payment.userId.toString() !== req.user._id.toString()) {
+                return res.status(403).json({
+                    message: 'Unauthorized: Payment does not belong to user',
+                    status: 403,
+                    success: false,
+                    error: true
+                });
+            }
+
+            if (payment.status !== 'success') {
+                return res.status(400).json({
+                    message: 'Payment not successful. Please complete payment first.',
+                    status: 400,
+                    success: false,
+                    error: true
+                });
+            }
+
+            // Ensure payment is for an ad plan (category: 'ads')
+            if (payment.planCategory !== 'ads') {
+                return res.status(400).json({
+                    message: 'Payment is not for an ad plan',
+                    status: 400,
+                    success: false,
+                    error: true
+                });
+            }
+        }
 
         const newAd = new adModel(payload);
         const result = await newAd.save();
