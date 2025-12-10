@@ -2,6 +2,21 @@ const Payment = require('../../model/paymentModel');
 const PricingPlan = require('../../model/pricingPlanModel');
 const razorpayService = require('../../services/razorpayService');
 
+/**
+ * Extract numeric value from duration string
+ * Examples: "3 months" -> 3, "10 days" -> 10, "6" -> 6
+ */
+const extractNumericDuration = (durationStr) => {
+    if (!durationStr) return 3; // Default to 3 months
+
+    // If it's already a number, return it
+    if (typeof durationStr === 'number') return durationStr;
+
+    // Extract first number from string
+    const match = durationStr.toString().match(/\d+/);
+    return match ? parseInt(match[0], 10) : 3; // Default to 3 if no number found
+};
+
 const createPaymentOrder = async (req, res) => {
     try {
         const { planId, duration } = req.body;
@@ -29,14 +44,19 @@ const createPaymentOrder = async (req, res) => {
         }
 
         // Determine the amount based on duration
+        // Duration comes as a string (e.g., "3 months", "10 days") from pricing plan
         let amount;
+        let durationNumeric; // Extract numeric value for payment record
+
         if (duration === plan.duration1) {
             amount = plan.price1;
+            durationNumeric = extractNumericDuration(plan.duration1);
         } else if (duration === plan.duration2) {
             amount = plan.price2;
+            durationNumeric = extractNumericDuration(plan.duration2);
         } else {
-            return res.status(400).json({ 
-                message: 'Invalid duration for this plan' 
+            return res.status(400).json({
+                message: 'Invalid duration for this plan'
             });
         }
 
@@ -63,7 +83,7 @@ const createPaymentOrder = async (req, res) => {
             planCategory: plan.category,
             amount: amount,
             currency: 'INR',
-            duration: duration,
+            duration: durationNumeric, // Store numeric value in payment record
             razorpayOrderId: razorpayOrder.id,
             status: 'created'
         });
