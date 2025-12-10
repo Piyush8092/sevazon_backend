@@ -229,6 +229,7 @@ const getAllAdUser = async (req, res) => {
         let page = req.query.page || 1;
         let limit = req.query.limit || 10;
         let placementPage = req.query.placementPage; // Optional filter by placement page
+        let adPlanType = req.query.adPlanType; // Optional filter by ad plan type (e.g., 'banner' for home page)
         let pincode = req.query.pincode; // Optional filter by pincode for location-based ads and sorting
         const skip = (page - 1) * limit;
 
@@ -238,6 +239,11 @@ const getAllAdUser = async (req, res) => {
         // Filter by placement page if provided
         if (placementPage) {
             queryFilter.placementPages = placementPage;
+        }
+
+        // Filter by ad plan type if provided (e.g., 'banner' for home page)
+        if (adPlanType) {
+            queryFilter.adPlanType = adPlanType;
         }
 
         // Fetch all results without pincode filtering (we'll sort by distance instead)
