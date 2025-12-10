@@ -163,6 +163,11 @@ const clearFeaturedCategory = require('../controllers/featuredCategory/clearFeat
 const getFeaturedCategoryTypes = require('../controllers/featuredCategory/getFeaturedCategoryTypes');
 const updateFeaturedCategoryType = require('../controllers/featuredCategory/updateFeaturedCategoryType');
 
+// Featured Posts controllers
+const getFeaturedPosts = require('../controllers/featuredPosts/getFeaturedPosts');
+const setFeaturedPosts = require('../controllers/featuredPosts/setFeaturedPosts');
+const clearFeaturedPosts = require('../controllers/featuredPosts/clearFeaturedPosts');
+
 // Feedback controllers
 const { createFeedback } = require('../controllers/feedback/createFeedback');
 const { getAllFeedback } = require('../controllers/feedback/getAllFeedback');
@@ -406,6 +411,13 @@ router.post('/clear-featured-category', authGuard, clearFeaturedCategory);
 // Category type management endpoints
 router.get('/get-featured-category-types', getFeaturedCategoryTypes);
 router.put('/update-featured-category-type', authGuard, updateFeaturedCategoryType);
+
+// Featured Posts routes
+// Public endpoint - get featured posts
+router.get('/get-featured-posts', getFeaturedPosts);
+// Admin endpoints - set/clear featured posts
+router.post('/set-featured-posts', authGuard, setFeaturedPosts);
+router.post('/clear-featured-posts', authGuard, clearFeaturedPosts);
 
 
 
