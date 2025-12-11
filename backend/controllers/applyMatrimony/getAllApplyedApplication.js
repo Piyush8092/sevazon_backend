@@ -9,27 +9,47 @@ const getAllApplyApplication = async (req, res) => {
 
         // Find matrimony profiles that belong to the current user AND have received applications
         // This shows profiles where others have applied to the current user's profile
-        const result = await MatrimonyModel.find({
+        const myProfiles = await MatrimonyModel.find({
             userId: userId, // Profile belongs to current user
             'applyMatrimony.0': { $exists: true }, // Has at least one application
             applyMatrimony: { $elemMatch: { applyMatrimonyStatus: true } } // Has active applications
         })
             .populate('userId', 'name email phone')
-            .populate('applyMatrimony.applyUserId', 'name email phone')
+            .populate('applyMatrimony.applyUserId', 'name email phone');
+
+        // Extract all applicant user IDs from the current user's profiles
+        const applicantIds = new Set();
+        myProfiles.forEach(profile => {
+            profile.applyMatrimony.forEach(app => {
+                if (app.applyMatrimonyStatus === true && app.applyUserId) {
+                    applicantIds.add(app.applyUserId._id.toString());
+                }
+            });
+        });
+
+        // Now fetch the matrimony profiles of those applicants
+        const applicantProfiles = await MatrimonyModel.find({
+            userId: { $in: Array.from(applicantIds) }
+        })
+            .populate('userId', 'name email phone')
             .skip(skip)
             .limit(limit);
 
-        const total = await MatrimonyModel.countDocuments({
-            userId: userId,
-            'applyMatrimony.0': { $exists: true },
-            applyMatrimony: { $elemMatch: { applyMatrimonyStatus: true } }
-        });
+        const total = applicantIds.size;
         const totalPages = Math.ceil(total / limit);
 
-        res.json({message: 'All applications retrieved successfully', status: 200, data: result, success: true, error: false, total, totalPages});
+        res.json({
+            message: 'All applications retrieved successfully',
+            status: 200,
+            data: applicantProfiles,
+            success: true,
+            error: false,
+            total,
+            totalPages
+        });
     }
     catch (e) {
-        res.json({message: 'Something went wrong', status: 500, data: e, success: false, error: true});
+        res.json({message: 'Something went wrong', status: 500, data: e.message, success: false, error: true});
     }
 };
 
