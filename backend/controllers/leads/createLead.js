@@ -1,4 +1,5 @@
 let leadModel = require('../../model/leadModel');
+let userModel = require('../../model/userModel');
 
 const createLead = async (req, res) => {
     try {
@@ -12,6 +13,13 @@ const createLead = async (req, res) => {
 
         const newLead = new leadModel(payload);
         const result = await newLead.save();
+
+        // Set AnyServiceCreate flag for user if not already set
+        let user = await userModel.findById(req.user._id);
+        if (user && user.AnyServiceCreate === false) {
+            user.AnyServiceCreate = true;
+            await user.save();
+        }
 
         // Populate userId with user data (name, email, phone) before returning
         const populatedLead = await leadModel
