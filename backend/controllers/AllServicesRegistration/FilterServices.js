@@ -1,111 +1,70 @@
 const createServiceModel = require('../../model/createAllServiceProfileModel');
 
- 
 const FilterServices = async (req, res) => {
     try {
-        // Extract query parameters
         const {
-            // Basic Info Filters
-            name,           // yourName or businessName
-            profileType,    // 'Service Profile' or 'Business Profile'
-            serviceType,    // 'premium' or 'featured'
-            gender,         // 'Male', 'Female', 'Other'
-            
-            // Location Filters
+            name,
+            profileType,
+            serviceType,
+            gender,
+
             city,
             state,
             pincode,
             area,
-            
-            // Category Filters
-            category,       // selectCategory
-            subCategory,    // selectSubCategory
+
+            category,
+            subCategory,
             subCategoryOther,
-            
-            // Business/Service Filters
+
             experience,
             establishedYear,
-            
-            // Price Range Filters
+
             minPrice,
             maxPrice,
-            
-            // Search Query (for text search)
+
             search,
-            
-            // Pagination
+
             page = 1,
             limit = 10,
-            
-            // Sorting
+
             sortBy = 'createdAt',
             sortOrder = 'desc'
         } = req.query;
 
-        // Build dynamic filter object
+        // ===============================
+        // 1️⃣ BUILD FILTER OBJECT (SAME)
+        // ===============================
         const filter = {};
-        
-        // Only add filters if parameters are provided
-        if (profileType) {
-            filter.profileType = profileType;
-        }
-        
-        if (serviceType) {
-            filter.serviceType = serviceType;
-        }
-        
-        if (gender) {
-            filter.gender = gender;
-        }
-        
-        if (city) {
-            filter.city = new RegExp(city, 'i'); // Case-insensitive search
-        }
-        
-        if (state) {
-            filter.state = new RegExp(state, 'i');
-        }
-        
-        if (pincode) {
-            filter.pincode = pincode;
-        }
-        
-        if (area) {
-            filter.area = new RegExp(area, 'i');
-        }
-        
-        if (category) {
-            filter.selectCategory = new RegExp(category, 'i');
-        }
-        
-        if (subCategory) {
-            filter.selectSubCategory = new RegExp(subCategory, 'i');
-        }
-        
-        if (experience) {
-            filter.experience = new RegExp(experience, 'i');
-        }
-        
-        if (establishedYear) {
-            filter.establishedInYear = establishedYear;
-        }
-        
-        // Price range filter
+
+        if (profileType) filter.profileType = profileType;
+        if (serviceType) filter.serviceType = serviceType;
+        if (gender) filter.gender = gender;
+        if (pincode) filter.pincode = pincode;
+        if (establishedYear) filter.establishedInYear = establishedYear;
+
+        if (city) filter.city = new RegExp(city, 'i');
+        if (state) filter.state = new RegExp(state, 'i');
+        if (area) filter.area = new RegExp(area, 'i');
+
+        if (category) filter.selectCategory = new RegExp(category, 'i');
+        if (subCategory) filter.selectSubCategory = new RegExp(subCategory, 'i');
+
+        if (experience) filter.experience = new RegExp(experience, 'i');
+
         if (minPrice || maxPrice) {
             filter.price = {};
             if (minPrice) filter.price.$gte = parseFloat(minPrice);
             if (maxPrice) filter.price.$lte = parseFloat(maxPrice);
         }
-        
-        // Name search (searches in both yourName and businessName)
+
         if (name) {
             filter.$or = [
                 { yourName: new RegExp(name, 'i') },
                 { businessName: new RegExp(name, 'i') }
             ];
         }
-        
-        // General text search across multiple fields
+
         if (search) {
             filter.$or = [
                 { yourName: new RegExp(search, 'i') },
@@ -119,32 +78,69 @@ const FilterServices = async (req, res) => {
                 { area: new RegExp(search, 'i') }
             ];
         }
-        
-        // Always filter for active profiles
+
         filter.isActive = true;
-        
-        // Pagination setup
+
+        // ===============================
+        // 2️⃣ PAGINATION SETUP (SAME)
+        // ===============================
         const pageNum = parseInt(page);
         const limitNum = parseInt(limit);
         const skip = (pageNum - 1) * limitNum;
-        
-        // Sorting setup
-        const sortObj = {};
-        sortObj[sortBy] = sortOrder === 'asc' ? 1 : -1;
-        
-        // Execute query with filters, pagination, and sorting
-        const result = await createServiceModel
-            .find(filter)
-            .populate('userId', 'name email phone profileImage')
-            .sort(sortObj)
-            .skip(skip)
-            .limit(limitNum);
-        
-        // Get total count for pagination
+
+        const sortDirection = sortOrder === 'asc' ? 1 : -1;
+
+        // ===============================
+        // 3️⃣ AGGREGATION WITH PRIORITY SORT ✅ (NEW)
+        // ===============================
+        const result = await createServiceModel.aggregate([
+            { $match: filter },
+
+            {
+                $addFields: {
+                    servicePriority: {
+                        $switch: {
+                            branches: [
+                                { case: { $eq: ['$serviceType', 'premium'] }, then: 1 },
+                                { case: { $eq: ['$serviceType', 'featured'] }, then: 2 },
+                                { case: { $eq: ['$serviceType', 'null'] }, then: 3 }
+                            ],
+                            default: 4
+                        }
+                    }
+                }
+            },
+
+            {
+                $sort: {
+                    servicePriority: 1,
+                    [sortBy]: sortDirection
+                }
+            },
+
+            { $skip: skip },
+            { $limit: limitNum },
+
+            {
+                $lookup: {
+                    from: 'users',
+                    localField: 'userId',
+                    foreignField: '_id',
+                    as: 'userId'
+                }
+            },
+            { $unwind: '$userId' }
+        ]);
+
+        // ===============================
+        // 4️⃣ COUNT FOR PAGINATION (SAME)
+        // ===============================
         const total = await createServiceModel.countDocuments(filter);
         const totalPages = Math.ceil(total / limitNum);
-        
-        // Response
+
+        // ===============================
+        // 5️⃣ RESPONSE (SAME)
+        // ===============================
         res.json({
             message: 'Services filtered successfully',
             status: 200,
@@ -157,14 +153,10 @@ const FilterServices = async (req, res) => {
                 hasNextPage: pageNum < totalPages,
                 hasPrevPage: pageNum > 1
             },
-            filters: {
-                applied: Object.keys(req.query).filter(key => !['page', 'limit', 'sortBy', 'sortOrder'].includes(key)),
-                total: Object.keys(filter).length
-            },
             success: true,
             error: false
         });
-        
+
     } catch (error) {
         res.status(500).json({
             message: 'Something went wrong',

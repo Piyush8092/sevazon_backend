@@ -464,10 +464,12 @@ router.put('/update-specific-service-bookmark',authGuard,UpdateServiceProfileBoo
 // for bookmark service profile api is => http://localhost:3000/api/get-bookmark-service-profile
 router.get('/get-bookmark-service-profile',authGuard,getBookmarkServiceProfile); 
 
+//make route take list of pincode find disticet wise data
+// router.get('/get-district-wise-data/:pincode/:pincodeArray',authGuard,getDistrictWiseData);
 
  
 
-
+ 
 
 // for job post
 router.post('/create-job',authGuard,createJob);
@@ -788,6 +790,8 @@ router.get('/get-terms-and-conditions',getTermsAndConditions);
 router.put('/edit-terms-and-conditions/:id',authGuard,editTermsAndConditions);
 router.delete('/delete-terms-and-conditions/:id',authGuard,deleteTermsAndConditions);
 router.get('/get-specific-terms-and-conditions/:id',getSpecificTermsAndConditions);
+
+ 
 
 // Agora video/voice call routes
 router.post('/generate-call-token', [
