@@ -16,6 +16,30 @@ const calculatePincodeDistance = (pincode1, pincode2) => {
     return Math.abs(num1 - num2);
 };
 
+/**
+ * Sort leads by district (leads use the creator's district from userId)
+ * Since leads don't have premium/featured status, we only sort by district match
+ * Priority:
+ * 1. Leads from user's district
+ * 2. Leads from other districts
+ */
+const sortByDistrict = (leads, userDistrict) => {
+    return leads.sort((a, b) => {
+        const aDistrict = a.userId?.district || '';
+        const bDistrict = b.userId?.district || '';
+
+        const aIsSameDistrict = aDistrict.toLowerCase() === userDistrict.toLowerCase();
+        const bIsSameDistrict = bDistrict.toLowerCase() === userDistrict.toLowerCase();
+
+        // Leads from user's district come first
+        if (aIsSameDistrict && !bIsSameDistrict) return -1;
+        if (!aIsSameDistrict && bIsSameDistrict) return 1;
+
+        // Maintain current order for same tier
+        return 0;
+    });
+};
+
 const getQueryLead = async (req, res) => {
     try {
         // Check if user has created a Service/Business profile
@@ -44,6 +68,7 @@ const getQueryLead = async (req, res) => {
 
         let query = req.query.query;
         let pincode = req.query.pincode; // Optional filter by pincode for location-based filtering and sorting
+        let district = req.query.district; // Optional district for district-based sorting
 
         if (!query) {
             return res.status(400).json({message: 'Query parameter is required'});
@@ -53,11 +78,14 @@ const getQueryLead = async (req, res) => {
         let result = await leadModel
             .find({serviceRequire: {$regex: query, $options: 'i'}})
             .sort({ createdAt: -1 }) // Sort by newest first
-            .populate('userId', 'name email phone pincode'); // Include pincode in populated user data
+            .populate('userId', 'name email phone pincode district'); // Include pincode and district in populated user data
 
-        // Sort by distance from user's pincode if provided (nearest first)
-        // Since leads don't have their own pincode, we sort based on the creator's (userId) pincode
-        if (pincode) {
+        // Sort by district-based priority if district is provided
+        if (district) {
+            result = sortByDistrict(result, district);
+        }
+        // Fallback to pincode-based sorting if only pincode is provided
+        else if (pincode) {
             result = result.sort((a, b) => {
                 const pincodeA = a.userId?.pincode;
                 const pincodeB = b.userId?.pincode;

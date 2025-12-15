@@ -37,6 +37,10 @@ const profileSchema = new mongoose.Schema({
         type: String,
         required: [true, 'Pincode is required'],
     },
+    district: {
+        type: String,
+        default: null
+    },
     city: {
         type: String,
         required: [true, 'City is required'],

@@ -41,6 +41,18 @@ const jobSchema = new mongoose.Schema({
         type: String,
         required: [true, 'Pincode is required'],
     },
+    district: {
+        type: String,
+        default: null
+    },
+    city: {
+        type: String,
+        default: null
+    },
+    state: {
+        type: String,
+        default: null
+    },
     description: {
         type: String,
         required: [true, 'Description is required'],
@@ -116,11 +128,21 @@ const jobSchema = new mongoose.Schema({
       ref:'user',
   }
 }],
+    // Job type for premium/featured status
+    jobType: {
+        type: String,
+        enum: ['premium', 'featured', 'regular'],
+        default: 'regular'
+    },
     isActive: {
         type: Boolean,
         default: true
     },
     isVerified: {
+        type: Boolean,
+        default: false
+    },
+    isFeatured: {
         type: Boolean,
         default: false
     }
