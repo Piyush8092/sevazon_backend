@@ -160,7 +160,16 @@ const profileSchema = new mongoose.Schema({
         },
     },
     catalogImages: {
-        type: [String],
+        type: [{
+            image: {
+                type: String,
+                required: true
+            },
+            price: {
+                type: String,
+                required: true
+            }
+        }],
         required: function() {
             return this.profileType === 'Business Profile';
         },
