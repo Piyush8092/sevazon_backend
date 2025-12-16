@@ -138,6 +138,12 @@ const { deleteTermsAndConditions } = require('../controllers/term/termDelete');
 const { getSpecificAccountDeletePolicy } = require('../controllers/AccountDeletePolicy/getSpecificAccountDeletion');
 const { getSpecificPrivacyPolicy } = require('../controllers/privacy/getSpecificPrivecy');
 const { getSpecificTermsAndConditions } = require('../controllers/term/getSpecificTerm');
+
+// About Us controllers
+const { createAboutUs } = require('../controllers/aboutUs/aboutUsCreate');
+const { getAboutUs } = require('../controllers/aboutUs/aboutUsGet');
+const { editAboutUs } = require('../controllers/aboutUs/aboutUsEdit');
+const { getSpecificAboutUs } = require('../controllers/aboutUs/getSpecificAboutUs');
 const { deleteApplyJob } = require('../controllers/ApplyJob/deleteJobs');
 const { updateContact } = require('../controllers/contact/updateContact');
 const { getSpecificContact } = require('../controllers/contact/getSpecificContact');
@@ -791,7 +797,13 @@ router.put('/edit-terms-and-conditions/:id',authGuard,editTermsAndConditions);
 router.delete('/delete-terms-and-conditions/:id',authGuard,deleteTermsAndConditions);
 router.get('/get-specific-terms-and-conditions/:id',getSpecificTermsAndConditions);
 
- 
+// about us
+router.post('/create-about-us',authGuard,createAboutUs); // Admin only
+router.get('/get-about-us',getAboutUs); // Public endpoint
+router.put('/edit-about-us/:id',authGuard,editAboutUs); // Admin only
+router.get('/get-specific-about-us/:id',getSpecificAboutUs); // Public endpoint
+
+
 
 // Agora video/voice call routes
 router.post('/generate-call-token', [
