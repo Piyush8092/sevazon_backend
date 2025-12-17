@@ -1,4 +1,4 @@
-let propertyModel = require('../../model/PropertyModel');
+let propertyModel = require('../../model/property');
 const userModel = require('../../model/userModel');
 
 const UpdateReportAndBlockProperty = async (req, res) => {

@@ -1,5 +1,5 @@
 const userModel = require('../../model/userModel');
-const propertyModel = require('../../model/PropertyModel');
+const propertyModel = require('../../model/property');
 
 const getBookmarkProperty = async (req, res) => {
     try {
