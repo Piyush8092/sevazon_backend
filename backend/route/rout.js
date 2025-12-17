@@ -268,6 +268,14 @@ const { UpdateMatrimonyProfileBookMark } = require('../controllers/MatrimonyPost
 const { UpdateJobProfileBookMark } = require('../controllers/JobPost/UpdateJobProfileBookMark');
 const { UpdateReportAndBlockJob } = require('../controllers/JobPost/UpdateReportAndBlockJob');
 const { getReportAndBlockJobProfile } = require('../controllers/JobPost/getReportAndBlockJobProfile');
+const { UpdateReportAndBlockOffer } = require('../controllers/offersAndDiscount/UpdateReportAndBlockOffer');
+const { UpdateOfferBookmark } = require('../controllers/offersAndDiscount/UpdateOfferBookmark');
+const { getReportAndBlockOffer } = require('../controllers/offersAndDiscount/getReportAndBlockOffer');
+const { getBookmarkOffer } = require('../controllers/offersAndDiscount/getBookmarkOffer');
+const { UpdateReportAndBlockProperty } = require('../controllers/Property/UpdateReportAndBlockProperty');
+const { UpdatePropertyBookmark } = require('../controllers/Property/UpdatePropertyBookmark');
+const { getReportAndBlockProperty } = require('../controllers/Property/getReportAndBlockProperty');
+const { getBookmarkProperty } = require('../controllers/Property/getBookmarkProperty');
 const { getBlockUserView } = require('../controllers/AllServicesRegistration/getBlockUserView');
 const { getBlockJobUserView } = require('../controllers/JobPost/getBlockJobUserView');
 const { getBlockMatrimonyUserView } = require('../controllers/MatrimonyPost/getBlockMatrimonyUserView');
@@ -597,15 +605,23 @@ router.get('/get-all-pending-matrimony',authGuard,getPendingMatrimony);
  
 
 
-// for propert post. 
+// for propert post.
 router.post('/create-property',authGuard,createProperty);
-router.get('/get-all-property',authGuard,getAllProperty); 
+router.get('/get-all-property',authGuard,getAllProperty);
 router.get('/get-specific-property/:id',getSpecificqueryProperty);
 router.put('/update-specific-property/:id',authGuard,updateProperty);
 router.delete('/delete-specific-property/:id',authGuard,deleteProperty);
 router.get('/get-total-property-count',authGuard,getTotalPropertyCount);
 router.get('/get-all-property-user', getAllPropertyUser);
 router.get('/send-notification-to-property-poster',authGuard,sendNotificationToPropertyPoster);
+
+// Property report and block
+router.put('/update-specific-property-report-block/:id',authGuard,UpdateReportAndBlockProperty);
+router.get('/get-report-block-property',authGuard,getReportAndBlockProperty);
+
+// Property bookmark
+router.put('/update-specific-property-bookmark/:id',authGuard,UpdatePropertyBookmark);
+router.get('/get-bookmark-property',authGuard,getBookmarkProperty);
 
 // api is => http://localhost:3000/api/get-query-property?query=Bengaluru
 router.get('/get-query-property',queryProperty);
@@ -622,6 +638,14 @@ router.delete('/delete-specific-offer/:id',authGuard,DeleteSpecificOffer);
 router.get('/get-total-offer-count',authGuard,getTotalOfferCount);
 router.get('/get-all-offer-user', getAllOfferUser);
 router.get('/send-notification-to-offer-poster',authGuard,sendNotificationToOfferPoster);
+
+// Offer report and block
+router.put('/update-specific-offer-report-block/:id',authGuard,UpdateReportAndBlockOffer);
+router.get('/get-report-block-offer',authGuard,getReportAndBlockOffer);
+
+// Offer bookmark
+router.put('/update-specific-offer-bookmark/:id',authGuard,UpdateOfferBookmark);
+router.get('/get-bookmark-offer',authGuard,getBookmarkOffer);
 
 // api is => http://localhost:3000/api/get-query-offer?query=411001
 router.get('/get-query-offer',queryOffer);

@@ -121,6 +121,22 @@ ServiceReportAndBlockID: [{
         type: mongoose.Schema.Types.ObjectId,
         ref:'jobModel',
     }],
+    offerBookmarkID: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref:'offer',
+    }],
+    offerReportAndBlockID: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref:'offer',
+    }],
+    propertyBookmarkID: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref:'PropertyModel',
+    }],
+    propertyReportAndBlockID: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref:'PropertyModel',
+    }],
     newsReportID: [{
         type: mongoose.Schema.Types.ObjectId,
         ref:'NewsPost',

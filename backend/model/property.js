@@ -135,7 +135,22 @@ const PropertySchema = new mongoose.Schema({
     isVerified: {
         type: Boolean,
         default: false
+    },
+    reportAndBlock:[{
+        report:{
+           type:String,
+           required:[true,'Report is required'],
+         },
+      block:{
+        type:Boolean,
+        default:false,
+    },
+    reportAndBlockID: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref:'user',
     }
+
+}]
 }, {timestamps: true});
 
 const PropertyModel = mongoose.model('PropertyModel', PropertySchema);
