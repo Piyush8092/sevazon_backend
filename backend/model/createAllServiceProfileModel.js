@@ -224,6 +224,16 @@ const profileSchema = new mongoose.Schema({
         }
      }
     ],
+    paymentDetails: {
+        qrImage: {
+            type: String,
+            default: null
+        },
+        upiId: {
+            type: String,
+            default: null
+        }
+    },
     // User Reference
     userId: {
         type: mongoose.Schema.Types.ObjectId,
