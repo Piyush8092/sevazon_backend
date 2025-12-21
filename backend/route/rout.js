@@ -85,6 +85,8 @@ const { PropertyEditorView } = require('../controllers/Property/propertyEditorVi
  const { LogoutRout } = require('../controllers/logout');
 const { newsLike } = require('../controllers/NewsPost/newsLike');
 const { newsComment } = require('../controllers/NewsPost/newsComment');
+const { newsEmojiReaction } = require('./controllers/NewsPost/newsEmojiReaction');
+const { getTrendingNews } = require('./controllers/NewsPost/getTrendingNews');
 const { getUserDetail } = require('../controllers/user/getUserDetail');
 const { updateUser } = require('../controllers/user/updateUser');
 const { deleteUser } = require('../controllers/user/deleteUser');
@@ -709,6 +711,8 @@ router.put('/news-comment/:news_id',authGuard,newsComment);
 router.get('/get-specific-news-admin-view/:id',authGuard,specificNewsAdminView);
 router.put('/news-like/:news_id',authGuard,newsLike);
 router.put('/news-dislike/:news_id',authGuard,newsDislike);
+router.put('/news-emoji-reaction/:news_id',authGuard,newsEmojiReaction);
+router.get('/get-trending-news',authGuard,getTrendingNews);
 //send notification to news post user
 router.get('/send-notification-to-news-poster',authGuard,sendNotificationToNewsPoster);
 

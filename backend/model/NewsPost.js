@@ -93,7 +93,17 @@ let NewsSchame=new mongoose.Schema({
         location:{
             type:String,
             required:[true,'Location/State is required'],
-        }
+        },
+        emojiReactions:[{
+            emoji:{
+                type:String,
+                required:[true,'Emoji is required'],
+            },
+            userId:{
+                type:String,
+                required:[true,'User ID is required'],
+            }
+        }]
     }
 
     ,{timestamps:true});
