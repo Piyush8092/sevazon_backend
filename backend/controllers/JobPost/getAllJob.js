@@ -61,8 +61,11 @@ const getAllJob = async (req, res) => {
         let district = req.query.district; // Optional district for district-based sorting
         const skip = (page - 1) * limit;
 
-        // Build query filter - exclude current user's jobs
-        let queryFilter = {userId:{$nin: [req.user._id]}};
+        // Build query filter - exclude current user's jobs if user is logged in
+        let queryFilter = {};
+        if (req.user && req.user._id) {
+            queryFilter = { userId: { $nin: [req.user._id] } };
+        }
 
         // Fetch all results without filtering (we'll sort by district/distance instead)
         let result = await jobModel.find(queryFilter);
@@ -85,11 +88,11 @@ const getAllJob = async (req, res) => {
         const totalPages = Math.ceil(total / limit);
         result = result.slice(skip, skip + parseInt(limit));
 
-        res.json({message: 'Jobs retrieved successfully', status: 200, data: result, success: true, error: false, total, totalPages});
+        res.json({ message: 'Jobs retrieved successfully', status: 200, data: result, success: true, error: false, total, totalPages });
     } catch (e) {
-        res.json({message: 'Something went wrong', status: 500, data: e, success: false, error: true});
+        res.json({ message: 'Something went wrong', status: 500, data: e, success: false, error: true });
 
-        }
+    }
 };
 
 module.exports = { getAllJob };
