@@ -144,10 +144,14 @@ const GetAllAdds = async (req, res) => {
         // Build query filter
         let queryFilter = {
             $and: [
-                { userId: { $nin: [req.user._id] } },
                 { isVerified: true }
             ]
         };
+
+        // Exclude current user's ads if user is logged in
+        if (req.user && req.user._id) {
+            queryFilter.$and.push({ userId: { $nin: [req.user._id] } });
+        }
 
         // Filter by ad plan type if specified (e.g., 'banner' for home page)
         if (req.query.adPlanType) {

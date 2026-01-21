@@ -138,31 +138,37 @@ let     getAllOfferUser = async (req, res) => {
 
 // get all offers
 const GetAllOffer = async (req, res) => {
-    try {  
+    try {
         let page = parseInt(req.query.page) || 1;
         let limit = parseInt(req.query.limit) || 10;
         const skip = (page - 1) * limit;
-        
-        const result = await offer.find(    {userId:{$nin: [req.user._id]}}).skip(skip).limit(limit);
+
+        // Build query filter - exclude current user's offers if user is logged in
+        let queryFilter = {};
+        if (req.user && req.user._id) {
+            queryFilter = { userId: { $nin: [req.user._id] } };
+        }
+
+        const result = await offer.find(queryFilter).skip(skip).limit(limit);
         const total = await offer.countDocuments();
         const totalPages = Math.ceil(total / limit);
-        
+
         res.json({
-            message: 'Offers retrieved successfully', 
-            status: 200, 
-            data: result, 
+            message: 'Offers retrieved successfully',
+            status: 200,
+            data: result,
             total,
             totalPages,
             currentPage: page,
-            success: true, 
+            success: true,
             error: false
         });
     } catch (e) {
         res.json({
-            message: 'Something went wrong', 
-            status: 500, 
-            data: e.message, 
-            success: false, 
+            message: 'Something went wrong',
+            status: 500,
+            data: e.message,
+            success: false,
             error: true
         });
     }

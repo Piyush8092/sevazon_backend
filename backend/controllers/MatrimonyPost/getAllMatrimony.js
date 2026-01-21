@@ -6,8 +6,14 @@ const getAllMatrimony = async (req, res) => {
         let limit = req.query.limit || 10;
         const skip = (page - 1) * limit;
 
+        // Build query filter - exclude current user's matrimony profiles if user is logged in
+        let queryFilter = {};
+        if (req.user && req.user._id) {
+            queryFilter = { userId: { $nin: [req.user._id] } };
+        }
+
         // Populate applyMatrimony.applyUserId to include user IDs for frontend checking
-        const result = await MatrimonyModel.find({userId:{$nin: [req.user._id]}})
+        const result = await MatrimonyModel.find(queryFilter)
             .populate('applyMatrimony.applyUserId', '_id name email phone')
             .skip(skip)
             .limit(limit);
