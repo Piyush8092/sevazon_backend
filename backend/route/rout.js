@@ -1,11 +1,12 @@
-const router=require('express').Router();
+const router = require('express').Router();
 const { LoginRout } = require('../controllers/login');
 const { SignupRout } = require('../controllers/signup');
-const  authGuard  = require('../middleware/auth');
-const connectDB=require('../DB/connection');
-const cookie=require('cookie-parser');
-const { CreateAdd,GetAllAdds,GetSpecificAdd,UpdateSpecificAdd,DeleteSpecificAdd,queryAdds, AddCreaterView, getAllNotVerifiedAdds, FilterAdds, specificAddAdminView, getTotalAdCount, getAllAdUser, sendNotificationToAddPoster } = require('../controllers/Adds');
- const { CreateAllServices} = require('../controllers/AllServicesRegistration/createAllService');
+const authGuard = require('../middleware/auth');
+const optionalAuth = require('../middleware/optionalAuth');
+const connectDB = require('../DB/connection');
+const cookie = require('cookie-parser');
+const { CreateAdd, GetAllAdds, GetSpecificAdd, UpdateSpecificAdd, DeleteSpecificAdd, queryAdds, AddCreaterView, getAllNotVerifiedAdds, FilterAdds, specificAddAdminView, getTotalAdCount, getAllAdUser, sendNotificationToAddPoster } = require('../controllers/Adds');
+const { CreateAllServices } = require('../controllers/AllServicesRegistration/createAllService');
 const { UpdateSpecificServices } = require('../controllers/AllServicesRegistration/UpdateSpecificServices');
 const { GetAllServiceListName } = require('../controllers/CreateAllServices/GetAllServiceListName');
 const { GetAllServiceListSubName } = require('../controllers/CreateAllServices/GetAllServiceListSubName');
@@ -17,13 +18,13 @@ const { DeleteSpecsificServices } = require('../controllers/AllServicesRegistrat
 const { GetAllServices } = require('../controllers/AllServicesRegistration/GetAllServices');
 const { createVarityServiceList } = require('../controllers/CreateAllServices/CreateServiceList');
 const { AdminSpecificServiceView } = require('../controllers/AllServicesRegistration/AdminSpecificServiceView');
- const { GetAllServiceList } = require('../controllers/CreateAllServices/GetAllServiceList');
-  const { GetSpecificServiceList } = require('../controllers/CreateAllServices/GetSpecificSercice'); 
+const { GetAllServiceList } = require('../controllers/CreateAllServices/GetAllServiceList');
+const { GetSpecificServiceList } = require('../controllers/CreateAllServices/GetSpecificSercice');
 const { updateServiceListDetail } = require('../controllers/CreateAllServices/updateServiceListDetail');
 const deleteServiceListDetail = require('../controllers/CreateAllServices/DeleteSpecificServiceDetail');
 const { queryServices } = require('../controllers/AllServicesRegistration/queryServices');
 const { queryServiceList } = require('../controllers/CreateAllServices/queryServiceList');
- const { getAllJob } = require('../controllers/JobPost/getAllJob');
+const { getAllJob } = require('../controllers/JobPost/getAllJob');
 const { getSpecificJob } = require('../controllers/JobPost/getSpecificJob');
 const { updateJob } = require('../controllers/JobPost/updateJob');
 const { deleteJob } = require('../controllers/JobPost/deletejob');
@@ -66,7 +67,7 @@ const { getSpecificNews } = require('../controllers/NewsPost/getSpecificNews');
 const { updateNews } = require('../controllers/NewsPost/updateNews');
 const { blockNewsAuthor, unblockNewsAuthor } = require('../controllers/NewsPost/blockNewsAuthor');
 const { deleteNews } = require('../controllers/NewsPost/deleteNews');
-const {  queryNews } = require('../controllers/NewsPost/queryNews');
+const { queryNews } = require('../controllers/NewsPost/queryNews');
 const { updateFollower } = require('../controllers/newsEditor/updateFollower');
 const { createContact } = require('../controllers/contact/createContact');
 const { getContact } = require('../controllers/contact/getContactData');
@@ -82,7 +83,7 @@ const { getJobCreaterView } = require('../controllers/JobPost/jobCreaterView');
 const { MatrimonyCreatorView } = require('../controllers/MatrimonyPost/matrimoneyCreatorView');
 const { NewsEditorView } = require('../controllers/NewsPost/NewsEditorView');
 const { PropertyEditorView } = require('../controllers/Property/propertyEditorView');
- const { LogoutRout } = require('../controllers/logout');
+const { LogoutRout } = require('../controllers/logout');
 const { newsLike } = require('../controllers/NewsPost/newsLike');
 const { newsComment } = require('../controllers/NewsPost/newsComment');
 const { newsEmojiReaction } = require('../controllers/NewsPost/newsEmojiReaction');
@@ -150,7 +151,7 @@ const { deleteApplyJob } = require('../controllers/ApplyJob/deleteJobs');
 const { updateContact } = require('../controllers/contact/updateContact');
 const { getSpecificContact } = require('../controllers/contact/getSpecificContact');
 const { newsDislike } = require('../controllers/NewsPost/newsDisLike');
-const {getTotalUserCount } = require('../controllers/user/getTotalUserCount');
+const { getTotalUserCount } = require('../controllers/user/getTotalUserCount');
 const { UpdateReportAndBlockNews } = require('../controllers/NewsPost/UpdateReportAndBlockNews');
 const { bookmarkNews } = require('../controllers/NewsPost/bookmarkNews');
 const { getBookmarkNewsUserView } = require('../controllers/NewsPost/getBookmarkNewsUserView');
@@ -237,7 +238,7 @@ const { getAcceptMetrimony } = require('../controllers/applyMatrimony/getAcceptM
 const { getRejectMatrimony } = require('../controllers/applyMatrimony/getRejectMatrimony');
 const { getSentMatrimony } = require('../controllers/applyMatrimony/getSentMatrimony');
 const { cancelMatrimonyRequest } = require('../controllers/applyMatrimony/cancelMatrimonyRequest');
-const {getTotalJobCount } = require('../controllers/JobPost/getTotalJobCount');
+const { getTotalJobCount } = require('../controllers/JobPost/getTotalJobCount');
 // Pricing Plan controllers
 const { createPricingPlan } = require('../controllers/pricingPlan/createPricingPlan');
 const { getAllPricingPlans } = require('../controllers/pricingPlan/getAllPricingPlans');
@@ -255,11 +256,11 @@ const { getRazorpayKey } = require('../controllers/payment/getRazorpayKey');
 const { getUserActiveSubscriptions } = require('../controllers/payment/getUserActiveSubscriptions');
 const { checkFeatureAccess } = require('../controllers/payment/checkFeatureAccess');
 
- cookie();
- const { getAllPrimiumUser } = require('../controllers/user/getAllPrimiumUser');
+cookie();
+const { getAllPrimiumUser } = require('../controllers/user/getAllPrimiumUser');
 
 const { UpdateReportAndBlock } = require('../controllers/AllServicesRegistration/UpdateReportAndBlock');
- const { UpdateServiceProfileBookMark } = require('../controllers/AllServicesRegistration/UpdateServiceProfileBookMark');
+const { UpdateServiceProfileBookMark } = require('../controllers/AllServicesRegistration/UpdateServiceProfileBookMark');
 const { getBookmarkServiceProfile } = require('../controllers/user/getBookmarkServiceProfile');
 const { getBookmarkJobPost } = require('../controllers/user/getBookmarkJobPost');
 const { getReportAndBlockServiceProfile } = require('../controllers/user/getReportAndBlockServiceProfile');
@@ -289,10 +290,10 @@ const { specificNewsAdminView } = require('../controllers/NewsPost/getSpecificUs
 const { specificVehiclesAdminView } = require('../controllers/vehicles/getSpecificUserAdminView');
 const { specificPropertyAdminView } = require('../controllers/Property/getSpecificUserAdminView');
 const { specificFeedbackAdminView } = require('../controllers/feedback/specificFeedbackAdminView');
-const {getTotalPropertyCount } = require('../controllers/Property/getTotalPropertyCount');
- const { getTotalNewsCount } = require('../controllers/NewsPost/getTotalNewsCount');
+const { getTotalPropertyCount } = require('../controllers/Property/getTotalPropertyCount');
+const { getTotalNewsCount } = require('../controllers/NewsPost/getTotalNewsCount');
 const { getTotalLocalServicesCount } = require('../controllers/localServices/getTotalLocalServicesCount');
-const { getTotalContactCount}= require('../controllers/contact/getTotalContactCount');
+const { getTotalContactCount } = require('../controllers/contact/getTotalContactCount');
 
 const { getAllServiceUser } = require('../controllers/AllServicesRegistration/getAlluserService');
 const { ALLuserJob } = require('../controllers/JobPost/ALLuserJob');
@@ -303,30 +304,30 @@ const { getAllLocalServicesUser } = require('../controllers/localServices/getAll
 const { sendNotificationToJobPoster } = require('../controllers/JobPost/sendNotificationToJobPoster');
 const { sendNotificationToMatrimonyPoster } = require('../controllers/MatrimonyPost/sendNotificationToMatrimonyPoster');
 const { sendNotificationToPropertyPoster } = require('../controllers/Property/sendNotificationToPropertyPoster');
- const { sendNotificationToNewsPoster } = require('../controllers/NewsPost/sendNotificationToNewsPoster');
- const { sendNotificationToLocalServicesPoster } = require('../controllers/localServices/sendNotificationToLocalServicesPoster');
+const { sendNotificationToNewsPoster } = require('../controllers/NewsPost/sendNotificationToNewsPoster');
+const { sendNotificationToLocalServicesPoster } = require('../controllers/localServices/sendNotificationToLocalServicesPoster');
 const { sendNotificationToServicePoster } = require('../controllers/AllServicesRegistration/sendNotificationToServicePoster');
 const { getspecificJobApplyAdminView } = require('../controllers/ApplyJob/getspecificJobApplyAdminView');
 
-   cookie();
+cookie();
 router.get('/', (req, res) => {
-    res.send('Hello savazon!');
+  res.send('Hello savazon!');
 });
 
 
 // auth of signup and login
-router.post('/signup',SignupRout);
-router.post('/login',LoginRout);
-router.get('/logout',LogoutRout);
-router.get('/auth-user',authGuard,getAuthUserDetail);
+router.post('/signup', SignupRout);
+router.post('/login', LoginRout);
+router.get('/logout', LogoutRout);
+router.get('/auth-user', authGuard, getAuthUserDetail);
 
 // for otp verification
-router.post('/send-otp',sendOTP);
-router.post('/verify-otp',verifyOTP);
-router.get('/resend-otp/:phone',getOtp);
+router.post('/send-otp', sendOTP);
+router.post('/verify-otp', verifyOTP);
+router.get('/resend-otp/:phone', getOtp);
 
 // for signup with OTP verification
-router.post('/verify-signup-otp',verifySignupOTP);
+router.post('/verify-signup-otp', verifySignupOTP);
 
 // Unified search across all content types
 // api is => http://localhost:3000/api/unified-search?query=Mumbai
@@ -343,73 +344,73 @@ router.get('/get-recommendations', getRecommendations);
 
 
 
- 
+
 // user releted route =>service profile releretd route
-router.get('/get-user-detail',authGuard,getUserDetail);
-router.get('/get-all-user',authGuard,getAuthUserDetail);
+router.get('/get-user-detail', authGuard, getUserDetail);
+router.get('/get-all-user', authGuard, getAuthUserDetail);
 //get all user for notification
-router.get('/get-all-user-for-notification',authGuard,getAllUserForNotification);
-router.get('/get-specific-user/:id',authGuard,getSpecificUser);
-router.delete('/delete-user/:id',authGuard,deleteUser);
+router.get('/get-all-user-for-notification', authGuard, getAllUserForNotification);
+router.get('/get-specific-user/:id', authGuard, getSpecificUser);
+router.delete('/delete-user/:id', authGuard, deleteUser);
 // update service profile => normal user
-router.put('/update-user/:id',authGuard,updateUser);
-router.get('/get-service-query-user',queryServiceUser);
+router.put('/update-user/:id', authGuard, updateUser);
+router.get('/get-service-query-user', queryServiceUser);
 // KYC verification for user profile
-router.post('/user/kyc/verify',authGuard,verifyUserKyc);
+router.post('/user/kyc/verify', authGuard, verifyUserKyc);
 // Follow/Unfollow editor (any user can follow)
-router.post('/user/follow-editor',authGuard,followEditor);
+router.post('/user/follow-editor', authGuard, followEditor);
 // FCM Token Management
-router.post('/user/update-fcm-token',authGuard,updateFcmToken);
-router.delete('/user/remove-fcm-token',authGuard,removeFcmToken);
-router.get('/user/fcm-status/:userId',authGuard,getFcmStatus);
-router.post('/user/report-device',reportDevice);
+router.post('/user/update-fcm-token', authGuard, updateFcmToken);
+router.delete('/user/remove-fcm-token', authGuard, removeFcmToken);
+router.get('/user/fcm-status/:userId', authGuard, getFcmStatus);
+router.post('/user/report-device', reportDevice);
 
 // User Report and Block Management
-router.post('/report-user',authGuard,reportUser);
-router.get('/admin/reports',authGuard,getAllReports);
-router.put('/admin/block-user/:id',authGuard,blockUser);
-router.put('/admin/unblock-user/:id',authGuard,unblockUser);
+router.post('/report-user', authGuard, reportUser);
+router.get('/admin/reports', authGuard, getAllReports);
+router.put('/admin/block-user/:id', authGuard, blockUser);
+router.put('/admin/unblock-user/:id', authGuard, unblockUser);
 
 // get all primium user
-router.get('/get-all-primium-user',authGuard,getAllPrimiumUser);
-  
-  //  for bookmark job post
-router.get('/get-bookmark-job-post',authGuard, getBookmarkJobPost);
+router.get('/get-all-primium-user', authGuard, getAllPrimiumUser);
+
+//  for bookmark job post
+router.get('/get-bookmark-job-post', authGuard, getBookmarkJobPost);
 
 //fetch non profile user if user has no post and no activity show all user
-router.get('/get-non-profile-user',authGuard,getNonProfileUser);
+router.get('/get-non-profile-user', authGuard, getNonProfileUser);
 //get total user count 
-router.get('/get-total-user-count',authGuard,getTotalUserCount);
+router.get('/get-total-user-count', authGuard, getTotalUserCount);
 
 
 // usermodel releted route 
 // admin Access For Main UserModel Role change ['admin','user'] =>at the time of login user 
-router.put('/update-admin-role/:id',authGuard,AdminUpdate);
+router.put('/update-admin-role/:id', authGuard, AdminUpdate);
 // usermodel under route
-router.get('/login-user-view',authGuard,adminAllUserView);
-router.get('/admin-get-specific-user/:id',authGuard,AdminSpecificUserView);
-router.get('/admin-get-query-user',queryAdminUser);
- 
+router.get('/login-user-view', authGuard, adminAllUserView);
+router.get('/admin-get-specific-user/:id', authGuard, AdminSpecificUserView);
+router.get('/admin-get-query-user', queryAdminUser);
+
 
 
 
 
 // for display all services list items
-router.post('/create-service-list',authGuard,createVarityServiceList);
-router.get('/get-service-list',GetAllServiceList)
-router.put('/update-specific-service-list/:id',authGuard,updateServiceListDetail)
-router.delete('/delete-specific-service-list/:id',authGuard,deleteServiceListDetail)
-router.get('/get-specific-service-list/:id',GetSpecificServiceList);
-router.get('/get-sub-service-list/:id',GetSubServiceList);
+router.post('/create-service-list', authGuard, createVarityServiceList);
+router.get('/get-service-list', GetAllServiceList)
+router.put('/update-specific-service-list/:id', authGuard, updateServiceListDetail)
+router.delete('/delete-specific-service-list/:id', authGuard, deleteServiceListDetail)
+router.get('/get-specific-service-list/:id', GetSpecificServiceList);
+router.get('/get-sub-service-list/:id', GetSubServiceList);
 
 
 //get all service list catagory name  unique only and catagory wise subcatagory name
 //api is => http://localhost:3000/api/get-all-service-list-name
-router.get('/get-all-service-list-name',GetAllServiceListName);
- 
+router.get('/get-all-service-list-name', GetAllServiceListName);
+
 // api name of query service
 // http://localhost:3000/api/get-query-service-list?query=Plumbing
-router.get('/get-query-service-list',queryServiceList);
+router.get('/get-query-service-list', queryServiceList);
 
 // Seasonal Category routes (Legacy - kept for backward compatibility)
 // Public endpoint - get current seasonal category
@@ -439,114 +440,114 @@ router.post('/clear-featured-posts', authGuard, clearFeaturedPosts);
 
 
 // for craete all services
-router.post('/create-all-service',authGuard,CreateAllServices);
-router.put('/update-specific-service/:id',authGuard,UpdateSpecificServices);
-router.get('/get-specific-service/:id',GetSpecificServices);
-router.delete('/delete-specific-service/:id',authGuard,DeleteSpecsificServices);
-router.get('/get-specific-service-admin-view/:id',authGuard,AdminSpecificServiceView);
-router.get('/get-all-service',authGuard,GetAllServices);
-router.get('/get-all-user-service',getAllServiceUser);
+router.post('/create-all-service', authGuard, CreateAllServices);
+router.put('/update-specific-service/:id', authGuard, UpdateSpecificServices);
+router.get('/get-specific-service/:id', GetSpecificServices);
+router.delete('/delete-specific-service/:id', authGuard, DeleteSpecsificServices);
+router.get('/get-specific-service-admin-view/:id', authGuard, AdminSpecificServiceView);
+router.get('/get-all-service', authGuard, GetAllServices);
+router.get('/get-all-user-service', getAllServiceUser);
 // api route is http://localhost:3000/api/get-query-service?query=Bengaluru
- router.get('/get-query-service',queryServices);
+router.get('/get-query-service', queryServices);
 // Flexible filtering API - supports multiple optional parameters
 // Examples:  http://localhost:3000/api/filter-services?city=Mumbai&profileType=Service Profile&minPrice=1000
-router.get('/filter-services',FilterServices);
+router.get('/filter-services', FilterServices);
 // for like comment 
-router.put('/update-specific-service-like/:id',authGuard,updateLike);
-router.put('/update-specific-service-dislike/:id',authGuard,updateDislike);
-router.put('/update-specific-service-review/:id',authGuard,UpdateReview);
-router.get('/get-specific-service-rating',authGuard,getRatting);
+router.put('/update-specific-service-like/:id', authGuard, updateLike);
+router.put('/update-specific-service-dislike/:id', authGuard, updateDislike);
+router.put('/update-specific-service-review/:id', authGuard, UpdateReview);
+router.get('/get-specific-service-rating', authGuard, getRatting);
 // for get  created service or business profile of both in my profile
-router.get('/get-service-creator-view',authGuard,getServiceCreaterView);
-router.put('/update-specific-service-important-link/:id',authGuard,updateImportantLink);
-router.put('/update-specific-service-time-slot/:id',authGuard,updateTimeSlot);
+router.get('/get-service-creator-view', authGuard, getServiceCreaterView);
+router.put('/update-specific-service-important-link/:id', authGuard, updateImportantLink);
+router.put('/update-specific-service-time-slot/:id', authGuard, updateTimeSlot);
 //seND notification to service post user 
-router.get('/send-notification-to-service-poster',authGuard,sendNotificationToServicePoster);
+router.get('/send-notification-to-service-poster', authGuard, sendNotificationToServicePoster);
 
 
 // for report and block
 //api is => http://localhost:3000/api/update-specific-service-report-block/profileId  body pass=>  {"report":"This is a test report","block":true} 
-router.put('/update-specific-service-report-block/:id',authGuard,UpdateReportAndBlock);
+router.put('/update-specific-service-report-block/:id', authGuard, UpdateReportAndBlock);
 // for report and block service profile api is => http://localhost:3000/api/get-report-block-service-profile
-router.get('/get-report-block-service-profile',authGuard,getReportAndBlockServiceProfile);
+router.get('/get-report-block-service-profile', authGuard, getReportAndBlockServiceProfile);
 
 // login user view whom he/she block 
-router.get('/get-block-service-user-view',authGuard,getBlockUserView);
+router.get('/get-block-service-user-view', authGuard, getBlockUserView);
 
- 
+
 // for bookmark service profile
 // http://localhost:3000/api/update-specific-service-bookmark.     body pass=>  {"serviceProfileBookmarkID":"650666666666666666666666"}
-router.put('/update-specific-service-bookmark',authGuard,UpdateServiceProfileBookMark);
+router.put('/update-specific-service-bookmark', authGuard, UpdateServiceProfileBookMark);
 // for bookmark service profile api is => http://localhost:3000/api/get-bookmark-service-profile
-router.get('/get-bookmark-service-profile',authGuard,getBookmarkServiceProfile); 
+router.get('/get-bookmark-service-profile', authGuard, getBookmarkServiceProfile);
 
 //make route take list of pincode find disticet wise data
 // router.get('/get-district-wise-data/:pincode/:pincodeArray',authGuard,getDistrictWiseData);
 
- 
 
- 
+
+
 
 // for job post
-router.post('/create-job',authGuard,createJob);
-router.get('/get-all-job',authGuard,getAllJob);
-router.get('/get-specific-job/:id',getSpecificJob);
-router.put('/update-specific-job/:id',authGuard,updateJob);
-router.delete('/delete-specific-job/:id',authGuard,deleteJob);
-router.get('/get-all-user-job',ALLuserJob);
-router.get('/get-query-job',queryJobs);
-router.get('/get-total-job-count',authGuard,getTotalJobCount);
+router.post('/create-job', authGuard, createJob);
+router.get('/get-all-job', optionalAuth, getAllJob);
+router.get('/get-specific-job/:id', optionalAuth, getSpecificJob);
+router.put('/update-specific-job/:id', authGuard, updateJob);
+router.delete('/delete-specific-job/:id', authGuard, deleteJob);
+router.get('/get-all-user-job', ALLuserJob);
+router.get('/get-query-job', optionalAuth, queryJobs);
+router.get('/get-total-job-count', authGuard, getTotalJobCount);
 // Flexible job filtering API - supports multiple optional parameters
 // Examples: /api/filter-jobs?city=Mumbai&workMode=Remote&minSalary=50000
-router.get('/filter-jobs',FilterJobs);
-router.get('/get-job-creator-view',authGuard,getJobCreaterView);
-router.get('/get-all-job-admin-view/:id',authGuard,AdminJobView);
+router.get('/filter-jobs', optionalAuth, FilterJobs);
+router.get('/get-job-creator-view', authGuard, getJobCreaterView);
+router.get('/get-all-job-admin-view/:id', authGuard, AdminJobView);
 //send notification userId who not crate job post 
-router.get('/send-notification-to-job-poster',authGuard,sendNotificationToJobPoster);
+router.get('/send-notification-to-job-poster', authGuard, sendNotificationToJobPoster);
 
 
 // job Apply api is => http://localhost:3000/api/apply-job/650666666666666666666666      body pass=>  {"title":"test","fullName":"test","qualification":"test","gender":"Male","pincode":"123456","city":"test","state":"test","address":"test","contactNumber":"1234567890"}
-router.post('/apply-job/:job_id',authGuard,ApplyedJob);
+router.post('/apply-job/:job_id', authGuard, ApplyedJob);
 // admin view
-router.get('/get-all-job-appliation',authGuard,getAllApplyJob);
+router.get('/get-all-job-appliation', authGuard, getAllApplyJob);
 // any one can see specific apply job
-router.get('/get-specific-apply-job/:apply_id',getSpecificApplyJob);
+router.get('/get-specific-apply-job/:apply_id', getSpecificApplyJob);
 //get all application of job creater and admin view
-router.get('/get-all-apply-job-admin-view/:job_id',authGuard,getspecificJobApplyAdminView);
+router.get('/get-all-apply-job-admin-view/:job_id', authGuard, getspecificJobApplyAdminView);
 
- 
+
 // router.get('/applier-view',authGuard,getApplyedJob);
 // router.get('/job-creator-view',authGuard,getApplyedJobCreterView);
 // router.delete('/delete-job-application/:apply_id',authGuard,deleteApplyJob);
 
- // job creater view
+// job creater view
 router.get('/get-all-accepted-applications', authGuard, getAcceptedApplications);
 router.get('/get-all-rejected-applications', authGuard, getRejectedApplications);
-router.get('/get-all-pending-applications',authGuard,getpendingApplications);
- 
+router.get('/get-all-pending-applications', authGuard, getpendingApplications);
+
 // for update pass payload value  =>  { "accept_status":"Accepted"} or  { "accept_status":"Rejected"}
-router.put('/update-job-application/:apply_id',authGuard,updateApplyStatusByCreater);
+router.put('/update-job-application/:apply_id', authGuard, updateApplyStatusByCreater);
 
 // job applicant view
 router.get('/my-accepted-applications', authGuard, getApplicantAcceptedApplications);
 router.get('/my-rejected-applications', authGuard, getApplicantRejectedApplications);
-router.get('/my-pending-applications',authGuard,getApplicantPendingApplications);
+router.get('/my-pending-applications', authGuard, getApplicantPendingApplications);
 
 //report and block job post
 //api is => http://localhost:3000/api/update-specific-job-report-block/650666666666666666666666  body pass=>  {"report":"This is a test report","block":true} 
-router.put('/update-specific-job-report-block/:id',authGuard,UpdateReportAndBlockJob);
+router.put('/update-specific-job-report-block/:id', authGuard, UpdateReportAndBlockJob);
 // for report and block. user side view api is => http://localhost:3000/api/get-report-block-job-profile
-router.get('/get-report-block-job-profile',authGuard,getReportAndBlockJobProfile);
+router.get('/get-report-block-job-profile', authGuard, getReportAndBlockJobProfile);
 
 // login user view whom he/she block 
-router.get('/get-block-job-user-view',authGuard,getBlockJobUserView);
+router.get('/get-block-job-user-view', authGuard, getBlockJobUserView);
 
 
 // favourite job
 //api is => http://localhost:3000/api/update-job-favourite  body   pass=>  {"jobProfileBookmarkID":"650666666666666666666666"}
-router.put('/update-job-favourite',authGuard,UpdateJobProfileBookMark);
-  // api is => http://localhost:3000/api/get-user-favourite-job     
-router.get('/get-user-favourite-job',authGuard,getAllFavouritJob);
+router.put('/update-job-favourite', authGuard, UpdateJobProfileBookMark);
+// api is => http://localhost:3000/api/get-user-favourite-job     
+router.get('/get-user-favourite-job', authGuard, getAllFavouritJob);
 
 
 
@@ -554,140 +555,140 @@ router.get('/get-user-favourite-job',authGuard,getAllFavouritJob);
 
 
 // for matrimony post
-router.post('/create-matrimony',authGuard,createMatrimony);
-router.get('/get-all-matrimony',authGuard,getAllMatrimony);
-router.get('/get-specific-matrimony/:id',getSpecificMatrimony);
-router.put('/update-specific-matrimony/:id',authGuard,updateMatrimony);
-router.delete('/delete-specific-matrimony/:id',authGuard,deleteMatrimony);
-router.get('/get-matrimony-creator-view',authGuard,MatrimonyCreatorView);
-router.get('/get-specific-matrimony-admin-view/:id',authGuard,specificMatrimonyAdminView);
-router.get('/get-total-matrimony-count',authGuard,getTotalMatrimonyCount);
-router.get('/get-all-matrimon-user',getAllMatrimonyUser);
+router.post('/create-matrimony', authGuard, createMatrimony);
+router.get('/get-all-matrimony', optionalAuth, getAllMatrimony);
+router.get('/get-specific-matrimony/:id', optionalAuth, getSpecificMatrimony);
+router.put('/update-specific-matrimony/:id', authGuard, updateMatrimony);
+router.delete('/delete-specific-matrimony/:id', authGuard, deleteMatrimony);
+router.get('/get-matrimony-creator-view', authGuard, MatrimonyCreatorView);
+router.get('/get-specific-matrimony-admin-view/:id', authGuard, specificMatrimonyAdminView);
+router.get('/get-total-matrimony-count', authGuard, getTotalMatrimonyCount);
+router.get('/get-all-matrimon-user', getAllMatrimonyUser);
 //send notification to matrimony post user 
-router.get('/send-notification-to-matrimony-poster',authGuard,sendNotificationToMatrimonyPoster);
+router.get('/send-notification-to-matrimony-poster', authGuard, sendNotificationToMatrimonyPoster);
 
 // api is =>. http://localhost:3000/api/get-query-matrimony?query=Brahmin
-router.get('/get-query-matrimony', queryMatrimony);
+router.get('/get-query-matrimony', optionalAuth, queryMatrimony);
 // Flexible matrimony filtering API - supports multiple optional parameters
 // Examples: /api/filter-matrimony?gender=Male&city=Mumbai&minAge=25&maxAge=35
-router.get('/filter-matrimony',FilterMatrimony);
+router.get('/filter-matrimony', optionalAuth, FilterMatrimony);
 
 //for report and block 
 //api is => http://localhost:3000/api/update-specific-matrimony-report-block/650666666666666666666666  body pass=>  {"report":"This is a test report","block":true} 
-router.put('/update-specific-matrimony-report-block/:id',authGuard,UpdateReportAndBlockMatrimony);
+router.put('/update-specific-matrimony-report-block/:id', authGuard, UpdateReportAndBlockMatrimony);
 //for report and block. user side view api is => http://localhost:3000/api/get-report-block-matrimony-profile
-router.get('/get-report-block-matrimony-profile',authGuard,getReportAndBlockMatrimonyProfile);
+router.get('/get-report-block-matrimony-profile', authGuard, getReportAndBlockMatrimonyProfile);
 // login user view whom he/she block 
-router.get('/get-block-matrimony-user-view',authGuard,getBlockMatrimonyUserView);
+router.get('/get-block-matrimony-user-view', authGuard, getBlockMatrimonyUserView);
 
 
 // for bookmark matrimony profile
 //api is => http://localhost:3000/api/update-specific-matrimony-bookmark  body pass=>  {"matrimonyProfileBookmarkID":"650666666666666666666666"}
-router.put('/update-specific-matrimony-bookmark',authGuard,UpdateMatrimonyProfileBookMark);
+router.put('/update-specific-matrimony-bookmark', authGuard, UpdateMatrimonyProfileBookMark);
 //api is => http://localhost:3000/api/get-bookmark-Matrimony-profile
-router.get('/get-bookmark-Matrimony-profile',authGuard,getBookmarkMatrimonyProfile);
+router.get('/get-bookmark-Matrimony-profile', authGuard, getBookmarkMatrimonyProfile);
 
 
 
 
 // for apply matrimony
 //api is => http://localhost:3000/api/apply-matrimony/matrimony_id
-router.post('/apply-matrimony/:id',authGuard,applyMatrimony);
-router.delete('/cancel-matrimony-request/:id',authGuard,cancelMatrimonyRequest);
-router.get('/get-all-apply-matrimony',authGuard,getAllApplyApplication);
-router.get('/get-all-sent-matrimony',authGuard,getSentMatrimony);
-router.get('/get-specific-apply-matrimony/:id',getSpecificApplyMatrimony);
+router.post('/apply-matrimony/:id', authGuard, applyMatrimony);
+router.delete('/cancel-matrimony-request/:id', authGuard, cancelMatrimonyRequest);
+router.get('/get-all-apply-matrimony', authGuard, getAllApplyApplication);
+router.get('/get-all-sent-matrimony', authGuard, getSentMatrimony);
+router.get('/get-specific-apply-matrimony/:id', getSpecificApplyMatrimony);
 //pass body {"accept":true}
-router.put('/accept-matrimony/:id/:index',authGuard,acceptMatrimony);
+router.put('/accept-matrimony/:id/:index', authGuard, acceptMatrimony);
 // pass body  {"reject":true}
-router.put('/reject-matrimony/:id/:index',authGuard,rejectMatrimony);
-router.get('/get-all-accepted-matrimony',authGuard,getAcceptMetrimony);
-router.get('/get-all-rejected-matrimony',authGuard,getRejectMatrimony);
-router.get('/get-all-pending-matrimony',authGuard,getPendingMatrimony);
- 
+router.put('/reject-matrimony/:id/:index', authGuard, rejectMatrimony);
+router.get('/get-all-accepted-matrimony', authGuard, getAcceptMetrimony);
+router.get('/get-all-rejected-matrimony', authGuard, getRejectMatrimony);
+router.get('/get-all-pending-matrimony', authGuard, getPendingMatrimony);
+
 
 
 // for propert post.
-router.post('/create-property',authGuard,createProperty);
-router.get('/get-all-property',authGuard,getAllProperty);
-router.get('/get-specific-property/:id',getSpecificqueryProperty);
-router.put('/update-specific-property/:id',authGuard,updateProperty);
-router.delete('/delete-specific-property/:id',authGuard,deleteProperty);
-router.get('/get-total-property-count',authGuard,getTotalPropertyCount);
+router.post('/create-property', authGuard, createProperty);
+router.get('/get-all-property', optionalAuth, getAllProperty);
+router.get('/get-specific-property/:id', optionalAuth, getSpecificqueryProperty);
+router.put('/update-specific-property/:id', authGuard, updateProperty);
+router.delete('/delete-specific-property/:id', authGuard, deleteProperty);
+router.get('/get-total-property-count', authGuard, getTotalPropertyCount);
 router.get('/get-all-property-user', getAllPropertyUser);
-router.get('/send-notification-to-property-poster',authGuard,sendNotificationToPropertyPoster);
+router.get('/send-notification-to-property-poster', authGuard, sendNotificationToPropertyPoster);
 
 // Property report and block
-router.put('/update-specific-property-report-block/:id',authGuard,UpdateReportAndBlockProperty);
-router.get('/get-report-block-property',authGuard,getReportAndBlockProperty);
+router.put('/update-specific-property-report-block/:id', authGuard, UpdateReportAndBlockProperty);
+router.get('/get-report-block-property', authGuard, getReportAndBlockProperty);
 
 // Property bookmark
-router.put('/update-specific-property-bookmark/:id',authGuard,UpdatePropertyBookmark);
-router.get('/get-bookmark-property',authGuard,getBookmarkProperty);
+router.put('/update-specific-property-bookmark/:id', authGuard, UpdatePropertyBookmark);
+router.get('/get-bookmark-property', authGuard, getBookmarkProperty);
 
 // api is => http://localhost:3000/api/get-query-property?query=Bengaluru
-router.get('/get-query-property',queryProperty);
-router.get('/get-property-editor-view',authGuard,PropertyEditorView);
-router.get('/get-specific-property-admin-view/:id',authGuard,specificPropertyAdminView);
+router.get('/get-query-property', optionalAuth, queryProperty);
+router.get('/get-property-editor-view', authGuard, PropertyEditorView);
+router.get('/get-specific-property-admin-view/:id', authGuard, specificPropertyAdminView);
 
 
 // for Offers post
-router.post('/create-offer',authGuard,createOffer);
-router.get('/get-all-offer',authGuard,GetAllOffer);
-router.get('/get-specific-offer/:id',GetSpecificOffer);
-router.put('/update-specific-offer/:id',authGuard,UpdateSpecificOffer);
-router.delete('/delete-specific-offer/:id',authGuard,DeleteSpecificOffer);
-router.get('/get-total-offer-count',authGuard,getTotalOfferCount);
+router.post('/create-offer', authGuard, createOffer);
+router.get('/get-all-offer', optionalAuth, GetAllOffer);
+router.get('/get-specific-offer/:id', optionalAuth, GetSpecificOffer);
+router.put('/update-specific-offer/:id', authGuard, UpdateSpecificOffer);
+router.delete('/delete-specific-offer/:id', authGuard, DeleteSpecificOffer);
+router.get('/get-total-offer-count', authGuard, getTotalOfferCount);
 router.get('/get-all-offer-user', getAllOfferUser);
-router.get('/send-notification-to-offer-poster',authGuard,sendNotificationToOfferPoster);
+router.get('/send-notification-to-offer-poster', authGuard, sendNotificationToOfferPoster);
 
 // Offer report and block
-router.put('/update-specific-offer-report-block/:id',authGuard,UpdateReportAndBlockOffer);
-router.get('/get-report-block-offer',authGuard,getReportAndBlockOffer);
+router.put('/update-specific-offer-report-block/:id', authGuard, UpdateReportAndBlockOffer);
+router.get('/get-report-block-offer', authGuard, getReportAndBlockOffer);
 
 // Offer bookmark
-router.put('/update-specific-offer-bookmark/:id',authGuard,UpdateOfferBookmark);
-router.get('/get-bookmark-offer',authGuard,getBookmarkOffer);
+router.put('/update-specific-offer-bookmark/:id', authGuard, UpdateOfferBookmark);
+router.get('/get-bookmark-offer', authGuard, getBookmarkOffer);
 
 // api is => http://localhost:3000/api/get-query-offer?query=411001
-router.get('/get-query-offer',queryOffer);
-router.get('/show-create-offer-view',authGuard,showCreateOfferView);
+router.get('/get-query-offer', optionalAuth, queryOffer);
+router.get('/show-create-offer-view', authGuard, showCreateOfferView);
 //api is => http://localhost:3000/api/filter-offer?city=Mumbai
-router.get('/filter-offer',FilterOffer);
-router.get('/get-specific-offer-admin-view/:id',authGuard,specificOfferAdminView);
+router.get('/filter-offer', optionalAuth, FilterOffer);
+router.get('/get-specific-offer-admin-view/:id', authGuard, specificOfferAdminView);
 
 
 // for adds post
-router.post('/create-ad',authGuard,CreateAdd);
-router.get('/get-all-ad',authGuard,GetAllAdds);
-router.get('/get-specific-ad/:id',GetSpecificAdd);
-router.put('/update-specific-ad/:id',authGuard,UpdateSpecificAdd);
-router.delete('/delete-specific-ad/:id',authGuard,DeleteSpecificAdd);
-router.get('/get-total-ad-count',authGuard,getTotalAdCount);
+router.post('/create-ad', authGuard, CreateAdd);
+router.get('/get-all-ad', optionalAuth, GetAllAdds);
+router.get('/get-specific-ad/:id', GetSpecificAdd);
+router.put('/update-specific-ad/:id', authGuard, UpdateSpecificAdd);
+router.delete('/delete-specific-ad/:id', authGuard, DeleteSpecificAdd);
+router.get('/get-total-ad-count', authGuard, getTotalAdCount);
 router.get('/get-all-ad-user', getAllAdUser);
 // api is =>    http://localhost:3000/api/get-query-ad?query=Electronics
-router.get('/get-query-ad',queryAdds);
-router.get('/get-add-creator-view',authGuard,AddCreaterView);
-router.get('/get-all-not-verified-adds',authGuard,getAllNotVerifiedAdds);
+router.get('/get-query-ad', queryAdds);
+router.get('/get-add-creator-view', authGuard, AddCreaterView);
+router.get('/get-all-not-verified-adds', authGuard, getAllNotVerifiedAdds);
 // api is => http://localhost:3000/api/filter-adds?category=Electronics&route=Mobiles&position=Top&isActive=true&validTill=2025-12-31&location=Bengaluru&isVerified=true&search=iPhone
-router.get('/filter-adds',FilterAdds);
-router.get('/get-specific-ad-admin-view/:id',authGuard,specificAddAdminView);
-router.get('/send-notification-to-ad-poster',authGuard,sendNotificationToAddPoster);
+router.get('/filter-adds', FilterAdds);
+router.get('/get-specific-ad-admin-view/:id', authGuard, specificAddAdminView);
+router.get('/send-notification-to-ad-poster', authGuard, sendNotificationToAddPoster);
 
 
 
 // editor post
-router.post('/create-editor',authGuard,createEditor);
-router.get('/get-all-editor',getAllEditor);
-router.get('/get-specific-editor/:id',getSpecificEditor);
-  router.put('/update-specific-editor/:id',authGuard,updateEditor);
-  router.delete('/delete-specific-editor/:id',authGuard,deleteEditor);
-  // api is =>http://localhost:3000/api/get-query-editor?query=foodie_vlogs123
-  router.get('/get-query-editor',queryEditors);
-  // for followers and following
-  router.put('/update-follower-detail/:id',authGuard,updateFollower);
-router.get('/verified-editor',authGuard,getVerifiedUser);
-router.get('/not-verified-editor',authGuard,getNotVerifiedUser);
+router.post('/create-editor', authGuard, createEditor);
+router.get('/get-all-editor', optionalAuth, getAllEditor);
+router.get('/get-specific-editor/:id', getSpecificEditor);
+router.put('/update-specific-editor/:id', authGuard, updateEditor);
+router.delete('/delete-specific-editor/:id', authGuard, deleteEditor);
+// api is =>http://localhost:3000/api/get-query-editor?query=foodie_vlogs123
+router.get('/get-query-editor', queryEditors);
+// for followers and following
+router.put('/update-follower-detail/:id', authGuard, updateFollower);
+router.get('/verified-editor', authGuard, getVerifiedUser);
+router.get('/not-verified-editor', authGuard, getNotVerifiedUser);
 
 // KYC Verification routes for news editor profiles
 router.post('/kyc/verify', verifyDocument);
@@ -697,139 +698,139 @@ router.post('/kyc/verify-image', authGuard, verifyDocumentImage);
 
 
 // news post
-router.post('/create-news',authGuard,createNews);
-router.get('/get-all-news',authGuard,getAllNews);
-router.get('/get-specific-news/:id',getSpecificNews);
-router.put('/update-specific-news/:id',authGuard,updateNews);
-router.delete('/delete-specific-news/:id',authGuard,deleteNews);
+router.post('/create-news', authGuard, createNews);
+router.get('/get-all-news', optionalAuth, getAllNews);
+router.get('/get-specific-news/:id', optionalAuth, getSpecificNews);
+router.put('/update-specific-news/:id', authGuard, updateNews);
+router.delete('/delete-specific-news/:id', authGuard, deleteNews);
 // api is =>. http://localhost:3000/api/get-query-news?query=AI Revolution in 2025
-router.get('/get-query-news',queryNews);
-router.get('/get-total-news-count',authGuard,getTotalNewsCount);
-router.get('/get-news-editor-view',authGuard,NewsEditorView);
+router.get('/get-query-news', optionalAuth, queryNews);
+router.get('/get-total-news-count', authGuard, getTotalNewsCount);
+router.get('/get-news-editor-view', authGuard, NewsEditorView);
 router.get('/get-all-news-user', getAllNewsUser);
-router.put('/news-comment/:news_id',authGuard,newsComment);
-router.get('/get-specific-news-admin-view/:id',authGuard,specificNewsAdminView);
-router.put('/news-like/:news_id',authGuard,newsLike);
-router.put('/news-dislike/:news_id',authGuard,newsDislike);
-router.put('/news-emoji-reaction/:news_id',authGuard,newsEmojiReaction);
-router.get('/get-trending-news',authGuard,getTrendingNews);
+router.put('/news-comment/:news_id', authGuard, newsComment);
+router.get('/get-specific-news-admin-view/:id', authGuard, specificNewsAdminView);
+router.put('/news-like/:news_id', authGuard, newsLike);
+router.put('/news-dislike/:news_id', authGuard, newsDislike);
+router.put('/news-emoji-reaction/:news_id', authGuard, newsEmojiReaction);
+router.get('/get-trending-news', optionalAuth, getTrendingNews);
 //send notification to news post user
-router.get('/send-notification-to-news-poster',authGuard,sendNotificationToNewsPoster);
+router.get('/send-notification-to-news-poster', authGuard, sendNotificationToNewsPoster);
 
 // Block/Unblock news author (prevents seeing all news from this author)
-router.put('/block-news-author/:newsId',authGuard,blockNewsAuthor);
-router.put('/unblock-news-author/:authorId',authGuard,unblockNewsAuthor);
+router.put('/block-news-author/:newsId', authGuard, blockNewsAuthor);
+router.put('/unblock-news-author/:authorId', authGuard, unblockNewsAuthor);
 
 // Report news (sends report to admin for review)
-router.put('/update-specific-news-report-block/:id',authGuard,UpdateReportAndBlockNews);
+router.put('/update-specific-news-report-block/:id', authGuard, UpdateReportAndBlockNews);
 
 // Bookmark/Save news
-router.put('/bookmark-news/:id',authGuard,bookmarkNews);
-router.get('/get-bookmark-news-user-view',authGuard,getBookmarkNewsUserView);
+router.put('/bookmark-news/:id', authGuard, bookmarkNews);
+router.get('/get-bookmark-news-user-view', authGuard, getBookmarkNewsUserView);
 
 
- 
+
 
 
 
 // vehicles post
-router.post('/create-vehicle',authGuard,createVehicle);
-router.get('/get-all-vehicle',authGuard,getAllVehicle);
-router.get('/get-specific-vehicle/:id',getSpecificVehicles);
-router.put('/update-specific-vehicle/:id',authGuard,updateVehicle);
+router.post('/create-vehicle', authGuard, createVehicle);
+router.get('/get-all-vehicle', authGuard, getAllVehicle);
+router.get('/get-specific-vehicle/:id', getSpecificVehicles);
+router.put('/update-specific-vehicle/:id', authGuard, updateVehicle);
 // api is => http://localhost:3000/api/get-query-vehicle?query=2025
-router.get('/get-query-vehicle',queryVehicles);
-router.get('/get-vehicles-creator-view',authGuard,getVehiclesCreaterView);
-router.delete('/delete-specific-vehicle/:id',authGuard,deleteVehicles);
-router.get('/get-specific-vehicle-admin-view/:id',authGuard,specificVehiclesAdminView);
+router.get('/get-query-vehicle', queryVehicles);
+router.get('/get-vehicles-creator-view', authGuard, getVehiclesCreaterView);
+router.delete('/delete-specific-vehicle/:id', authGuard, deleteVehicles);
+router.get('/get-specific-vehicle-admin-view/:id', authGuard, specificVehiclesAdminView);
 
 
 // local services
-router.post('/create-local-services',authGuard,createServicesRoute);
-router.get('/get-all-local-services',authGuard,getAllLocalServices);
-router.get('/get-specific-local-services/:id',getSpecificLocalServiceRoute);
-router.delete('/delete-specific-local-services/:id',authGuard,deleteLocalService);
-router.get('/get-local-services-creator-view',authGuard,LocalServiceCreaterView);
+router.post('/create-local-services', authGuard, createServicesRoute);
+router.get('/get-all-local-services', authGuard, getAllLocalServices);
+router.get('/get-specific-local-services/:id', getSpecificLocalServiceRoute);
+router.delete('/delete-specific-local-services/:id', authGuard, deleteLocalService);
+router.get('/get-local-services-creator-view', authGuard, LocalServiceCreaterView);
 // api is => http://localhost:3000/api/get-query-local-services?query=local Service
-router.get('/get-query-local-services',queryLocalServices);
-router.get('/get-total-local-services-count',authGuard,getTotalLocalServicesCount);
+router.get('/get-query-local-services', queryLocalServices);
+router.get('/get-total-local-services-count', authGuard, getTotalLocalServicesCount);
 router.get('/get-all-local-services-user', getAllLocalServicesUser);
-router.put('/update-local-services/:id',authGuard,updateLocalService);
-router.get('/get-specific-local-services-admin-view/:id',authGuard,specificLoaclServicesAdminView);
+router.put('/update-local-services/:id', authGuard, updateLocalService);
+router.get('/get-specific-local-services-admin-view/:id', authGuard, specificLoaclServicesAdminView);
 //seND notification to local services post user 
-router.get('/send-notification-to-local-services-poster',authGuard,sendNotificationToLocalServicesPoster);
+router.get('/send-notification-to-local-services-poster', authGuard, sendNotificationToLocalServicesPoster);
 
 
 //leads
-router.post('/create-lead',authGuard,createLead);
-router.get('/get-all-lead',getAllLead);
-router.get('/get-specific-lead/:id',getSpecificLead);
-router.put('/update-specific-lead/:id',authGuard,updateLead);
-router.delete('/delete-specific-lead/:id',authGuard,deleteLead);
-router.get('/get-query-lead',getQueryLead);
-router.get('/get-lead-creator-view',authGuard,getLeadCreaterView);
- router.get('/get-all-job-admin-view/:user_id',authGuard,AdminLeadView);
+router.post('/create-lead', authGuard, createLead);
+router.get('/get-all-lead', getAllLead);
+router.get('/get-specific-lead/:id', getSpecificLead);
+router.put('/update-specific-lead/:id', authGuard, updateLead);
+router.delete('/delete-specific-lead/:id', authGuard, deleteLead);
+router.get('/get-query-lead', getQueryLead);
+router.get('/get-lead-creator-view', authGuard, getLeadCreaterView);
+router.get('/get-all-job-admin-view/:user_id', authGuard, AdminLeadView);
 
 // FAQ route
-router.post('/create-faq',authGuard,createFaq);
-router.get('/get-all-faq',getFaq);
-router.get('/get-specific-faq/:id',getSpecificFAQ);
-router.put('/update-specific-faq/:id',authGuard,updateFaq);
-router.delete('/delete-specific-faq/:id',authGuard,deleteFAQ);
-router.get('/get-query-faq',queryFAQ);
+router.post('/create-faq', authGuard, createFaq);
+router.get('/get-all-faq', getFaq);
+router.get('/get-specific-faq/:id', getSpecificFAQ);
+router.put('/update-specific-faq/:id', authGuard, updateFaq);
+router.delete('/delete-specific-faq/:id', authGuard, deleteFAQ);
+router.get('/get-query-faq', queryFAQ);
 
 
 
 
 // contact us
-router.post('/create-contact',createContact);
-router.get('/get-all-contact',getContact);
-router.get('/get-total-contact-count',authGuard,getTotalContactCount);
-router.delete('/delete-specific-contact/:id',deleteContact);
-router.get('/get-query-contact',queryContact);
-router.get('/get-specific-contact/:id',getSpecificContact);
-router.put('/update-specific-contact/:id',authGuard,updateContact);
+router.post('/create-contact', createContact);
+router.get('/get-all-contact', getContact);
+router.get('/get-total-contact-count', authGuard, getTotalContactCount);
+router.delete('/delete-specific-contact/:id', deleteContact);
+router.get('/get-query-contact', queryContact);
+router.get('/get-specific-contact/:id', getSpecificContact);
+router.put('/update-specific-contact/:id', authGuard, updateContact);
 
 // contact settings (for Contact Us page)
-router.get('/get-contact-settings',getContactSettings); // Public endpoint
-router.put('/update-contact-settings',authGuard,updateContactSettings); // Admin only
+router.get('/get-contact-settings', getContactSettings); // Public endpoint
+router.put('/update-contact-settings', authGuard, updateContactSettings); // Admin only
 
 // feedback
-router.post('/create-feedback',authGuard,createFeedback);
-router.get('/get-all-feedback',getAllFeedback);
-router.get('/get-specific-feedback/:id',getSpecificFeedback);
-router.put('/update-feedback/:id',authGuard,updateFeedback);
-router.delete('/delete-feedback/:id',authGuard,deleteFeedback);
-router.get('/get-query-feedback',queryFeedback);
-router.get('/get-specific-feedback-admin-view/:id',authGuard,specificFeedbackAdminView);
+router.post('/create-feedback', authGuard, createFeedback);
+router.get('/get-all-feedback', getAllFeedback);
+router.get('/get-specific-feedback/:id', getSpecificFeedback);
+router.put('/update-feedback/:id', authGuard, updateFeedback);
+router.delete('/delete-feedback/:id', authGuard, deleteFeedback);
+router.get('/get-query-feedback', queryFeedback);
+router.get('/get-specific-feedback-admin-view/:id', authGuard, specificFeedbackAdminView);
 
 // account delete policy
-router.post('/create-account-delete-policy',authGuard,createAccountDeletePolicy);
-router.get('/get-account-delete-policy',getAccountDeletePolicy);
-router.put('/edit-account-delete-policy/:id',authGuard,editAccountDeletePolicy);
-router.delete('/delete-account-delete-policy/:id',authGuard,deleteAccountDeletePolicy); 
-router.get('/get-specific-account-delete-policy/:id',getSpecificAccountDeletePolicy);
+router.post('/create-account-delete-policy', authGuard, createAccountDeletePolicy);
+router.get('/get-account-delete-policy', getAccountDeletePolicy);
+router.put('/edit-account-delete-policy/:id', authGuard, editAccountDeletePolicy);
+router.delete('/delete-account-delete-policy/:id', authGuard, deleteAccountDeletePolicy);
+router.get('/get-specific-account-delete-policy/:id', getSpecificAccountDeletePolicy);
 
 // privacy policy
-router.post('/create-privacy-policy',authGuard,createPrivacyPolicy);
-router.get('/get-privacy-policy',getPrivacyPolicy);
-router.put('/edit-privacy-policy/:id',authGuard,editPrivacyPolicy);
-router.delete('/delete-privacy-policy/:id',authGuard,deletePrivacyPolicy);
-router.get('/get-specific-privacy-policy/:id',getSpecificPrivacyPolicy);
+router.post('/create-privacy-policy', authGuard, createPrivacyPolicy);
+router.get('/get-privacy-policy', getPrivacyPolicy);
+router.put('/edit-privacy-policy/:id', authGuard, editPrivacyPolicy);
+router.delete('/delete-privacy-policy/:id', authGuard, deletePrivacyPolicy);
+router.get('/get-specific-privacy-policy/:id', getSpecificPrivacyPolicy);
 
 
 // terms and conditions
-router.post('/create-terms-and-conditions',authGuard,createTermsAndConditions);
-router.get('/get-terms-and-conditions',getTermsAndConditions);
-router.put('/edit-terms-and-conditions/:id',authGuard,editTermsAndConditions);
-router.delete('/delete-terms-and-conditions/:id',authGuard,deleteTermsAndConditions);
-router.get('/get-specific-terms-and-conditions/:id',getSpecificTermsAndConditions);
+router.post('/create-terms-and-conditions', authGuard, createTermsAndConditions);
+router.get('/get-terms-and-conditions', getTermsAndConditions);
+router.put('/edit-terms-and-conditions/:id', authGuard, editTermsAndConditions);
+router.delete('/delete-terms-and-conditions/:id', authGuard, deleteTermsAndConditions);
+router.get('/get-specific-terms-and-conditions/:id', getSpecificTermsAndConditions);
 
 // about us
-router.post('/create-about-us',authGuard,createAboutUs); // Admin only
-router.get('/get-about-us',getAboutUs); // Public endpoint
-router.put('/edit-about-us/:id',authGuard,editAboutUs); // Admin only
-router.get('/get-specific-about-us/:id',getSpecificAboutUs); // Public endpoint
+router.post('/create-about-us', authGuard, createAboutUs); // Admin only
+router.get('/get-about-us', getAboutUs); // Public endpoint
+router.put('/edit-about-us/:id', authGuard, editAboutUs); // Admin only
+router.get('/get-specific-about-us/:id', getSpecificAboutUs); // Public endpoint
 
 
 
@@ -984,7 +985,7 @@ router.post('/user/check-feature-access', authGuard, checkFeatureAccess);
 
 // Chat routes
 const chatRoutes = require('./chatRoutes');
-          
-    router.use('/chat', chatRoutes);
 
-module.exports=router;
+router.use('/chat', chatRoutes);
+
+module.exports = router;
