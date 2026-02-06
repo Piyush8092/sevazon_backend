@@ -39,11 +39,11 @@ const sortByDistrict = (leads, userDistrict) => {
         return 0;
     });
 };
-
 const getAllLead = async (req, res) => {
     try {
-        // Check if user has created a Service/Business profile
+         // Check if user has created a Service/Business profile
         const userId = req.user._id;
+        console.log(userId)
         const user = await userModel.findById(userId);
 
         if (!user) {
@@ -54,8 +54,7 @@ const getAllLead = async (req, res) => {
                 error: true
             });
         }
-
-        // Verify user has Service/Business profile
+         // Verify user has Service/Business profile
         if (!user.AnyServiceCreate) {
             return res.status(403).json({
                 message: 'You need to create a Service/Business profile to view leads',

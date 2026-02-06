@@ -205,8 +205,8 @@ const { getNotVerifiedUser } = require('../controllers/newsEditor/getNotVerified
 const { getVerifiedUser } = require('../controllers/newsEditor/getVerifiedUser');
 const { getServiceCreaterView } = require('../controllers/AllServicesRegistration/getServiceCreaterView');
 const { createLead } = require('../controllers/leads/createLead');
-const { getAllLead } = require('../controllers/leads/getAllLead');
-const { getSpecificLead } = require('../controllers/leads/getSpecificLead');
+const {getAllLead}=require('../controllers/leads/getAllLead');
+ const { getSpecificLead } = require('../controllers/leads/getSpecificLead');
 const { updateLead } = require('../controllers/leads/updateLead');
 const { deleteLead } = require('../controllers/leads/daleteLead');
 const { getQueryLead } = require('../controllers/leads/getQueryLead');
@@ -763,7 +763,7 @@ router.get('/send-notification-to-local-services-poster', authGuard, sendNotific
 
 //leads
 router.post('/create-lead', authGuard, createLead);
-router.get('/get-all-lead', getAllLead);
+router.get('/get-all-lead',authGuard, getAllLead);
 router.get('/get-specific-lead/:id', getSpecificLead);
 router.put('/update-specific-lead/:id', authGuard, updateLead);
 router.delete('/delete-specific-lead/:id', authGuard, deleteLead);
@@ -985,6 +985,7 @@ router.post('/user/check-feature-access', authGuard, checkFeatureAccess);
 
 // Chat routes
 const chatRoutes = require('./chatRoutes');
+const { auth } = require('firebase-admin');
 
 router.use('/chat', chatRoutes);
 
