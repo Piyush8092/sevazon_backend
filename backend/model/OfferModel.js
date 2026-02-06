@@ -8,7 +8,7 @@ const offerSchema = new mongoose.Schema({
     },  
     profileId:{
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'createAllServiceProfileModel',
+        ref: 'ProfileModel',
         
        },
     yourNameBusinessInstituteFirmOrganisation: {

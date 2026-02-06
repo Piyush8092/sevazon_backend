@@ -8,7 +8,7 @@ const jobSchema = new mongoose.Schema({
     },
    profileId:{
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'createAllServiceProfileModel',
+    ref: 'ProfileModel',
     
    },
     title: {
