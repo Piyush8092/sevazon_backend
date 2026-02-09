@@ -48,7 +48,7 @@ const LoginRout = async (req, res) => {
         let token = jwt.sign(
             { id: existingUser._id },
             process.env.SECRET_KEY || 'me333enneffiimsqoqomcngfehdj3idss',
-            { expiresIn: '1d' }
+            { expiresIn: '365d' }
         );
 
         // ✅ Fix here
