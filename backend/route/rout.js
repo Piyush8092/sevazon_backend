@@ -122,6 +122,8 @@ const { GetSubServiceList } = require('../controllers/CreateAllServices/GetSubSe
 const { sendOTP } = require('../controllers/otp/sendOTP');
 const { verifyOTP } = require('../controllers/otp/verifyOTP');
 const { getOtp } = require('../controllers/otp/getOtp');
+const { sendOTPAlternative } = require('../controllers/otp/sendOTPAlternative');
+const { verifyOTPAlternative } = require('../controllers/otp/verifyOTPAlternative');
 const { verifySignupOTP } = require('../controllers/verifySignupOTP');
 const { updateLike } = require('../controllers/AllServicesRegistration/updatelike');
 const { updateDislike } = require('../controllers/AllServicesRegistration/updateDislike');
@@ -325,6 +327,10 @@ router.get('/auth-user', authGuard, getAuthUserDetail);
 router.post('/send-otp', sendOTP);
 router.post('/verify-otp', verifyOTP);
 router.get('/resend-otp/:phone', getOtp);
+
+// for alternative phone number OTP verification (protected routes)
+router.post('/send-otp-alternative', authGuard, sendOTPAlternative);
+router.post('/verify-otp-alternative', authGuard, verifyOTPAlternative);
 
 // for signup with OTP verification
 router.post('/verify-signup-otp', verifySignupOTP);

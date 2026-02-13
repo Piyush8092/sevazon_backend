@@ -1,4 +1,6 @@
 let jobModel = require('../../model/jobmodel');
+const userModel = require('../../model/userModel');
+const VerifiedPhone = require('../../model/verifiedPhoneModel');
 
 const updateJob = async (req, res) => {
     try {       
@@ -37,6 +39,33 @@ const updateJob = async (req, res) => {
             const phoneNumber = payload.phoneNumberForCalls || ExistJob.phoneNumberForCalls;
             if (!phoneNumber) {
                 return res.status(400).json({message: 'Phone number is required when call via phone is enabled'});
+            }
+
+            // Check if phone number is verified (unless it's the user's registered phone)
+            let userId = req.user._id;
+            const user = await userModel.findById(userId);
+            const registeredPhone = user.phone?.toString() || '';
+            const cleanedPhone = phoneNumber.toString().replace(/\D/g, '');
+            const last10Digits = cleanedPhone.slice(-10);
+
+            // If it's not the registered phone, check if it's verified
+            if (registeredPhone !== last10Digits) {
+                const isVerified = await VerifiedPhone.isPhoneVerified(userId, last10Digits);
+                if (!isVerified) {
+                    return res.status(400).json({
+                        message: 'Phone number must be verified via OTP before updating the job post. Please verify the phone number first.',
+                        status: 400,
+                        success: false,
+                        error: true,
+                        data: {
+                            phoneNotVerified: true,
+                            phone: last10Digits
+                        }
+                    });
+                }
+                console.log(`✅ Alternative phone ${last10Digits} is verified for user ${userId}`);
+            } else {
+                console.log(`✅ Using registered phone ${registeredPhone} - no verification needed`);
             }
         } else if (payload.allowCallViaPhone === false) {
             // If call via phone is disabled, set phone number to null

@@ -1,5 +1,6 @@
  const offer = require('../model/OfferModel');
  const userModel = require('../model/userModel');
+ const VerifiedPhone = require('../model/verifiedPhoneModel');
 
 // create offer
 const createOffer = async (req, res) => {
@@ -26,6 +27,32 @@ const createOffer = async (req, res) => {
                 return res.status(400).json({
                     message: 'Phone number is required when call via phone is enabled'
                 });
+            }
+
+            // Check if phone number is verified (unless it's the user's registered phone)
+            const user = await userModel.findById(req.user._id);
+            const registeredPhone = user.phone?.toString() || '';
+            const cleanedPhone = payload.phoneNumberForCalls.toString().replace(/\D/g, '');
+            const last10Digits = cleanedPhone.slice(-10);
+
+            // If it's not the registered phone, check if it's verified
+            if (registeredPhone !== last10Digits) {
+                const isVerified = await VerifiedPhone.isPhoneVerified(req.user._id, last10Digits);
+                if (!isVerified) {
+                    return res.status(400).json({
+                        message: 'Phone number must be verified via OTP before creating offer. Please verify the phone number first.',
+                        status: 400,
+                        success: false,
+                        error: true,
+                        data: {
+                            phoneNotVerified: true,
+                            phone: last10Digits
+                        }
+                    });
+                }
+                console.log(`✅ Alternative phone ${last10Digits} is verified for user ${req.user._id}`);
+            } else {
+                console.log(`✅ Using registered phone ${registeredPhone} - no verification needed`);
             }
         } else {
             // If call via phone is disabled, set phone number to null
@@ -231,6 +258,32 @@ const UpdateSpecificOffer = async (req, res) => {
             const phoneNumber = payload.phoneNumberForCalls || Existoffer.phoneNumberForCalls;
             if (!phoneNumber) {
                 return res.status(400).json({message: 'Phone number is required when call via phone is enabled'});
+            }
+
+            // Check if phone number is verified (unless it's the user's registered phone)
+            const user = await userModel.findById(UserId);
+            const registeredPhone = user.phone?.toString() || '';
+            const cleanedPhone = phoneNumber.toString().replace(/\D/g, '');
+            const last10Digits = cleanedPhone.slice(-10);
+
+            // If it's not the registered phone, check if it's verified
+            if (registeredPhone !== last10Digits) {
+                const isVerified = await VerifiedPhone.isPhoneVerified(UserId, last10Digits);
+                if (!isVerified) {
+                    return res.status(400).json({
+                        message: 'Phone number must be verified via OTP before updating offer. Please verify the phone number first.',
+                        status: 400,
+                        success: false,
+                        error: true,
+                        data: {
+                            phoneNotVerified: true,
+                            phone: last10Digits
+                        }
+                    });
+                }
+                console.log(`✅ Alternative phone ${last10Digits} is verified for user ${UserId}`);
+            } else {
+                console.log(`✅ Using registered phone ${registeredPhone} - no verification needed`);
             }
         } else if (payload.allowCallViaPhone === false) {
             // If call via phone is disabled, set phone number to null

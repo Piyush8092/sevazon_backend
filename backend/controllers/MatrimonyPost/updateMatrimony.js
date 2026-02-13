@@ -1,4 +1,6 @@
 let MatrimonyModel = require('../../model/Matrimony');
+const userModel = require('../../model/userModel');
+const VerifiedPhone = require('../../model/verifiedPhoneModel');
 
 const updateMatrimony = async (req, res) => {
     try {       
@@ -219,11 +221,39 @@ const updateMatrimony = async (req, res) => {
             if (isNaN(dob.getTime())) {
                 return res.status(400).json({message: 'Invalid date of birth format'});
             }
-            
+
             const today = new Date();
             const age = today.getFullYear() - dob.getFullYear();
             if (age < 18) {
                 return res.status(400).json({message: 'Age must be at least 18 years'});
+            }
+        }
+
+        // Validate contactNumber if being updated
+        if (payload.contactNumber && payload.contactNumber.trim() !== '') {
+            const user = await userModel.findById(UserId);
+            const registeredPhone = user.phone?.toString() || '';
+            const cleanedContact = payload.contactNumber.toString().replace(/\D/g, '');
+            const last10Digits = cleanedContact.slice(-10);
+
+            // If it's not the registered phone, check if it's verified
+            if (registeredPhone !== last10Digits) {
+                const isVerified = await VerifiedPhone.isPhoneVerified(UserId, last10Digits);
+                if (!isVerified) {
+                    return res.status(400).json({
+                        message: 'Contact number must be verified via OTP before updating matrimony profile. Please verify the phone number first.',
+                        status: 400,
+                        success: false,
+                        error: true,
+                        data: {
+                            phoneNotVerified: true,
+                            phone: last10Digits
+                        }
+                    });
+                }
+                console.log(`✅ Alternative contact number ${last10Digits} is verified for user ${UserId}`);
+            } else {
+                console.log(`✅ Using registered phone ${registeredPhone} as contact number - no verification needed`);
             }
         }
 

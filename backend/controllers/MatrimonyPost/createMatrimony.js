@@ -1,5 +1,6 @@
 let MatrimonyModel = require('../../model/Matrimony');
 let userModel = require('../../model/userModel');
+const VerifiedPhone = require('../../model/verifiedPhoneModel');
 const createMatrimony = async (req, res) => {
     try {       
         let payload = req.body;
@@ -91,6 +92,31 @@ const createMatrimony = async (req, res) => {
         // Set contactNumber from payload or use registered phone as fallback
         if (!payload.contactNumber || payload.contactNumber.trim() === '') {
             payload.contactNumber = req.user.phone;
+        } else {
+            // If contactNumber is provided and different from registered phone, verify it
+            const registeredPhone = req.user.phone?.toString() || '';
+            const cleanedContact = payload.contactNumber.toString().replace(/\D/g, '');
+            const last10Digits = cleanedContact.slice(-10);
+
+            // If it's not the registered phone, check if it's verified
+            if (registeredPhone !== last10Digits) {
+                const isVerified = await VerifiedPhone.isPhoneVerified(userId, last10Digits);
+                if (!isVerified) {
+                    return res.status(400).json({
+                        message: 'Contact number must be verified via OTP before creating matrimony profile. Please verify the phone number first.',
+                        status: 400,
+                        success: false,
+                        error: true,
+                        data: {
+                            phoneNotVerified: true,
+                            phone: last10Digits
+                        }
+                    });
+                }
+                console.log(`✅ Alternative contact number ${last10Digits} is verified for user ${userId}`);
+            } else {
+                console.log(`✅ Using registered phone ${registeredPhone} as contact number - no verification needed`);
+            }
         }
 
         const newMatrimony = new MatrimonyModel(payload);
