@@ -9,9 +9,9 @@ const axios = require('axios');
 class Fast2SMSService {
     constructor() {
         // Fast2SMS API Configuration
-        this.apiKey = process.env.FAST2SMS_API_KEY || 'ysJkdiu9PUmTNhgnKfOHYaDj8BW7I5Ew0QtzLF4MXxrlceqoZv21NUDRczmSjp6ZyPXBHTr7ou45e0OM';
+        this.apiKey = process.env.FAST2SMS_API_KEY || 'OWBD89X6mgzj7tUOSBSmsv6Mk3kEwyB8wGQN24P8cAme9l9jqdQ2lhhjxGlF';
         this.baseUrl = 'https://www.fast2sms.com/dev';
-        this.senderId = process.env.FAST2SMS_SENDER_ID || ''; // Optional sender ID
+        this.senderId = process.env.FAST2SMS_SENDER_ID || 'LOKDGS'; // Sender ID from your Fast2SMS account
 
         // Create axios instance with default configuration
         // NOTE: For GET requests, authorization must be sent as query parameter
@@ -78,17 +78,16 @@ class Fast2SMSService {
                 throw new Error('Invalid phone number format. Must be 10 digits.');
             }
 
-            // Prepare SMS message
-            const message = `Your OTP for Sevazon verification is ${otp}. Valid for 5 minutes. Do not share with anyone.`;
-
-            // Prepare request parameters - using 'q' route (quick transactional route)
-            // This route doesn't require DLT registration and works for testing
+            // Prepare request parameters - using 'dlt' route (DLT registered template)
+            // Template: "Your OTP for Loklink account verification is {#var#}. {#var#}"
+            // Template ID: 208749 (as per your Fast2SMS dashboard)
             // IMPORTANT: For GET requests, authorization must be included as a query parameter
             const params = {
                 authorization: this.apiKey, // API key as query parameter for GET requests
-                route: 'q', // Quick transactional route (use 'dlt' for production with registered templates)
-                message: message,
-                language: 'english',
+                route: 'dlt', // DLT route for production with registered templates
+                sender_id: this.senderId, // LOKDGS - your registered sender ID
+                message: '208749', // DLT Template ID from your Fast2SMS account
+                variables_values: `${otp}|`, // Variables for template: {#var#} = OTP
                 flash: 0, // 0 for normal SMS, 1 for flash SMS
                 numbers: cleanedPhone,
             };
