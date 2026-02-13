@@ -989,4 +989,9 @@ const { auth } = require('firebase-admin');
 
 router.use('/chat', chatRoutes);
 
+// Image upload routes
+const { upload, uploadSingleImage, uploadMultipleImages } = require('../controllers/upload/uploadImage');
+router.post('/upload/image', authGuard, upload.single('image'), uploadSingleImage);
+router.post('/upload/images', authGuard, upload.array('images', 10), uploadMultipleImages);
+
 module.exports = router;

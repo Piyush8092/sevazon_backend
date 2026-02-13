@@ -11,7 +11,8 @@ const createNews = async (req, res) => {
         }
 
         // Validate newsImages array
-        if (!payload.newsImages || !Array.isArray(payload.newsImages) || 
+        // Note: newsImages can be either base64 encoded strings or Firebase Storage URLs
+        if (!payload.newsImages || !Array.isArray(payload.newsImages) ||
             payload.newsImages.length < 1 || payload.newsImages.length > 5) {
             return res.status(400).json({message: 'Minimum 1 and maximum 5 news images are required'});
         }

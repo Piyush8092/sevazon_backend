@@ -23,6 +23,7 @@ const CreateAdd = async (req, res) => {
 
 
         // Validate images array
+        // Note: adImages can be either base64 encoded strings or Firebase Storage URLs
         if (!payload.adImages || !Array.isArray(payload.adImages) || payload.adImages.length < 1 || payload.adImages.length > 5) {
             return res.status(400).json({message: 'Minimum 1 and maximum 5 ad images are required'});
         }
@@ -333,6 +334,7 @@ const UpdateSpecificAdd = async (req, res) => {
          
 
         // Validate images array if being updated
+        // Note: adImages can be either base64 encoded strings or Firebase Storage URLs
         if (payload.adImages && (!Array.isArray(payload.adImages) || payload.adImages.length < 1 || payload.adImages.length > 5)) {
             return res.status(400).json({message: 'Minimum 1 and maximum 5 ad images are required'});
         }

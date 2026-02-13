@@ -34,6 +34,7 @@ const createOffer = async (req, res) => {
 
  
         // Validate images array
+        // Note: offerDiscountImages can be either base64 encoded strings or Firebase Storage URLs
         if (payload.offerDiscountImages && (!Array.isArray(payload.offerDiscountImages) || payload.offerDiscountImages.length > 2)) {
             return res.status(400).json({message: 'Maximum 2 offer discount images are allowed'});
         }

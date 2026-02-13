@@ -53,6 +53,7 @@ const CreateAllServices = async (req, res) => {
       if (!payload.experience || payload.experience.trim() === '') {
         payload.experience = null;
       }
+      // Note: workServiceImages can be either base64 encoded strings or Firebase Storage URLs
       if (!payload.workServiceImages || payload.workServiceImages.length === 0) {
         return res
           .status(400)
@@ -74,6 +75,7 @@ const CreateAllServices = async (req, res) => {
       }
      
       
+      // Note: catalogImages can be either base64 encoded strings or Firebase Storage URLs
       if (!payload.catalogImages || payload.catalogImages.length === 0) {
         return res
           .status(400)

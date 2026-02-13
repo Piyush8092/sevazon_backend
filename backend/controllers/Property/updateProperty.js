@@ -16,11 +16,12 @@ const updateProperty = async (req, res) => {
         }
 
         // Validate array fields if being updated
-        if (payload.vehicleImages && (!Array.isArray(payload.vehicleImages) || payload.vehicleImages.length === 0)) {
-            return res.status(400).json({message: 'Vehicle images must be a non-empty array'});
+        // Note: propertyImages can be either base64 encoded strings or Firebase Storage URLs
+        if (payload.propertyImages && (!Array.isArray(payload.propertyImages) || payload.propertyImages.length === 0)) {
+            return res.status(400).json({message: 'Property images must be a non-empty array'});
         }
 
-        if (payload.vehicleImages && payload.vehicleImages.length > 6) {
+        if (payload.propertyImages && payload.propertyImages.length > 6) {
             return res.status(400).json({message: 'Maximum 6 images are allowed'});
         }
 

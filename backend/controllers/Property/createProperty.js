@@ -26,6 +26,7 @@ const createProperty = async (req, res) => {
         }
 
         // Validate array fields
+        // Note: propertyImages can be either base64 encoded strings or Firebase Storage URLs
         if (!Array.isArray(payload.propertyImages) || payload.propertyImages.length === 0) {
             return res.status(400).json({message: 'At least one property image is required'});
         }

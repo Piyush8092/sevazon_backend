@@ -16,7 +16,8 @@ const initializeFirebase = () => {
             firebaseApp = admin.initializeApp({
                 credential: admin.credential.cert(serviceAccount),
                 projectId: serviceAccount.project_id,
-                databaseURL: process.env.FIREBASE_DATABASE_URL
+                databaseURL: process.env.FIREBASE_DATABASE_URL,
+                storageBucket: 'loklink.firebasestorage.app'
             });
 
             console.log('✅ Firebase initialized with FIREBASE_SERVICE_ACCOUNT_KEY');
@@ -40,7 +41,8 @@ const initializeFirebase = () => {
             firebaseApp = admin.initializeApp({
                 credential: admin.credential.cert(serviceAccount),
                 projectId: process.env.FIREBASE_PROJECT_ID,
-                databaseURL: process.env.FIREBASE_DATABASE_URL
+                databaseURL: process.env.FIREBASE_DATABASE_URL,
+                storageBucket: 'loklink.firebasestorage.app'
             });
 
             console.log('✅ Firebase initialized with individual environment variables');
@@ -50,7 +52,8 @@ const initializeFirebase = () => {
             const serviceAccountPath = process.env.FIREBASE_SERVICE_ACCOUNT_PATH || './config/firebase-service-account.json';
 
             firebaseApp = admin.initializeApp({
-                credential: admin.credential.cert(require(serviceAccountPath))
+                credential: admin.credential.cert(require(serviceAccountPath)),
+                storageBucket: 'loklink.firebasestorage.app'
             });
 
             console.log('✅ Firebase initialized with service account file');
@@ -70,12 +73,18 @@ const getMessaging = () => {
     return admin.messaging(app);
 };
 
+// Get Firebase storage instance
+const getStorage = () => {
+    const app = initializeFirebase();
+    return admin.storage(app);
+};
+
 // Validate FCM token format
 const isValidFCMToken = (token) => {
     if (!token || typeof token !== 'string') {
         return false;
     }
-    
+
     // Basic FCM token validation (tokens are typically 152+ characters)
     const fcmTokenRegex = /^[A-Za-z0-9_-]+:[A-Za-z0-9_-]+$/;
     return token.length >= 140 && (fcmTokenRegex.test(token) || token.includes(':'));
@@ -84,6 +93,7 @@ const isValidFCMToken = (token) => {
 module.exports = {
     initializeFirebase,
     getMessaging,
+    getStorage,
     isValidFCMToken,
     admin
 };
