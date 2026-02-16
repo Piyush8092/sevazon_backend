@@ -1,7 +1,6 @@
+const router = require('express').Router();
 // Call routes
 const callRoutes = require('./callRoutes');
-router.use('/call', callRoutes);
-const router = require('express').Router();
 const { LoginRout } = require('../controllers/login');
 const { SignupRout } = require('../controllers/signup');
 const authGuard = require('../middleware/auth');
@@ -971,6 +970,8 @@ router.post('/agora/switch-certificate', [
   authGuard,
   generalAgoraLimit
 ], agoraController.switchToBackupCertificate);
+
+router.use('/call', callRoutes);
 
 // FCM notification routes
 router.use('/fcm', fcmRoutes);

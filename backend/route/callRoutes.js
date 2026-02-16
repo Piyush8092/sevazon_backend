@@ -1,7 +1,6 @@
 const router = require('express').Router();
 const authGuard = require('../middleware/auth');
-const AgoraController = require('../controllers/agora/agoraController');
-const agoraController = new AgoraController();
+const agoraController = require('../controllers/agora/agoraController');
 
 // Generate Agora token
 router.post('/generate-call-token', authGuard, (req, res) => agoraController.generateToken(req, res));

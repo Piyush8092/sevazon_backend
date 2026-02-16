@@ -44,7 +44,6 @@ const featuredPostsSchema = new mongoose.Schema({
   isActive: {
     type: Boolean,
     default: true,
-    index: true,
   },
 
   // Optional: Start date for the featured posts

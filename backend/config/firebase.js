@@ -49,7 +49,7 @@ const initializeFirebase = () => {
         }
         // Priority 3: Fallback to service account file path (for local development)
         else {
-            const serviceAccountPath = process.env.FIREBASE_SERVICE_ACCOUNT_PATH || './config/firebase-service-account.json';
+            const serviceAccountPath = process.env.FIREBASE_SERVICE_ACCOUNT_PATH || './firebase-service-account.example.json';
 
             firebaseApp = admin.initializeApp({
                 credential: admin.credential.cert(require(serviceAccountPath)),
