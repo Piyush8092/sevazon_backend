@@ -1,3 +1,6 @@
+// Call routes
+const callRoutes = require('./callRoutes');
+router.use('/call', callRoutes);
 const router = require('express').Router();
 const { LoginRout } = require('../controllers/login');
 const { SignupRout } = require('../controllers/signup');

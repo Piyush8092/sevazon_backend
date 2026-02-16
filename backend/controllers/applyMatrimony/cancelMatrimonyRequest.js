@@ -1,56 +1,39 @@
 let MatrimonyModel = require('../../model/Matrimony');
 
+
 const cancelMatrimonyRequest = async (req, res) => {
     try {
-        let matrimonyId = req.params.id;
-        let userId = req.user._id;
-
+        const matrimonyId = req.params.id;
+        const userId = req.user._id;
+        console.log(`[cancelMatrimonyRequest] userId: ${userId}, profileId: ${matrimonyId}`);
         // Find the matrimony profile
-        let ExistMatrimony = await MatrimonyModel.findById(matrimonyId);
+        const ExistMatrimony = await MatrimonyModel.findById(matrimonyId);
         if (!ExistMatrimony) {
-            return res.status(404).json({
-                message: 'Matrimony profile not found',
-                status: 404,
-                success: false,
-                error: true
-            });
+            return res.status(404).json({ success: false, message: 'Matrimony profile not found', data: null });
         }
-
         // Find the application by the current user
         const applicationIndex = ExistMatrimony.applyMatrimony.findIndex(
             app => app.applyUserId.toString() === userId.toString()
         );
-
         if (applicationIndex === -1) {
-            return res.status(404).json({
-                message: 'No application found for this profile',
-                status: 404,
-                success: false,
-                error: true
-            });
+            return res.status(404).json({ success: false, message: 'No application found for this profile', data: null });
         }
-
         // Remove the application from the array
         ExistMatrimony.applyMatrimony.splice(applicationIndex, 1);
-
         // Save the updated matrimony profile
         await ExistMatrimony.save();
-
-        res.json({
-            message: 'Matrimony request cancelled successfully',
-            status: 200,
-            data: ExistMatrimony,
+        console.log(`[cancelMatrimonyRequest] Application cancelled: userId=${userId}, profileId=${matrimonyId}`);
+        return res.json({
             success: true,
-            error: false
+            message: 'Matrimony request cancelled successfully',
+            data: ExistMatrimony
         });
-
     } catch (e) {
-        res.json({
-            message: 'Something went wrong',
-            status: 500,
-            data: e.message,
+        console.error('[cancelMatrimonyRequest] Error:', e);
+        return res.status(500).json({
             success: false,
-            error: true
+            message: 'Something went wrong',
+            data: e.message || e
         });
     }
 };

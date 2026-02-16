@@ -2,6 +2,8 @@ const router = require('express').Router();
 const authGuard = require('../middleware/auth');
 const chatNotificationController = require('../controllers/chat/chatNotificationController');
 
+const chatController = require('../controllers/chat/chatController');
+
 // Import rate limiting middleware
 const { fcmRateLimit, spamPrevention, notificationSpamDetection } = require('../middleware/rateLimiter');
 
@@ -29,6 +31,22 @@ router.post('/send-message-notification',
     notificationSpamDetection,
     chatNotificationController.sendMessageNotification
 );
+
+// =============================
+// CHAT MESSAGE/ROOM ROUTES
+// =============================
+
+// Create or get a chat room
+router.post('/room', authGuard, chatController.createOrGetRoom);
+
+// Send a message
+router.post('/message', authGuard, chatController.sendMessage);
+
+// Get messages for a room (paginated)
+router.get('/messages/:roomId', authGuard, chatController.getMessages);
+
+// Get all rooms for the user
+router.get('/rooms', authGuard, chatController.getRooms);
 
 module.exports = router;
 

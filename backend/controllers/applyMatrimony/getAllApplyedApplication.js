@@ -1,12 +1,13 @@
 let MatrimonyModel = require('../../model/Matrimony');
 
+
 const getAllApplyApplication = async (req, res) => {
     try {
-        let page = req.query.page || 1;
-        let limit = req.query.limit || 10;
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
         const skip = (page - 1) * limit;
-        let userId = req.user._id;
-
+        const userId = req.user._id;
+        console.log(`[getAllApplyApplication] userId: ${userId}, page: ${page}, limit: ${limit}`);
         // Find matrimony profiles that belong to the current user AND have received applications
         // This shows profiles where others have applied to the current user's profile
         const myProfiles = await MatrimonyModel.find({
@@ -16,7 +17,6 @@ const getAllApplyApplication = async (req, res) => {
         })
             .populate('userId', 'name email phone')
             .populate('applyMatrimony.applyUserId', 'name email phone');
-
         // Extract all applicant user IDs from the current user's profiles
         const applicantIds = new Set();
         myProfiles.forEach(profile => {
@@ -26,7 +26,6 @@ const getAllApplyApplication = async (req, res) => {
                 }
             });
         });
-
         // Now fetch the matrimony profiles of those applicants
         const applicantProfiles = await MatrimonyModel.find({
             userId: { $in: Array.from(applicantIds) }
@@ -34,22 +33,22 @@ const getAllApplyApplication = async (req, res) => {
             .populate('userId', 'name email phone')
             .skip(skip)
             .limit(limit);
-
         const total = applicantIds.size;
         const totalPages = Math.ceil(total / limit);
-
-        res.json({
-            message: 'All applications retrieved successfully',
-            status: 200,
-            data: applicantProfiles,
+        return res.json({
             success: true,
-            error: false,
+            message: 'All applications retrieved successfully',
+            data: applicantProfiles,
             total,
             totalPages
         });
-    }
-    catch (e) {
-        res.json({message: 'Something went wrong', status: 500, data: e.message, success: false, error: true});
+    } catch (e) {
+        console.error('[getAllApplyApplication] Error:', e);
+        return res.status(500).json({
+            success: false,
+            message: 'Something went wrong',
+            data: e.message || e
+        });
     }
 };
 

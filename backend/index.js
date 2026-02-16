@@ -33,7 +33,16 @@ app.use(cors({
 
 app.use('/api', router);
 
+
+const http = require('http');
+
+const setupWebSocket = require('./utils/websocket');
+const setupCallWebSocket = require('./utils/call_websocket');
+
 connectDB();
-app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
+const server = http.createServer(app);
+setupWebSocket(server);
+setupCallWebSocket(server);
+server.listen(port, () => {
+  console.log(`Server (HTTP+WebSocket) running on port ${port}`);
 });
