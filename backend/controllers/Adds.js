@@ -43,13 +43,10 @@ const CreateAdd = async (req, res) => {
             payload.placementPages = ['home'];
         }
 
-        // All ads start as unverified and require admin approval
-        // This ensures quality control regardless of user's KYC status
+        // All ads are auto-approved, admin can only delete
         payload.userId = req.user._id;
-        payload.isVerified = false; // Always false until admin approves
-        // User-controlled placement - no admin approval needed for placement
-        // Status is set to Pending for content review, but placement is user-controlled
-        payload.status = 'Pending';
+        payload.isVerified = true;
+        payload.status = 'Approved';
 
         // Store payment reference if provided (optional for backward compatibility)
         // Frontend should send paymentId after successful payment verification
@@ -143,32 +140,20 @@ const GetAllAdds = async (req, res) => {
         const skip = (page - 1) * limit;
 
         // Build query filter
-        let queryFilter = {
-            $and: [
-                { isVerified: true }
-            ]
-        };
-
+        let queryFilter = { isVerified: true, status: 'Approved' };
         // Exclude current user's ads if user is logged in
         if (req.user && req.user._id) {
-            queryFilter.$and.push({ userId: { $nin: [req.user._id] } });
+            queryFilter.userId = { $nin: [req.user._id] };
         }
-
-        // Filter by ad plan type if specified (e.g., 'banner' for home page)
         if (req.query.adPlanType) {
-            queryFilter.$and.push({ adPlanType: req.query.adPlanType });
+            queryFilter.adPlanType = req.query.adPlanType;
         }
-
-        // Filter by placement page if specified
         if (req.query.placementPage) {
-            queryFilter.$and.push({ placementPages: req.query.placementPage });
+            queryFilter.placementPages = req.query.placementPage;
         }
-
-        // Filter by pincode for location-based ads if specified
         if (req.query.pincode) {
-            queryFilter.$and.push({ pincode: req.query.pincode });
+            queryFilter.pincode = req.query.pincode;
         }
-
         const result = await adModel.find(queryFilter).skip(skip).limit(limit);
         const total = await adModel.countDocuments(queryFilter);
         const totalPages = Math.ceil(total / limit);
@@ -240,13 +225,9 @@ const getAllAdUser = async (req, res) => {
 
         // Build query filter
         let queryFilter = { status: 'Approved', isActive: true };
-
-        // Filter by placement page if provided
         if (placementPage) {
             queryFilter.placementPages = placementPage;
         }
-
-        // Filter by ad plan type if provided (e.g., 'banner' for home page)
         if (adPlanType) {
             queryFilter.adPlanType = adPlanType;
         }
@@ -379,11 +360,8 @@ let getAllNotVerifiedAdds = async (req, res) => {
         let page = req.query.page || 1;
         let limit = req.query.limit || 10;
         const skip = (page - 1) * limit;
-        const result = await adModel.find({isVerified: false}).skip(skip).limit(limit);
-        const total = await adModel.countDocuments({isVerified: false});
-        const totalPages = Math.ceil(total / limit);
-
-        res.json({message: 'Not verified adds retrieved successfully', status: 200, data: result, success: true, error: false, total, totalPages});
+        // No longer used: all ads are auto-approved
+        res.json({message: 'All ads are auto-approved. No unverified ads.', status: 200, data: [], success: true, error: false, total: 0, totalPages: 0});
     }
     catch (e) {
         res.json({message: 'Something went wrong', status: 500, data: e, success: false, error: true});
