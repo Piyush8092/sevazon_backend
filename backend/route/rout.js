@@ -976,6 +976,12 @@ router.use('/call', callRoutes);
 // FCM notification routes
 router.use('/fcm', fcmRoutes);
 
+
+// Pricing Settings routes (Admin controls FREE/PAID mode)
+const { getPricingSettings, updatePricingSettings } = require('../controllers/pricingSettingsController');
+router.get('/pricing-settings', getPricingSettings);
+router.put('/pricing-settings', authGuard, updatePricingSettings);
+
 // Pricing Plan routes
 router.post('/create-pricing-plan', authGuard, createPricingPlan);
 router.get('/get-all-pricing-plans', getAllPricingPlans);
