@@ -43,13 +43,13 @@ class AttestrService {
     }
 
     /**
-     * Verify PAN card
+     * Verify PAN card (Attestr v2)
      * @param {string} panNumber - PAN number to verify (format: AAAAA9999A)
-     * @param {string} name - Name on PAN card (optional, for enhanced verification)
-     * @param {string} dob - Date of birth (optional, format: DD/MM/YYYY)
+     * @param {string} name - Name on PAN card (required)
+     * @param {string} dob - Date of birth (required, format: DD-MM-YYYY)
      * @returns {Promise<Object>} Verification result
      */
-    async verifyPAN(panNumber, name = null, dob = null) {
+    async verifyPAN(panNumber, name, dob) {
         try {
             // Check if Attestr is enabled
             if (!this.config.isEnabled()) {
@@ -65,7 +65,6 @@ class AttestrService {
 
             // Normalize PAN number
             const normalizedPAN = panNumber.toString().replace(/[\s-]/g, '').toUpperCase();
-
             // Validate PAN format
             const PAN_PATTERN = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
             if (!PAN_PATTERN.test(normalizedPAN)) {
@@ -76,26 +75,39 @@ class AttestrService {
                     error: 'INVALID_FORMAT',
                 };
             }
-
-            console.log(`🔍 Verifying PAN: ${normalizedPAN}`);
+            // Validate name and dob
+            if (!name || typeof name !== 'string' || !name.trim()) {
+                return {
+                    success: false,
+                    verified: false,
+                    message: 'Name is required for PAN verification',
+                    error: 'MISSING_NAME',
+                };
+            }
+            if (!dob || typeof dob !== 'string' || !dob.trim()) {
+                return {
+                    success: false,
+                    verified: false,
+                    message: 'Date of birth is required for PAN verification',
+                    error: 'MISSING_DOB',
+                };
+            }
 
             // Prepare request payload according to Attestr API documentation
-            // API v2: POST https://api.attestr.com/api/v2/public/checkx/pan
+            // API v2: POST https://api.attestr.com/api/v2/public/checkx/pan/basic
             const payload = {
                 pan: normalizedPAN,
+                name: name.trim(),
+                birthOrIncorporatedDate: dob.trim(),
             };
 
-            // Note: name and dob are not used in the standard PAN verification API
-            // They might be used in advanced verification modes
-
-            // Make API request to Attestr
-            // Correct endpoint: /public/checkx/pan (not /public/pan/verify)
-            const endpoint = this.config.getEndpoint('/public/checkx/pan');
+            // Use correct endpoint for v2 PAN verification
+            const endpoint = this.config.getEndpoint('/public/checkx/pan/basic');
 
             const response = await this.client.post(endpoint, payload);
 
             // Process response according to Attestr API documentation
-            // Response format: { valid: true/false, category: "INDIVIDUAL", name: "...", aadhaarLinked: true/false/null }
+            // Response format: { valid: true/false, ...fields }
             if (response.data && response.data.valid === true) {
                 return {
                     success: true,
@@ -105,8 +117,12 @@ class AttestrService {
                         pan: normalizedPAN,
                         name: response.data.name,
                         category: response.data.category,
+                        panStatus: response.data.panStatus,
+                        panStatusCode: response.data.panStatusCode,
                         aadhaarLinked: response.data.aadhaarLinked,
-                        status: 'VALID',
+                        nameMatches: response.data.nameMatches,
+                        birthOrIncorporatedDateMatches: response.data.birthOrIncorporatedDateMatches,
+                        status: response.data.panStatus,
                         verificationId: `ATTESTR_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
                         timestamp: new Date(),
                         provider: 'Attestr',
@@ -119,6 +135,7 @@ class AttestrService {
                     verified: false,
                     message: response.data.message || 'Provided PAN number does not exist',
                     error: 'INVALID_PAN',
+                    data: response.data,
                 };
             } else {
                 return {
@@ -126,18 +143,17 @@ class AttestrService {
                     verified: false,
                     message: 'PAN verification failed',
                     error: 'VERIFICATION_FAILED',
+                    data: response.data,
                 };
             }
 
         } catch (error) {
             console.error('❌ Error verifying PAN with Attestr:', error.message);
-            
             // Handle specific error cases
             if (error.response) {
                 // API returned an error response
                 const status = error.response.status;
                 const errorData = error.response.data;
-
                 if (status === 401 || status === 403) {
                     return {
                         success: false,
@@ -165,6 +181,7 @@ class AttestrService {
                         verified: false,
                         message: errorData?.message || 'PAN verification failed',
                         error: errorData?.error || 'API_ERROR',
+                        data: errorData,
                     };
                 }
             } else if (error.request) {
