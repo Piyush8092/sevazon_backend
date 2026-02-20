@@ -151,9 +151,7 @@ const createMatrimony = async (req, res) => {
             console.log(`📊 Free post used: ${user.freePostsUsed}/${user.freePostLimit || 10}`);
         }
 
-        if (userUpdated) {
-          await user.save();
-        }
+            await user.save();
 
         res.json({
             message: 'Matrimony profile created successfully',
