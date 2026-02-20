@@ -20,8 +20,11 @@ const createLead = async (req, res) => {
         if (payload.serviceid) leadData.serviceid = payload.serviceid;
         if (payload.businessid) leadData.businessid = payload.businessid;
 
+        console.log('DEBUG: Creating lead with:', leadData);
+
         const newLead = new leadModel(leadData);
         const result = await newLead.save();
+        console.log('DEBUG: Lead saved:', result);
 
         // Set AnyServiceCreate flag for user if not already set
         let user = await userModel.findById(req.user._id);

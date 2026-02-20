@@ -74,6 +74,15 @@ const getAllLead = async (req, res) => {
             .sort({ createdAt: -1 }) // Sort by newest first
             .populate('userId', 'name email phone pincode district'); // Include pincode and district in populated user data
 
+        // Debug log for lead IDs
+        result.forEach(lead => {
+            console.log('DEBUG: Lead fetched:', {
+                _id: lead._id,
+                serviceid: lead.serviceid,
+                businessid: lead.businessid
+            });
+        });
+
         // Sort by district-based priority if district is provided
         if (district) {
             result = sortByDistrict(result, district);
