@@ -3,6 +3,7 @@ let userModel = require('../../model/userModel');
 
 const createLead = async (req, res) => {
     try {
+
         let payload = req.body;
 
         if (!payload.serviceRequire) {
@@ -11,7 +12,15 @@ const createLead = async (req, res) => {
 
         payload.userId = req.user._id;
 
-        const newLead = new leadModel(payload);
+        // Only include serviceid and businessid if present in payload
+        const leadData = {
+            userId: payload.userId,
+            serviceRequire: payload.serviceRequire,
+        };
+        if (payload.serviceid) leadData.serviceid = payload.serviceid;
+        if (payload.businessid) leadData.businessid = payload.businessid;
+
+        const newLead = new leadModel(leadData);
         const result = await newLead.save();
 
         // Set AnyServiceCreate flag for user if not already set

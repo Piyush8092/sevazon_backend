@@ -10,6 +10,14 @@ const leadSchema = new mongoose.Schema({
         type:String,
         required:[true,'Service is required'],
     },
+    serviceid: {
+        type: String,
+        default: '',
+    },
+    businessid: {
+        type: String,
+        default: '',
+    },
 }
 )
 
