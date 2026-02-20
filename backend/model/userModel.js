@@ -177,6 +177,10 @@ newsBlockID: [{
             type: String,
         }
     }],
+        hasMatrimonyProfile: {
+            type: Boolean,
+            default: false,
+        },
 
     // FCM Tokens for push notifications (supports multiple devices)
     fcmTokens: [{

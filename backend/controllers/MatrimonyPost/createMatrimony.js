@@ -129,6 +129,9 @@ const createMatrimony = async (req, res) => {
           user.AnyServiceCreate = true;
           userUpdated = true;
         }
+        
+                // Set hasMatrimonyProfile true when profile is created
+                user.hasMatrimonyProfile = true;
 
         // Increment free post counter if user doesn't have an active subscription
         // Check if user has any active 'post' category subscription
