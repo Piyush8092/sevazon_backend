@@ -1,5 +1,8 @@
+
 const Payment = require('../../model/paymentModel');
 const razorpayService = require('../../services/razorpayService');
+const User = require('../../model/userModel');
+const PricingPlan = require('../../model/pricingPlanModel');
 
 const verifyPayment = async (req, res) => {
     try {
@@ -50,20 +53,43 @@ const verifyPayment = async (req, res) => {
         // Fetch payment details from Razorpay
         try {
             const paymentDetails = await razorpayService.fetchPaymentDetails(razorpayPaymentId);
-            
+
             // Update payment record
             payment.razorpayPaymentId = razorpayPaymentId;
             payment.razorpaySignature = razorpaySignature;
             payment.status = 'success';
             payment.paymentMethod = paymentDetails.method;
             payment.startDate = new Date();
-            
+
             // Calculate end date based on duration
             const endDate = new Date();
             endDate.setMonth(endDate.getMonth() + payment.duration);
             payment.endDate = endDate;
 
             await payment.save();
+
+            // Fetch plan details and assign benefits to user
+            const plan = await PricingPlan.findById(payment.planId);
+            if (plan) {
+                await User.findByIdAndUpdate(
+                    userId,
+                    {
+                        $set: {
+                            activePlan: {
+                                planId: plan._id,
+                                planTitle: plan.title,
+                                planCategory: plan.category,
+                                features: plan.features,
+                                startDate: payment.startDate,
+                                endDate: payment.endDate,
+                                amount: payment.amount,
+                                status: payment.status,
+                            }
+                        },
+                        $addToSet: { subscriptions: payment._id }
+                    }
+                );
+            }
 
             res.status(200).json({
                 message: 'Payment verified successfully',
@@ -78,18 +104,41 @@ const verifyPayment = async (req, res) => {
             });
         } catch (error) {
             console.error('Error fetching payment details:', error);
-            
+
             // Still mark as success if signature is valid
             payment.razorpayPaymentId = razorpayPaymentId;
             payment.razorpaySignature = razorpaySignature;
             payment.status = 'success';
             payment.startDate = new Date();
-            
+
             const endDate = new Date();
             endDate.setMonth(endDate.getMonth() + payment.duration);
             payment.endDate = endDate;
 
             await payment.save();
+
+            // Fetch plan details and assign benefits to user
+            const plan = await PricingPlan.findById(payment.planId);
+            if (plan) {
+                await User.findByIdAndUpdate(
+                    userId,
+                    {
+                        $set: {
+                            activePlan: {
+                                planId: plan._id,
+                                planTitle: plan.title,
+                                planCategory: plan.category,
+                                features: plan.features,
+                                startDate: payment.startDate,
+                                endDate: payment.endDate,
+                                amount: payment.amount,
+                                status: payment.status,
+                            }
+                        },
+                        $addToSet: { subscriptions: payment._id }
+                    }
+                );
+            }
 
             res.status(200).json({
                 message: 'Payment verified successfully',

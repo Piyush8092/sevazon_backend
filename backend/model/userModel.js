@@ -75,6 +75,18 @@ const userSchema = new mongoose.Schema({
     subscriptions: [{
         type: mongoose.Schema.Types.ObjectId,
     }],
+
+    // Store active plan benefits and details
+    activePlan: {
+        planId: { type: mongoose.Schema.Types.ObjectId, ref: 'PricingPlan' },
+        planTitle: String,
+        planCategory: String,
+        features: [String],
+        startDate: Date,
+        endDate: Date,
+        amount: Number,
+        status: String,
+    },
     LastLoginTime: {
         type: String,
         default: null

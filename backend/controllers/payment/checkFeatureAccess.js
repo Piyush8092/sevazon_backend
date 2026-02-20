@@ -77,79 +77,84 @@ const checkFeatureAccess = async (req, res) => {
             console.log(`⚠️ Free posts exhausted, checking for active subscriptions...`);
         }
 
-        // Find all successful payments for the user
-        const query = { 
-            userId,
-            status: 'success'
-        };
+        // Try to use user.activePlan for fast access control
+        const user = await User.findById(userId);
+        let userFeatures = new Set();
+        let subscriptionDetails = [];
+        let hasAccess = false;
+        let partialAccess = false;
+        let featureAccessMap = {};
+        let totalActiveSubscriptions = 0;
 
-        // Add category filter if provided
-        if (category) {
-            query.planCategory = category;
+        if (user && user.activePlan && user.activePlan.endDate && new Date(user.activePlan.endDate) > new Date()) {
+            // Use activePlan if valid
+            if (Array.isArray(user.activePlan.features)) {
+                user.activePlan.features.forEach(f => userFeatures.add(f));
+            }
+            subscriptionDetails.push({
+                planId: user.activePlan.planId,
+                planTitle: user.activePlan.planTitle,
+                planCategory: user.activePlan.planCategory,
+                features: user.activePlan.features,
+                startDate: user.activePlan.startDate,
+                endDate: user.activePlan.endDate,
+                amount: user.activePlan.amount,
+                status: user.activePlan.status,
+            });
+            totalActiveSubscriptions = 1;
+        } else {
+            // Fallback to dynamic check via payments
+            const query = { 
+                userId,
+                status: 'success'
+            };
+            if (category) {
+                query.planCategory = category;
+            }
+            const payments = await Payment.find(query)
+                .populate('planId')
+                .sort({ createdAt: -1 });
+            const now = new Date();
+            const activeSubscriptions = payments.filter(payment => {
+                if (!payment.endDate) return false;
+                return new Date(payment.endDate) > now;
+            });
+            activeSubscriptions.forEach(payment => {
+                if (payment.planId && typeof payment.planId === 'object' && payment.planId.features) {
+                    payment.planId.features.forEach(f => userFeatures.add(f));
+                    subscriptionDetails.push({
+                        subscriptionId: payment._id,
+                        planTitle: payment.planTitle,
+                        planCategory: payment.planCategory,
+                        features: payment.planId.features,
+                        endDate: payment.endDate
+                    });
+                }
+            });
+            totalActiveSubscriptions = activeSubscriptions.length;
         }
 
-        const payments = await Payment.find(query)
-            .populate('planId')
-            .sort({ createdAt: -1 });
-
-        // Filter only active subscriptions (not expired)
-        const now = new Date();
-        const activeSubscriptions = payments.filter(payment => {
-            if (!payment.endDate) return false;
-            return new Date(payment.endDate) > now;
-        });
-
-        // Collect all features from active subscriptions
-        const userFeatures = new Set();
-        const subscriptionDetails = [];
-
-        activeSubscriptions.forEach(payment => {
-            if (payment.planId && typeof payment.planId === 'object' && payment.planId.features) {
-                payment.planId.features.forEach(f => userFeatures.add(f));
-                
-                subscriptionDetails.push({
-                    subscriptionId: payment._id,
-                    planTitle: payment.planTitle,
-                    planCategory: payment.planCategory,
-                    features: payment.planId.features,
-                    endDate: payment.endDate
-                });
-            }
-        });
-
-        // Check access for each requested feature
-        const featureAccessMap = {};
         featuresToCheck.forEach(f => {
             featureAccessMap[f] = userFeatures.has(f);
         });
+        hasAccess = featuresToCheck.every(f => userFeatures.has(f));
+        partialAccess = featuresToCheck.some(f => userFeatures.has(f));
 
-        // Determine overall access
-        const hasAccess = featuresToCheck.every(f => userFeatures.has(f));
-        const partialAccess = featuresToCheck.some(f => userFeatures.has(f));
-
-        console.log(`✅ Feature access check complete for user ${userId}`);
-        console.log(`   Has full access: ${hasAccess}`);
-        console.log(`   Has partial access: ${partialAccess}`);
-
-        // Include free post information in response for 'post' category
         const responseData = {
             hasAccess,
             partialAccess,
             featureAccess: featureAccessMap,
             userFeatures: Array.from(userFeatures),
             activeSubscriptions: subscriptionDetails,
-            totalActiveSubscriptions: activeSubscriptions.length
+            totalActiveSubscriptions
         };
 
         // Add free post info if checking 'post' category
-        if (category === 'post') {
-            const user = await User.findById(userId);
-            if (user) {
-                responseData.freePostsUsed = user.freePostsUsed || 0;
-                responseData.freePostLimit = user.freePostLimit || 10;
-                responseData.freePostsRemaining = (user.freePostLimit || 10) - (user.freePostsUsed || 0);
-                responseData.accessType = hasAccess ? 'subscription' : 'none';
-            }
+        if (category === 'post' && user) {
+            responseData.freePostsUsed = user.freePostsUsed || 0;
+            responseData.freePostLimit = user.freePostLimit || 10;
+            responseData.freePostsRemaining = (user.freePostLimit || 10) - (user.freePostsUsed || 0);
+            responseData.accessType = hasAccess ? 'subscription' : 'none';
         }
 
         res.status(200).json({
