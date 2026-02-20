@@ -151,7 +151,13 @@ const createMatrimony = async (req, res) => {
             console.log(`📊 Free post used: ${user.freePostsUsed}/${user.freePostLimit || 10}`);
         }
 
-            await user.save();
+            console.log('=== MATRIMONY DEBUG === User before save:', JSON.stringify(user.toObject ? user.toObject() : user));
+            try {
+                await user.save();
+                console.log('=== MATRIMONY DEBUG === User saved successfully');
+            } catch (saveErr) {
+                console.error('=== MATRIMONY DEBUG === Error saving user:', saveErr);
+            }
 
         res.json({
             message: 'Matrimony profile created successfully',
