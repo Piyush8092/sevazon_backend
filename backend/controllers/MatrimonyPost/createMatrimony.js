@@ -132,6 +132,7 @@ const createMatrimony = async (req, res) => {
         
         // Set hasMatrimonyProfile true when profile is created
         user.hasMatrimonyProfile = true;
+        await user.save();
         userUpdated = true;
         console.log(`✅ Setting hasMatrimonyProfile = true for user ${userId}`);
 
