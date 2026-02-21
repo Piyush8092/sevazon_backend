@@ -215,11 +215,18 @@ isFeatured: {
             type:String,
 
         },
+        userName:{
+            type:String,
+        },
         review:{
             type:String,
         },
         ratting:{
             type:Number,
+        },
+        createdAt:{
+            type:Date,
+            default:Date.now
         }
     }],
       importantLink:[

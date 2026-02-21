@@ -1,7 +1,7 @@
 
 
 const createServiceModel = require("../../model/createAllServiceProfileModel");
-const { listenerCount } = require("../../model/userModel");
+const UserModel = require("../../model/userModel");
 // get specific service
 const GetSpecificServices = async (req, res) => {
     try {       
