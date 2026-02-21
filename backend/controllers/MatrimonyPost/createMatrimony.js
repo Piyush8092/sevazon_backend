@@ -21,7 +21,7 @@ const createMatrimony = async (req, res) => {
             !payload.employmentType || !Array.isArray(payload.employmentType) || payload.employmentType.length === 0 ||
             !payload.pincode || !Array.isArray(payload.pincode) || payload.pincode.length === 0 ||
             !payload.city || !Array.isArray(payload.city) || payload.city.length === 0 ||
-            !payload.state || !Array.isArray(payload.state) || payload.state.length === 0 ) {
+            !payload.state || !Array.isArray(payload.state) || payload.state.length === 0  ) {
             return res.status(400).json({message: 'All required fields must be provided'});
         }
 
@@ -122,7 +122,7 @@ const createMatrimony = async (req, res) => {
         const newMatrimony = new MatrimonyModel(payload);
         const result = await newMatrimony.save();
         let user = await userModel.findById(userId);
-
+console.log(user,'dsdjsdjddnj');
         // Update user flags and free post counter
         let userUpdated = false;
         if(user.AnyServiceCreate === false) {
@@ -133,6 +133,7 @@ const createMatrimony = async (req, res) => {
         // Set hasMatrimonyProfile true when profile is created
         user.hasMatrimonyProfile = true;
         await user.save();
+        
         userUpdated = true;
         console.log(`✅ Setting hasMatrimonyProfile = true for user ${userId}`);
 

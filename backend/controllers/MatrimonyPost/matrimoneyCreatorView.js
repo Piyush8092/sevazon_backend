@@ -8,7 +8,7 @@ const MatrimonyCreatorView = async (req, res) => {
         let userId=req.user._id;
 
         // Populate applyMatrimony.applyUserId and userId for frontend checking and chat
-        const result = await MatrimonyModel.find(queryFilter)
+        const result = await MatrimonyModel.find({userId: userId})
             .populate('userId', '_id name email phone')
             .populate('applyMatrimony.applyUserId', '_id name email phone')
             .skip(skip)
