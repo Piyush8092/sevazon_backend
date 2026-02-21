@@ -41,7 +41,7 @@ const paymentSchema = new mongoose.Schema({
     // Razorpay order details
     razorpayOrderId: {
         type: String,
-        required: [true, 'Razorpay order ID is required']
+        // required: [true, 'Razorpay order ID is required']
     },
     razorpayPaymentId: {
         type: String,

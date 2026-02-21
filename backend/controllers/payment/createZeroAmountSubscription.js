@@ -11,7 +11,7 @@ const createZeroAmountSubscription = async (req, res) => {
                 message: 'Plan ID and duration are required'
             });
         }
-
+ 
         const plan = await PricingPlan.findById(planId);
         if (!plan) {
             return res.status(404).json({ message: 'Plan not found' });
@@ -21,10 +21,12 @@ const createZeroAmountSubscription = async (req, res) => {
             return res.status(400).json({ message: 'Plan is not active' });
         }
 
+ 
         // Determine duration
         let durationNumeric;
         let amount = 0; // ZERO AMOUNT
 
+ 
         if (duration === plan.duration1) {
             durationNumeric = parseInt(plan.duration1.match(/\d+/)[0]);
         } else if (duration === plan.duration2) {
@@ -35,7 +37,7 @@ const createZeroAmountSubscription = async (req, res) => {
             });
         }
 
-        // Create Payment record directly as success
+         // Create Payment record directly as success
         const payment = new Payment({
             userId,
             planId,
