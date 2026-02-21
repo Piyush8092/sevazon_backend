@@ -13,12 +13,12 @@ const createLead = async (req, res) => {
         payload.userId = req.user._id;
 
         // Only include serviceid and businessid if present in payload
-        const leadData = {
-            userId: payload.userId,
-            serviceRequire: payload.serviceRequire,
-        };
-        if (payload.serviceid) leadData.serviceid = payload.serviceid;
-        if (payload.businessid) leadData.businessid = payload.businessid;
+            const leadData = {
+                userId: payload.userId,
+                serviceRequire: payload.serviceRequire,
+                serviceid: payload.serviceid || '',
+                businessid: payload.businessid || '',
+            };
 
         console.log('DEBUG: Creating lead with:', leadData);
 
