@@ -1,0 +1,41 @@
+name: Deploy Node Backend to Droplet
+
+on:
+  push:
+    branches:
+      - add-branch-name-here
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Deploy to DigitalOcean Droplet
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.DROPLET_HOST }}
+          username: ${{ secrets.DROPLET_USER }}
+          key: ${{ secrets.DROPLET_SSH_KEY }}
+          script: |
+            echo "Navigating to app directory"
+            cd ${{ secrets.APP_DIR }}
+            pwd
+            git branch
+            git log --oneline -3
+
+            echo "Pull latest code"
+            git fetch origin
+            git reset --hard origin/main
+
+            echo "Move to backend directory"
+            cd backend
+
+            echo "Install dependencies"
+            npm ci --production
+
+            pm2 restart ${{ secrets.PM2_APP }}
+            pm2 save
+            echo "Deployment completed successfully."
