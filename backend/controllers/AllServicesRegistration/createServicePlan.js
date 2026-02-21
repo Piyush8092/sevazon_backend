@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const ProfileModel = require("../../model/ProfileModel");
+const ProfileModel = require("../../model/createAllServiceProfileModel");
 
 const createServicePlan = async (req, res) => {
   try {

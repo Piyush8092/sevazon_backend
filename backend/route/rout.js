@@ -262,6 +262,7 @@ const { getUserActiveSubscriptions } = require('../controllers/payment/getUserAc
 const { checkFeatureAccess } = require('../controllers/payment/checkFeatureAccess');
 const { checkUserSubscription } = require('../controllers/payment/checkUserSubscription');
 const { syncServiceProfileTypes, syncAllServiceProfileTypes } = require('../controllers/payment/syncServiceProfileTypes');
+const { createServicePlan } = require('../controllers/AllServicesRegistration/createServicePlan');
 
 cookie();
 const { getAllPrimiumUser } = require('../controllers/user/getAllPrimiumUser');
@@ -1019,8 +1020,7 @@ router.use('/chat', chatRoutes);
 
 // Image upload routes
 const { upload, uploadSingleImage, uploadMultipleImages } = require('../controllers/upload/uploadImage');
-const { createServicePlan } = require('../controllers/AllServicesRegistration/createServicePlan');
-router.post('/upload/image', authGuard, upload.single('image'), uploadSingleImage);
+  router.post('/upload/image', authGuard, upload.single('image'), uploadSingleImage);
 router.post('/upload/images', authGuard, upload.array('images', 10), uploadMultipleImages);
 
 module.exports = router;
