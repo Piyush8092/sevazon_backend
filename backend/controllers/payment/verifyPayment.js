@@ -3,6 +3,49 @@ const Payment = require('../../model/paymentModel');
 const razorpayService = require('../../services/razorpayService');
 const User = require('../../model/userModel');
 const PricingPlan = require('../../model/pricingPlanModel');
+const ServiceProfile = require('../../model/createAllServiceProfileModel');
+
+/**
+ * Helper function to update user's service/business profiles based on their active plan
+ * @param {String} userId - User ID
+ * @param {Object} plan - Pricing plan object
+ */
+const updateUserServiceProfiles = async (userId, plan) => {
+    try {
+        console.log(`🔄 Updating service profiles for user ${userId} with plan ${plan.title}`);
+        
+        // Determine the serviceType based on plan features
+        let serviceType = 'null';
+        if (plan.isFeatured) {
+            serviceType = 'featured';
+        } else if (plan.isPremium) {
+            serviceType = 'premium';
+        }
+
+        // Only update if the plan is premium or featured
+        if (serviceType !== 'null') {
+            // Update all service/business profiles owned by this user
+            const updateResult = await ServiceProfile.updateMany(
+                { 
+                    userId: userId,
+                    isActive: true // Only update active profiles
+                },
+                { 
+                    $set: { serviceType: serviceType } 
+                }
+            );
+
+            console.log(`✅ Updated ${updateResult.modifiedCount} service profile(s) to ${serviceType} for user ${userId}`);
+            return updateResult;
+        } else {
+            console.log(`ℹ️ Plan ${plan.title} is not premium/featured, no profile updates needed`);
+            return null;
+        }
+    } catch (error) {
+        console.error(`❌ Error updating service profiles for user ${userId}:`, error);
+        throw error;
+    }
+};
 
 const verifyPayment = async (req, res) => {
     try {
@@ -138,6 +181,12 @@ const verifyPayment = async (req, res) => {
                         $addToSet: { subscriptions: payment._id }
                     }
                 );
+
+                // Update user's service/business profiles with the appropriate serviceType
+                // Only for service-business category plans
+                if (plan.category === 'service-business') {
+                    await updateUserServiceProfiles(userId, plan);
+                }
             }
 
             res.status(200).json({

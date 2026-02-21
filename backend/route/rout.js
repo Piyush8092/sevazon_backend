@@ -261,6 +261,7 @@ const { getRazorpayKey } = require('../controllers/payment/getRazorpayKey');
 const { getUserActiveSubscriptions } = require('../controllers/payment/getUserActiveSubscriptions');
 const { checkFeatureAccess } = require('../controllers/payment/checkFeatureAccess');
 const { checkUserSubscription } = require('../controllers/payment/checkUserSubscription');
+const { syncServiceProfileTypes, syncAllServiceProfileTypes } = require('../controllers/payment/syncServiceProfileTypes');
 
 cookie();
 const { getAllPrimiumUser } = require('../controllers/user/getAllPrimiumUser');
@@ -999,6 +1000,10 @@ router.post('/create-payment-order', authGuard, createPaymentOrder);
 router.post('/verify-payment', authGuard, verifyPayment);
 router.get('/get-payment-history', authGuard, getPaymentHistory);
 router.get('/get-razorpay-key', getRazorpayKey);
+
+// Service profile sync routes
+router.post('/sync-service-profile-types', authGuard, syncServiceProfileTypes);
+router.post('/admin/sync-all-service-profile-types', authGuard, syncAllServiceProfileTypes);
 
 // User subscription and feature access routes
 router.get('/user/active-subscriptions', authGuard, getUserActiveSubscriptions);
