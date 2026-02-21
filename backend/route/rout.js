@@ -120,6 +120,7 @@ const { trackActivity, getUserActivity } = require('../controllers/userActivity/
 const { getRecommendations } = require('../controllers/userActivity/getRecommendations');
 const { updateLocalService } = require('../controllers/localServices/updateLocalService');
 const { getAuthUserDetail } = require('../controllers/user/getAuthUserDetail');
+const { fixMatrimonyProfileFlag } = require('../controllers/user/fixMatrimonyProfileFlag');
 const { GetSubServiceList } = require('../controllers/CreateAllServices/GetSubServiceList');
 const { sendOTP } = require('../controllers/otp/sendOTP');
 const { verifyOTP } = require('../controllers/otp/verifyOTP');
@@ -325,6 +326,9 @@ router.post('/signup', SignupRout);
 router.post('/login', LoginRout);
 router.get('/logout', LogoutRout);
 router.get('/auth-user', authGuard, getAuthUserDetail);
+
+// Fix matrimony profile flag for users who have profiles but flag is false
+router.post('/fix-matrimony-flag', authGuard, fixMatrimonyProfileFlag);
 
 // for otp verification
 router.post('/send-otp', sendOTP);
