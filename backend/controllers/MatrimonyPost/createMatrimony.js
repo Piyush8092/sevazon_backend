@@ -79,12 +79,8 @@ const createMatrimony = async (req, res) => {
             return res.status(400).json({message: 'User not authenticated'});
         }
 
-        // Verification is optional - set isVerified based on user's KYC status
-        // This allows unverified users to post, but marks their posts accordingly
-        const isUserVerified = req.user.isKycVerified || false;
-
         payload.userId = userId;
-        payload.isVerified = isUserVerified;
+        payload.isVerified = false;
 
         // Set phoneNo (user's registered phone) - required field
         payload.phoneNo = req.user.phone;
