@@ -498,7 +498,8 @@ router.get('/get-bookmark-service-profile', authGuard, getBookmarkServiceProfile
 //make route take list of pincode find disticet wise data
 // router.get('/get-district-wise-data/:pincode/:pincodeArray',authGuard,getDistrictWiseData);
 
-
+//for create servicePlans type [primum,feature,null]
+router.put('/update-service-plan/:serviceId',authGuard,createServicePlan);
 
 
 
@@ -1018,6 +1019,7 @@ router.use('/chat', chatRoutes);
 
 // Image upload routes
 const { upload, uploadSingleImage, uploadMultipleImages } = require('../controllers/upload/uploadImage');
+const { createServicePlan } = require('../controllers/AllServicesRegistration/createServicePlan');
 router.post('/upload/image', authGuard, upload.single('image'), uploadSingleImage);
 router.post('/upload/images', authGuard, upload.array('images', 10), uploadMultipleImages);
 

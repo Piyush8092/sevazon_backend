@@ -147,8 +147,8 @@ const createMatrimony = async (req, res) => {
         });
 
         // If no active subscription, increment free post counter
-        if (!activePostSubscription) {
-            user.freePostsUsed = (user.freePostsUsed || 0) + 1;
+        if (activePostSubscription) {
+            user.freePostsUsed = user.freePostsUsed + 1;
             userUpdated = true;
             console.log(`📊 Free post used: ${user.freePostsUsed}/${user.freePostLimit || 10}`);
         }
