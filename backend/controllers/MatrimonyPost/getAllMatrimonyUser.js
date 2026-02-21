@@ -7,8 +7,9 @@ const getAllMatrimonyUser = async (req, res) => {
         let limit = req.query.limit || 10;
         const skip = (page - 1) * limit;
 
-        // Populate applyMatrimony.applyUserId to include user IDs for frontend checking
-        const result = await MatrimonyModel.find()
+        // Populate applyMatrimony.applyUserId and userId for frontend checking and chat
+        const result = await MatrimonyModel.find(queryFilter)
+            .populate('userId', '_id name email phone')
             .populate('applyMatrimony.applyUserId', '_id name email phone')
             .skip(skip)
             .limit(limit);

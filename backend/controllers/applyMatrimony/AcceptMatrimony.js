@@ -71,6 +71,39 @@ const acceptMatrimony = async (req, res) => {
         
         await ExistMatrimony.save();
         
+        // Get the applicant's user ID
+        const applicantUserId = application.applyUserId;
+        
+        // Find the applicant's matrimony profile and update it to show connection
+        const applicantProfile = await MatrimonyModel.findOne({ userId: applicantUserId });
+        if (applicantProfile) {
+            // Check if connection already exists
+            const existingConnectionIndex = applicantProfile.applyMatrimony.findIndex(
+                app => app.applyUserId && app.applyUserId.toString() === userId.toString()
+            );
+            
+            if (existingConnectionIndex !== -1) {
+                // Update existing entry
+                applicantProfile.applyMatrimony[existingConnectionIndex].accept = true;
+                applicantProfile.applyMatrimony[existingConnectionIndex].reject = false;
+                applicantProfile.applyMatrimony[existingConnectionIndex].status = 'Accepted';
+            } else {
+                // Create new entry showing the bidirectional connection
+                applicantProfile.applyMatrimony.push({
+                    applyUserId: userId,
+                    applyMatrimonyStatus: true,
+                    status: 'Accepted',
+                    reject: false,
+                    accept: true
+                });
+            }
+            
+            await applicantProfile.save();
+            console.log(`[acceptMatrimony] ✅ Updated applicant's profile for bidirectional connection: applicantUserId=${applicantUserId}`);
+        } else {
+            console.log(`[acceptMatrimony] ⚠️ Applicant profile not found for userId=${applicantUserId}`);
+        }
+        
         console.log(`[acceptMatrimony] ✅ Application accepted: userId=${userId}, profileId=${id}, index=${index}`);
         
         return res.json({

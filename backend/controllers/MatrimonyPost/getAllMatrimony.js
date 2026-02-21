@@ -12,8 +12,9 @@ const getAllMatrimony = async (req, res) => {
             queryFilter = { userId: { $nin: [req.user._id] } };
         }
 
-        // Populate applyMatrimony.applyUserId to include user IDs for frontend checking
+        // Populate applyMatrimony.applyUserId and userId for frontend checking and chat
         const result = await MatrimonyModel.find(queryFilter)
+            .populate('userId', '_id name email phone')
             .populate('applyMatrimony.applyUserId', '_id name email phone')
             .skip(skip)
             .limit(limit);

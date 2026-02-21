@@ -7,8 +7,9 @@ const MatrimonyCreatorView = async (req, res) => {
         const skip = (page - 1) * limit;
         let userId=req.user._id;
 
-        // Populate applyMatrimony.applyUserId to include user IDs for frontend checking
-        const result = await MatrimonyModel.find({userId:userId})
+        // Populate applyMatrimony.applyUserId and userId for frontend checking and chat
+        const result = await MatrimonyModel.find(queryFilter)
+            .populate('userId', '_id name email phone')
             .populate('applyMatrimony.applyUserId', '_id name email phone')
             .skip(skip)
             .limit(limit);

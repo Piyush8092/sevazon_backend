@@ -2,6 +2,7 @@ const notificationService = require('../../services/notificationService');
 const notificationTriggers = require('../../services/notificationTriggers');
 const User = require('../../model/userModel');
 const NotificationPreferences = require('../../model/notificationPreferencesModel');
+const mongoose = require('mongoose');
 
 /**
  * Send notification when a new chat message is sent
@@ -35,6 +36,17 @@ const sendMessageNotification = async (req, res) => {
             });
         }
 
+        // Validate recipientId is a valid ObjectId
+        if (!mongoose.Types.ObjectId.isValid(recipientId)) {
+            console.error('❌ Invalid recipient ID format:', recipientId);
+            return res.status(400).json({
+                message: 'Invalid recipient ID format',
+                status: 400,
+                success: false,
+                error: true
+            });
+        }
+
         // Get sender ID from authenticated user
         const senderId = req.user._id;
         console.log('   Sender ID:', senderId);
@@ -52,9 +64,12 @@ const sendMessageNotification = async (req, res) => {
         }
 
         // Verify recipient exists
+        console.log('🔍 Looking up recipient with ID:', recipientId);
         const recipient = await User.findById(recipientId);
         if (!recipient) {
             console.error('❌ Recipient not found:', recipientId);
+            console.error('   Searched in User collection');
+            console.error('   Please verify the user ID exists in the database');
             return res.status(404).json({
                 message: 'Recipient not found',
                 status: 404,
@@ -62,7 +77,7 @@ const sendMessageNotification = async (req, res) => {
                 error: true
             });
         }
-        console.log('✅ Recipient found:', recipient.name);
+        console.log('✅ Recipient found:', recipient.name, '(ID:', recipient._id, ')');
 
         // Check if recipient has muted this conversation
         const preferences = await NotificationPreferences.findOne({ userId: recipientId });

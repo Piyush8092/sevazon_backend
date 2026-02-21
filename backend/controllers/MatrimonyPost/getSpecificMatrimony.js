@@ -4,8 +4,9 @@ const getSpecificMatrimony = async (req, res) => {
 try{
     let id=req.params.id;
 
-    // Populate applyMatrimony.applyUserId to include user IDs for frontend checking
+    // Populate applyMatrimony.applyUserId and userId for frontend checking and chat
     let result=await MatrimonyModel.findById({_id:id})
+        .populate('userId', '_id name email phone')
         .populate('applyMatrimony.applyUserId', '_id name email phone');
 
     if(!result){

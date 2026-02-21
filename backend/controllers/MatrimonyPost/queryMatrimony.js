@@ -58,6 +58,7 @@ const queryMatrimony = async (req, res) => {
 };
  
         const result = await MatrimonyModel.find(searchQuery)
+            .populate('userId', '_id name email phone')
             .populate('applyMatrimony.applyUserId', '_id name email phone')
             .skip(skip)
             .limit(limit);
