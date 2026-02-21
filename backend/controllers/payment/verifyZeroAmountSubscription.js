@@ -1,5 +1,7 @@
 const User = require('../../model/userModel');
 const ServiceProfile = require('../../model/createAllServiceProfileModel');
+const Payment = require('../../model/paymentModel');
+const PricingPlan = require('../../model/pricingPlanModel');
 
 /* Expiry Calculator */
 const calculateExpiryDate = (plan, durationValue) => {
@@ -46,6 +48,7 @@ const verifyZeroAmountSubscription = async (req, res) => {
         const userId = req.user._id;
 
         const payment = await Payment.findById(paymentId);
+        console.log(payment)
 
         if (!payment) {
             return res.status(404).json({ message: 'Payment not found' });
@@ -56,6 +59,7 @@ const verifyZeroAmountSubscription = async (req, res) => {
         }
 
         const plan = await PricingPlan.findById(payment.planId);
+        console.log(plan)
         if (!plan) {
             return res.status(404).json({ message: 'Plan not found' });
         }
