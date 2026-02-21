@@ -316,7 +316,8 @@ const { sendNotificationToNewsPoster } = require('../controllers/NewsPost/sendNo
 const { sendNotificationToLocalServicesPoster } = require('../controllers/localServices/sendNotificationToLocalServicesPoster');
 const { sendNotificationToServicePoster } = require('../controllers/AllServicesRegistration/sendNotificationToServicePoster');
 const { getspecificJobApplyAdminView } = require('../controllers/ApplyJob/getspecificJobApplyAdminView');
-
+const { createZeroAmountSubscription } = require('../controllers/payment/createZeroAmountSubscription');
+const { verifyZeroAmountSubscription } = require('../controllers/payment/verifyZeroAmountSubscription');
 cookie();
 router.get('/', (req, res) => {
   res.send('Hello savazon!');
@@ -1000,6 +1001,10 @@ router.delete('/delete-pricing-plan/:id', authGuard, deletePricingPlan);
 // Payment routes
 router.post('/create-payment-order', authGuard, createPaymentOrder);
 router.post('/verify-payment', authGuard, verifyPayment);
+//for zero amount subscription
+router.post('/create-zero-amount-subscription', authGuard, createZeroAmountSubscription);
+router.post('/verify-zero-amount-subscription', authGuard, verifyZeroAmountSubscription);
+
 router.get('/get-payment-history', authGuard, getPaymentHistory);
 router.get('/get-razorpay-key', getRazorpayKey);
 
@@ -1020,6 +1025,7 @@ router.use('/chat', chatRoutes);
 
 // Image upload routes
 const { upload, uploadSingleImage, uploadMultipleImages } = require('../controllers/upload/uploadImage');
+ 
   router.post('/upload/image', authGuard, upload.single('image'), uploadSingleImage);
 router.post('/upload/images', authGuard, upload.array('images', 10), uploadMultipleImages);
 
