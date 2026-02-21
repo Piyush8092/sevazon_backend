@@ -4,43 +4,86 @@ let MatrimonyModel = require('../../model/Matrimony');
 const getAllApplyApplication = async (req, res) => {
     try {
         const page = parseInt(req.query.page) || 1;
-        const limit = parseInt(req.query.limit) || 10;
+        const limit = parseInt(req.query.limit) || 100; // Increased for better UX
         const skip = (page - 1) * limit;
         const userId = req.user._id;
         console.log(`[getAllApplyApplication] userId: ${userId}, page: ${page}, limit: ${limit}`);
-        // Find matrimony profiles that belong to the current user AND have received applications
-        // This shows profiles where others have applied to the current user's profile
-        const myProfiles = await MatrimonyModel.find({
-            userId: userId, // Profile belongs to current user
+        
+        // Find the current user's own matrimony profile with pending applications
+        const myProfile = await MatrimonyModel.findOne({
+            userId: userId,
             'applyMatrimony.0': { $exists: true }, // Has at least one application
-            applyMatrimony: { $elemMatch: { applyMatrimonyStatus: true } } // Has active applications
         })
             .populate('userId', 'name email phone')
-            .populate('applyMatrimony.applyUserId', 'name email phone');
-        // Extract all applicant user IDs from the current user's profiles
-        const applicantIds = new Set();
-        myProfiles.forEach(profile => {
-            profile.applyMatrimony.forEach(app => {
-                if (app.applyMatrimonyStatus === true && app.applyUserId) {
-                    applicantIds.add(app.applyUserId._id.toString());
-                }
+            .populate('applyMatrimony.applyUserId', 'name email phone profileImage');
+
+        if (!myProfile || !myProfile.applyMatrimony || myProfile.applyMatrimony.length === 0) {
+            return res.json({
+                success: true,
+                message: 'No applications found',
+                data: [],
+                total: 0,
+                totalPages: 0,
+                currentUserProfileId: null
             });
-        });
-        // Now fetch the matrimony profiles of those applicants
+        }
+
+        // Filter for active/pending applications
+        const pendingApplications = myProfile.applyMatrimony.filter(
+            app => app.applyMatrimonyStatus === true && app.status === 'Pending'
+        );
+
+        if (pendingApplications.length === 0) {
+            return res.json({
+                success: true,
+                message: 'No pending applications found',
+                data: [],
+                total: 0,
+                totalPages: 0,
+                currentUserProfileId: myProfile._id.toString()
+            });
+        }
+
+        // Get all applicant user IDs
+        const applicantIds = pendingApplications
+            .map(app => app.applyUserId?._id || app.applyUserId)
+            .filter(id => id);
+
+        // Fetch applicant's matrimony profiles with application index
         const applicantProfiles = await MatrimonyModel.find({
-            userId: { $in: Array.from(applicantIds) }
+            userId: { $in: applicantIds }
         })
-            .populate('userId', 'name email phone')
+            .populate('userId', 'name email phone profileImage')
             .skip(skip)
             .limit(limit);
-        const total = applicantIds.size;
+
+        // Enhance profiles with application metadata (index and current user's profile ID)
+        const enhancedProfiles = applicantProfiles.map(profile => {
+            // Find the application index in myProfile's applyMatrimony array
+            const applicationIndex = myProfile.applyMatrimony.findIndex(
+                app => app.applyUserId && 
+                       (app.applyUserId._id?.toString() === profile.userId._id.toString() ||
+                        app.applyUserId.toString() === profile.userId._id.toString())
+            );
+
+            // Convert to plain object and add metadata
+            const profileObj = profile.toObject();
+            profileObj.applicationIndex = applicationIndex;
+            profileObj.targetProfileId = myProfile._id.toString(); // Current user's profile ID
+            
+            return profileObj;
+        });
+
+        const total = applicantIds.length;
         const totalPages = Math.ceil(total / limit);
+
         return res.json({
             success: true,
             message: 'All applications retrieved successfully',
-            data: applicantProfiles,
+            data: enhancedProfiles,
             total,
-            totalPages
+            totalPages,
+            currentUserProfileId: myProfile._id.toString() // Current user's profile ID
         });
     } catch (e) {
         console.error('[getAllApplyApplication] Error:', e);

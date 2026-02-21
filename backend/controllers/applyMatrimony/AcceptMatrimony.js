@@ -6,35 +6,83 @@ const acceptMatrimony = async (req, res) => {
         const id = req.params.id;
         const payload = req.body;
         const userId = req.user._id;
-        console.log(`[acceptMatrimony] userId: ${userId}, profileId: ${id}, index: ${req.params.index}`);
+        const index = parseInt(req.params.index);
+        
+        console.log(`[acceptMatrimony] userId: ${userId}, profileId: ${id}, index: ${index}`);
+        
+        // Validate index
+        if (isNaN(index) || index < 0) {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'Invalid application index', 
+                data: null 
+            });
+        }
+        
         const ExistMatrimony = await MatrimonyModel.findById(id);
         if (!ExistMatrimony) {
-            return res.status(404).json({ success: false, message: 'Matrimony profile not found', data: null });
+            return res.status(404).json({ 
+                success: false, 
+                message: 'Matrimony profile not found', 
+                data: null 
+            });
         }
+        
+        // Verify ownership
         if (ExistMatrimony.userId.toString() !== userId.toString() && req.user.role !== 'ADMIN') {
-            return res.status(403).json({ success: false, message: 'You cannot accept this profile', data: null });
+            return res.status(403).json({ 
+                success: false, 
+                message: 'You cannot accept applications for this profile', 
+                data: null 
+            });
         }
-        const index = req.params.index;
-        if (ExistMatrimony.applyMatrimony[index].accept === true) {
-            return res.status(409).json({ success: false, message: 'You have already accepted this profile', data: null });
+        
+        // Check if application exists at index
+        if (!ExistMatrimony.applyMatrimony[index]) {
+            return res.status(404).json({ 
+                success: false, 
+                message: `No application found at index ${index}`, 
+                data: null 
+            });
         }
-        if (ExistMatrimony.applyMatrimony[index].reject === true) {
-            return res.status(409).json({ success: false, message: 'You have already rejected this profile', data: null });
+        
+        const application = ExistMatrimony.applyMatrimony[index];
+        
+        // Check if already processed
+        if (application.accept === true) {
+            return res.status(409).json({ 
+                success: false, 
+                message: 'You have already accepted this application', 
+                data: null 
+            });
         }
-        ExistMatrimony.applyMatrimony[index].accept = payload.accept;
+        if (application.reject === true) {
+            return res.status(409).json({ 
+                success: false, 
+                message: 'This application was already rejected', 
+                data: null 
+            });
+        }
+        
+        // Update application status
+        ExistMatrimony.applyMatrimony[index].accept = true;
+        ExistMatrimony.applyMatrimony[index].reject = false;
         ExistMatrimony.applyMatrimony[index].status = 'Accepted';
+        
         await ExistMatrimony.save();
-        console.log(`[acceptMatrimony] Application accepted: userId=${userId}, profileId=${id}, index=${index}`);
+        
+        console.log(`[acceptMatrimony] ✅ Application accepted: userId=${userId}, profileId=${id}, index=${index}`);
+        
         return res.json({
             success: true,
             message: 'Matrimony application accepted successfully',
             data: ExistMatrimony
         });
     } catch (e) {
-        console.error('[acceptMatrimony] Error:', e);
+        console.error('[acceptMatrimony] ❌ Error:', e);
         return res.status(500).json({
             success: false,
-            message: 'Something went wrong',
+            message: 'Something went wrong while accepting the application',
             data: e.message || e
         });
     }
