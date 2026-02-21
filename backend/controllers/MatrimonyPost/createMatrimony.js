@@ -130,8 +130,10 @@ const createMatrimony = async (req, res) => {
           userUpdated = true;
         }
         
-                // Set hasMatrimonyProfile true when profile is created
-                user.hasMatrimonyProfile = true;
+        // Set hasMatrimonyProfile true when profile is created
+        user.hasMatrimonyProfile = true;
+        userUpdated = true;
+        console.log(`✅ Setting hasMatrimonyProfile = true for user ${userId}`);
 
         // Increment free post counter if user doesn't have an active subscription
         // Check if user has any active 'post' category subscription
