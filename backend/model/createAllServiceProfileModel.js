@@ -28,6 +28,14 @@ const profileSchema = new mongoose.Schema({
     enum: ['premium', 'featured','null'],
      default: 'null'
 },
+isPremium: {
+    type: Boolean,
+    default: false,
+},
+isFeatured: {
+    type: Boolean,
+    default: false,
+},
      gender: {
         type: String,
         enum: ['Male', 'Female', 'Other'],

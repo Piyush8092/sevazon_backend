@@ -1,80 +1,95 @@
-
 const Payment = require('../../model/paymentModel');
 const razorpayService = require('../../services/razorpayService');
 const User = require('../../model/userModel');
 const PricingPlan = require('../../model/pricingPlanModel');
 const ServiceProfile = require('../../model/createAllServiceProfileModel');
 
-/**
- * Helper function to update user's service/business profiles based on their active plan
- * @param {String} userId - User ID
- * @param {Object} plan - Pricing plan object
- */
+
+/* =====================================================
+   Helper: Calculate Expiry Date
+===================================================== */
+const calculateExpiryDate = (plan, durationValue) => {
+    const endDate = new Date();
+
+    const durationText =
+        plan.duration1?.toLowerCase() ||
+        plan.duration2?.toLowerCase() ||
+        '';
+
+    if (durationText.includes('day')) {
+        endDate.setDate(endDate.getDate() + durationValue);
+    } else {
+        endDate.setMonth(endDate.getMonth() + durationValue);
+    }
+
+    return endDate;
+};
+
+
+/* =====================================================
+   Helper: Update ALL User Profiles (Service + Business)
+===================================================== */
 const updateUserServiceProfiles = async (userId, plan) => {
     try {
-        console.log(`🔄 Updating service profiles for user ${userId} with plan ${plan.title}`);
-        
-        // Determine the serviceType based on plan features
+
         let serviceType = 'null';
+
         if (plan.isFeatured) {
             serviceType = 'featured';
         } else if (plan.isPremium) {
             serviceType = 'premium';
         }
 
-        // Only update if the plan is premium or featured
-        if (serviceType !== 'null') {
-            // Update all service/business profiles owned by this user
-            const updateResult = await ServiceProfile.updateMany(
-                { 
-                    userId: userId,
-                    isActive: true // Only update active profiles
-                },
-                { 
-                    $set: { serviceType: serviceType } 
-                }
-            );
+        if (serviceType === 'null') return;
 
-            console.log(`✅ Updated ${updateResult.modifiedCount} service profile(s) to ${serviceType} for user ${userId}`);
-            return updateResult;
-        } else {
-            console.log(`ℹ️ Plan ${plan.title} is not premium/featured, no profile updates needed`);
-            return null;
-        }
+        const updateResult = await ServiceProfile.updateMany(
+            {
+                userId: userId,
+                isActive: true
+            },
+            {
+                $set: {
+                    serviceType: serviceType,
+                    isPremium: serviceType === 'premium',
+                    isFeatured: serviceType === 'featured'
+                }
+            }
+        );
+
+        console.log(`✅ Updated ${updateResult.modifiedCount} profiles to ${serviceType}`);
+        return updateResult;
+
     } catch (error) {
-        console.error(`❌ Error updating service profiles for user ${userId}:`, error);
+        console.error('❌ Profile update error:', error);
         throw error;
     }
 };
 
+
+/* =====================================================
+   VERIFY PAYMENT CONTROLLER
+===================================================== */
 const verifyPayment = async (req, res) => {
     try {
         const { razorpayOrderId, razorpayPaymentId, razorpaySignature } = req.body;
-        const userId = req.user._id; // From auth middleware
+        const userId = req.user._id;
 
-        // Validate required fields
         if (!razorpayOrderId || !razorpayPaymentId || !razorpaySignature) {
-            return res.status(400).json({ 
-                message: 'Order ID, Payment ID, and Signature are required' 
+            return res.status(400).json({
+                message: 'Order ID, Payment ID and Signature are required'
             });
         }
 
-        // Find the payment record
         const payment = await Payment.findOne({ razorpayOrderId });
+
         if (!payment) {
-            return res.status(404).json({ 
-                message: 'Payment record not found' 
-            });
+            return res.status(404).json({ message: 'Payment record not found' });
         }
 
-        // Verify that the payment belongs to the user
         if (payment.userId.toString() !== userId.toString()) {
-            return res.status(403).json({ 
-                message: 'Unauthorized access to payment' 
-            });
+            return res.status(403).json({ message: 'Unauthorized payment access' });
         }
 
-        // Verify the payment signature
         const isValid = razorpayService.verifyPaymentSignature(
             razorpayOrderId,
             razorpayPaymentId,
@@ -82,133 +97,70 @@ const verifyPayment = async (req, res) => {
         );
 
         if (!isValid) {
-            // Update payment status to failed
             payment.status = 'failed';
-            payment.errorDescription = 'Invalid payment signature';
+            payment.errorDescription = 'Invalid signature';
             await payment.save();
 
-            return res.status(400).json({ 
-                message: 'Payment verification failed',
-                error: 'Invalid signature'
+            return res.status(400).json({
+                message: 'Invalid payment signature'
             });
         }
 
-        // Fetch payment details from Razorpay
-        try {
-            const paymentDetails = await razorpayService.fetchPaymentDetails(razorpayPaymentId);
-
-            // Update payment record
-            payment.razorpayPaymentId = razorpayPaymentId;
-            payment.razorpaySignature = razorpaySignature;
-            payment.status = 'success';
-            payment.paymentMethod = paymentDetails.method;
-            payment.startDate = new Date();
-
-            // Calculate end date based on duration
-            const endDate = new Date();
-            endDate.setMonth(endDate.getMonth() + payment.duration);
-            payment.endDate = endDate;
-
-            await payment.save();
-
-            // Fetch plan details and assign benefits to user
-            const plan = await PricingPlan.findById(payment.planId);
-            if (plan) {
-                await User.findByIdAndUpdate(
-                    userId,
-                    {
-                        $set: {
-                            activePlan: {
-                                planId: plan._id,
-                                planTitle: plan.title,
-                                planCategory: plan.category,
-                                features: plan.features,
-                                startDate: payment.startDate,
-                                endDate: payment.endDate,
-                                amount: payment.amount,
-                                status: payment.status,
-                            }
-                        },
-                        $addToSet: { subscriptions: payment._id }
-                    }
-                );
-            }
-
-            res.status(200).json({
-                message: 'Payment verified successfully',
-                data: {
-                    paymentId: payment._id,
-                    status: payment.status,
-                    planTitle: payment.planTitle,
-                    startDate: payment.startDate,
-                    endDate: payment.endDate,
-                    amount: payment.amount
-                }
-            });
-        } catch (error) {
-            console.error('Error fetching payment details:', error);
-
-            // Still mark as success if signature is valid
-            payment.razorpayPaymentId = razorpayPaymentId;
-            payment.razorpaySignature = razorpaySignature;
-            payment.status = 'success';
-            payment.startDate = new Date();
-
-            const endDate = new Date();
-            endDate.setMonth(endDate.getMonth() + payment.duration);
-            payment.endDate = endDate;
-
-            await payment.save();
-
-            // Fetch plan details and assign benefits to user
-            const plan = await PricingPlan.findById(payment.planId);
-            if (plan) {
-                await User.findByIdAndUpdate(
-                    userId,
-                    {
-                        $set: {
-                            activePlan: {
-                                planId: plan._id,
-                                planTitle: plan.title,
-                                planCategory: plan.category,
-                                features: plan.features,
-                                startDate: payment.startDate,
-                                endDate: payment.endDate,
-                                amount: payment.amount,
-                                status: payment.status,
-                            }
-                        },
-                        $addToSet: { subscriptions: payment._id }
-                    }
-                );
-
-                // Update user's service/business profiles with the appropriate serviceType
-                // Only for service-business category plans
-                if (plan.category === 'service-business') {
-                    await updateUserServiceProfiles(userId, plan);
-                }
-            }
-
-            res.status(200).json({
-                message: 'Payment verified successfully',
-                data: {
-                    paymentId: payment._id,
-                    status: payment.status,
-                    planTitle: payment.planTitle,
-                    startDate: payment.startDate,
-                    endDate: payment.endDate,
-                    amount: payment.amount
-                }
-            });
+        // Fetch Plan
+        const plan = await PricingPlan.findById(payment.planId);
+        if (!plan) {
+            return res.status(404).json({ message: 'Plan not found' });
         }
+
+        // Update Payment Record
+        payment.status = 'success';
+        payment.razorpayPaymentId = razorpayPaymentId;
+        payment.razorpaySignature = razorpaySignature;
+        payment.startDate = new Date();
+        payment.endDate = calculateExpiryDate(plan, payment.duration);
+
+        await payment.save();
+
+        // Update User Active Plan
+        await User.findByIdAndUpdate(userId, {
+            $set: {
+                activePlan: {
+                    planId: plan._id,
+                    planTitle: plan.title,
+                    planCategory: plan.category,
+                    features: plan.features,
+                    startDate: payment.startDate,
+                    endDate: payment.endDate,
+                    amount: payment.amount,
+                    status: payment.status
+                }
+            },
+            $addToSet: { subscriptions: payment._id }
+        });
+
+        // ✅ Upgrade ALL service/business profiles
+        if (plan.category === 'service-business') {
+            await updateUserServiceProfiles(userId, plan);
+        }
+
+        return res.status(200).json({
+            message: 'Payment verified successfully',
+            data: {
+                paymentId: payment._id,
+                planTitle: plan.title,
+                startDate: payment.startDate,
+                endDate: payment.endDate,
+                amount: payment.amount
+            }
+        });
+
     } catch (error) {
-        console.error('Error verifying payment:', error);
-        res.status(500).json({ 
-            message: 'Error verifying payment', 
-            error: error.message 
+        console.error('❌ Verify Payment Error:', error);
+        return res.status(500).json({
+            message: 'Error verifying payment',
+            error: error.message
         });
     }
 };
 
 module.exports = { verifyPayment };
-
