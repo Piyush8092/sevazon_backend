@@ -71,12 +71,7 @@ const offerSchema = new mongoose.Schema({
     },
     offerDiscountImages: {
         type: [String],
-        validate: {
-            validator: function(v) {
-                return v && v.length <= 2;
-            },
-            message: 'Maximum 2 images are allowed'
-        }
+    
     },
     userId: {
         type: mongoose.Schema.Types.ObjectId,

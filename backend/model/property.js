@@ -118,13 +118,7 @@ const PropertySchema = new mongoose.Schema({
     
     // Images
     propertyImages: {
-        type: [String],
-        validate: {
-            validator: function(v) {
-                return v && v.length <= 6;
-            },
-            message: 'Maximum 6 images are allowed'
-        }
+        type: [String]
     },
     
     // System fields

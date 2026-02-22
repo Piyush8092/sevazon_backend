@@ -68,13 +68,7 @@ const adSchema = new mongoose.Schema({
         // Location-based filtering - pincode where the ad should be displayed
     },
     adImages: {
-        type: [String],
-        validate: {
-            validator: function(v) {
-                return v && v.length >= 1 && v.length <= 5;
-            },
-            message: 'Minimum 1 and maximum 5 ad images are required'
-        }
+        type: [String]
     },
     rejectionReason: {
         type: String,
