@@ -103,13 +103,8 @@ const createJob = async (req, res) => {
             return res.status(400).json({message: 'User not authenticated'});
         }
 
-        // Verification is optional - set isVerified based on user's KYC status
-        // This allows unverified users to post, but marks their posts accordingly
-        const isUserVerified = req.user.isKycVerified || false;
-
         payload.userId = userId;
-        // Note: phoneNumberForCalls is already set from payload (user can use different verified number)
-        payload.isVerified = isUserVerified;
+        payload.isVerified = false;
 
         const newJob = new jobModel(payload);
         const result = await newJob.save();

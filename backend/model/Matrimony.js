@@ -157,13 +157,8 @@ profileId:{
         required: [true, 'Contact number is required'],
     },
     images: {
-        type: [String],
-        validate: {
-            validator: function(v) {
-                return v && v.length >= 2;
-            },
-            message: 'Minimum 2 images are required'
-        }
+        type: [String]
+       
     }, 
     
     // Partner Requirements

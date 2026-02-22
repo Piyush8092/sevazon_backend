@@ -62,7 +62,6 @@ const { getSpecificEditor } = require('../controllers/newsEditor/getSpecificEdit
 const { updateEditor } = require('../controllers/newsEditor/updateEditor');
 const { deleteEditor } = require('../controllers/newsEditor/deleteEditor');
 const { queryEditors } = require('../controllers/newsEditor/queryEditor');
-const { verifyDocument, verifyDocumentImage } = require('../controllers/newsEditor/kycVerification');
 const { createNews } = require('../controllers/NewsPost/createNews');
 const { getAllNews } = require('../controllers/NewsPost/getAllNews');
 const { getSpecificNews } = require('../controllers/NewsPost/getSpecificNews');
@@ -93,7 +92,6 @@ const { getTrendingNews } = require('../controllers/NewsPost/getTrendingNews');
 const { getUserDetail } = require('../controllers/user/getUserDetail');
 const { updateUser } = require('../controllers/user/updateUser');
 const { deleteUser } = require('../controllers/user/deleteUser');
-const { verifyUserKyc } = require('../controllers/user/verifyUserKyc');
 const { followEditor } = require('../controllers/user/followEditor');
 const { updateFcmToken } = require('../controllers/user/updateFcmToken');
 const { removeFcmToken } = require('../controllers/user/removeFcmToken');
@@ -316,7 +314,8 @@ const { sendNotificationToNewsPoster } = require('../controllers/NewsPost/sendNo
 const { sendNotificationToLocalServicesPoster } = require('../controllers/localServices/sendNotificationToLocalServicesPoster');
 const { sendNotificationToServicePoster } = require('../controllers/AllServicesRegistration/sendNotificationToServicePoster');
 const { getspecificJobApplyAdminView } = require('../controllers/ApplyJob/getspecificJobApplyAdminView');
-
+const { createZeroAmountSubscription } = require('../controllers/payment/createZeroAmountSubscription');
+const { verifyZeroAmountSubscription } = require('../controllers/payment/verifyZeroAmountSubscription');
 cookie();
 router.get('/', (req, res) => {
   res.send('Hello savazon!');
@@ -370,8 +369,6 @@ router.delete('/delete-user/:id', authGuard, deleteUser);
 // update service profile => normal user
 router.put('/update-user/:id', authGuard, updateUser);
 router.get('/get-service-query-user', queryServiceUser);
-// KYC verification for user profile
-router.post('/user/kyc/verify', authGuard, verifyUserKyc);
 // Follow/Unfollow editor (any user can follow)
 router.post('/user/follow-editor', authGuard, followEditor);
 // FCM Token Management
@@ -706,10 +703,6 @@ router.put('/update-follower-detail/:id', authGuard, updateFollower);
 router.get('/verified-editor', authGuard, getVerifiedUser);
 router.get('/not-verified-editor', authGuard, getNotVerifiedUser);
 
-// KYC Verification routes for news editor profiles
-router.post('/kyc/verify', verifyDocument);
-router.post('/kyc/verify-image', authGuard, verifyDocumentImage);
-
 
 
 
@@ -1000,6 +993,10 @@ router.delete('/delete-pricing-plan/:id', authGuard, deletePricingPlan);
 // Payment routes
 router.post('/create-payment-order', authGuard, createPaymentOrder);
 router.post('/verify-payment', authGuard, verifyPayment);
+//for zero amount subscription
+router.post('/create-zero-amount-subscription', authGuard, createZeroAmountSubscription);
+router.post('/verify-zero-amount-subscription', authGuard, verifyZeroAmountSubscription);
+
 router.get('/get-payment-history', authGuard, getPaymentHistory);
 router.get('/get-razorpay-key', getRazorpayKey);
 
@@ -1020,6 +1017,7 @@ router.use('/chat', chatRoutes);
 
 // Image upload routes
 const { upload, uploadSingleImage, uploadMultipleImages } = require('../controllers/upload/uploadImage');
+ 
   router.post('/upload/image', authGuard, upload.single('image'), uploadSingleImage);
 router.post('/upload/images', authGuard, upload.array('images', 10), uploadMultipleImages);
 

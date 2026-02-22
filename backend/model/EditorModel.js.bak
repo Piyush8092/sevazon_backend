@@ -39,6 +39,17 @@ let EditorSchema=new mongoose.Schema({
         voterIdNumber:{
             type:String,
         },
+        verificationType:{
+            type:String,
+            enum: ['pan', 'voter_id'],
+        },
+        isKycVerified:{
+            type:Boolean,
+            default:false,
+        },
+        kycVerificationDetails:{
+            type:Object,
+        },
         aboutYourself:{
             type:String,
             required:[true,'About Yourself is required'],

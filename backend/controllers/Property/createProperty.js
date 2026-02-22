@@ -95,14 +95,9 @@ const createProperty = async (req, res) => {
             return res.status(400).json({message: 'User not authenticated'});
         }
 
-        // Verification is optional - set isVerified based on user's KYC status
-        // This allows unverified users to post, but marks their posts accordingly
-        const isUserVerified = req.user.isKycVerified || false;
-
         payload.userId = userId;
-        // Note: phoneNumberForCalls is already set from payload (user can use different verified number)
         payload.fullName = req.user.name;
-        payload.isVerified = isUserVerified;
+        payload.isVerified = false;
 
         const newProperty = new PropertyModel(payload);
         const result = await newProperty.save();

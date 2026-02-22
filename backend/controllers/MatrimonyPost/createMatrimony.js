@@ -21,7 +21,7 @@ const createMatrimony = async (req, res) => {
             !payload.employmentType || !Array.isArray(payload.employmentType) || payload.employmentType.length === 0 ||
             !payload.pincode || !Array.isArray(payload.pincode) || payload.pincode.length === 0 ||
             !payload.city || !Array.isArray(payload.city) || payload.city.length === 0 ||
-            !payload.state || !Array.isArray(payload.state) || payload.state.length === 0 ) {
+            !payload.state || !Array.isArray(payload.state) || payload.state.length === 0  ) {
             return res.status(400).json({message: 'All required fields must be provided'});
         }
 
@@ -79,12 +79,8 @@ const createMatrimony = async (req, res) => {
             return res.status(400).json({message: 'User not authenticated'});
         }
 
-        // Verification is optional - set isVerified based on user's KYC status
-        // This allows unverified users to post, but marks their posts accordingly
-        const isUserVerified = req.user.isKycVerified || false;
-
         payload.userId = userId;
-        payload.isVerified = isUserVerified;
+        payload.isVerified = false;
 
         // Set phoneNo (user's registered phone) - required field
         payload.phoneNo = req.user.phone;
@@ -121,22 +117,8 @@ const createMatrimony = async (req, res) => {
 
         const newMatrimony = new MatrimonyModel(payload);
         const result = await newMatrimony.save();
-        let user = await userModel.findById(userId);
 
-        // Update user flags and free post counter
-        let userUpdated = false;
-        if(user.AnyServiceCreate === false) {
-          user.AnyServiceCreate = true;
-          userUpdated = true;
-        }
-        
-        // Set hasMatrimonyProfile true when profile is created
-        user.hasMatrimonyProfile = true;
-        userUpdated = true;
-        console.log(`✅ Setting hasMatrimonyProfile = true for user ${userId}`);
-
-        // Increment free post counter if user doesn't have an active subscription
-        // Check if user has any active 'post' category subscription
+        // Update user document directly in DB to ensure hasMatrimonyProfile is set
         const Payment = require('../../model/paymentModel');
         const now = new Date();
         const activePostSubscription = await Payment.findOne({
@@ -146,20 +128,23 @@ const createMatrimony = async (req, res) => {
             endDate: { $gt: now }
         });
 
-        // If no active subscription, increment free post counter
+        // Prepare update object
+        let updateObj = {
+            hasMatrimonyProfile: true,
+        };
+        // Set AnyServiceCreate true if needed
+        const user = await userModel.findById(userId);
+        if (user && user.AnyServiceCreate === false) {
+            updateObj.AnyServiceCreate = true;
+        }
+        // Increment freePostsUsed if active subscription
         if (activePostSubscription) {
-            user.freePostsUsed = user.freePostsUsed + 1;
-            userUpdated = true;
-            console.log(`📊 Free post used: ${user.freePostsUsed}/${user.freePostLimit || 10}`);
+            updateObj.freePostsUsed = (user.freePostsUsed || 0) + 1;
         }
 
-            console.log('=== MATRIMONY DEBUG === User before save:', JSON.stringify(user.toObject ? user.toObject() : user));
-            try {
-                await user.save();
-                console.log('=== MATRIMONY DEBUG === User saved successfully');
-            } catch (saveErr) {
-                console.error('=== MATRIMONY DEBUG === Error saving user:', saveErr);
-            }
+        // Update user in DB
+        await userModel.findByIdAndUpdate(userId, updateObj, { new: true });
+        console.log(`✅ User updated with:`, updateObj);
 
         res.json({
             message: 'Matrimony profile created successfully',

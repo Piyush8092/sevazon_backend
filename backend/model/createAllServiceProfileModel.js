@@ -28,6 +28,14 @@ const profileSchema = new mongoose.Schema({
     enum: ['premium', 'featured','null'],
      default: 'null'
 },
+isPremium: {
+    type: Boolean,
+    default: false,
+},
+isFeatured: {
+    type: Boolean,
+    default: false,
+},
      gender: {
         type: String,
         enum: ['Male', 'Female', 'Other'],
@@ -207,11 +215,18 @@ const profileSchema = new mongoose.Schema({
             type:String,
 
         },
+        userName:{
+            type:String,
+        },
         review:{
             type:String,
         },
         ratting:{
             type:Number,
+        },
+        createdAt:{
+            type:Date,
+            default:Date.now
         }
     }],
       importantLink:[
