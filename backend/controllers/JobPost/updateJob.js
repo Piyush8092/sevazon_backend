@@ -44,7 +44,15 @@ const updateJob = async (req, res) => {
             // Check if phone number is verified (unless it's the user's registered phone)
             let userId = req.user._id;
             const user = await userModel.findById(userId);
-            const registeredPhone = user.phone?.toString() || '';
+
+            if (!user) {
+                return res.status(404).json({ message: "User not found" });
+            }
+
+            const registeredPhone = (user.phone || '')
+            .toString()
+            .replace(/\D/g, '')
+            .slice(-10);
             const cleanedPhone = phoneNumber.toString().replace(/\D/g, '');
             const last10Digits = cleanedPhone.slice(-10);
 
@@ -134,7 +142,7 @@ const updateJob = async (req, res) => {
             });
         }
         
-        res.json({
+        res.status(500).json({
             message: 'Something went wrong', 
             status: 500, 
             data: e.message, 
