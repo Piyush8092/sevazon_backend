@@ -38,6 +38,7 @@ const createOffer = async (req, res) => {
             // If it's not the registered phone, check if it's verified
             if (registeredPhone !== last10Digits) {
                 const isVerified = await VerifiedPhone.isPhoneVerified(req.user._id, last10Digits);
+                console.log(isVerified)
                 if (!isVerified) {
                     return res.status(400).json({
                         message: 'Phone number must be verified via OTP before creating offer. Please verify the phone number first.',
