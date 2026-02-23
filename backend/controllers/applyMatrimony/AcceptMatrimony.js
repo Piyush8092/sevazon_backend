@@ -4,7 +4,7 @@ const acceptMatrimony = async (req, res) => {
   try {
     const id = req.params.id;
     const index = parseInt(req.params.index);
-    const { accept } = req.body; // 👈 read from body
+    const { accept } = req.body; 
     const userId = req.user._id;
 
     const existMatrimony = await MatrimonyModel.findById(id);

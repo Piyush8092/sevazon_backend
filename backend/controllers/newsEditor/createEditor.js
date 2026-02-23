@@ -13,24 +13,24 @@ const createEditor = async (req, res) => {
         }
 
         // Validate that at least one verification method is provided
-        if (!payload.panNumber && !payload.voterIdNumber) {
-            return res.status(400).json({
-                message: 'Either PAN number or Voter ID number is required for verification'
-            });
-        }
+        // if (!payload.panNumber && !payload.voterIdNumber) {
+        //     return res.status(400).json({
+        //         message: 'Either PAN number or Voter ID number is required for verification'
+        //     });
+        // }
 
         // Validate verificationType matches the provided document
-        if (payload.panNumber && payload.verificationType !== 'pan') {
-            return res.status(400).json({
-                message: 'Verification type must be "pan" when PAN number is provided'
-            });
-        }
+        // if (payload.panNumber && payload.verificationType !== 'pan') {
+        //     return res.status(400).json({
+        //         message: 'Verification type must be "pan" when PAN number is provided'
+        //     });
+        // }
 
-        if (payload.voterIdNumber && payload.verificationType !== 'voter_id') {
-            return res.status(400).json({
-                message: 'Verification type must be "voter_id" when Voter ID is provided'
-            });
-        }
+        // if (payload.voterIdNumber && payload.verificationType !== 'voter_id') {
+        //     return res.status(400).json({
+        //         message: 'Verification type must be "voter_id" when Voter ID is provided'
+        //     });
+        // }
 
         let userId = req.user._id;
         if (!userId) {
