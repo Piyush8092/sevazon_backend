@@ -10,7 +10,7 @@ const getPendingMatrimony = async (req, res) => {
     console.log(`[getPendingMatrimony] userId: ${userId}, page: ${page}, limit: ${limit}`);
     const result = await MatrimonyModel.find({
       $and: [
-        { userId: userId },
+        { 'applyMatrimony.applyUserId': userId },
         { 'applyMatrimony.status': 'Pending' }
       ]
     })
@@ -19,7 +19,7 @@ const getPendingMatrimony = async (req, res) => {
       .limit(limit);
     const total = await MatrimonyModel.countDocuments({
       $and: [
-        { userId: userId },
+        { 'applyMatrimony.applyUserId': userId },
         { 'applyMatrimony.status': 'Pending' }
       ]
     });

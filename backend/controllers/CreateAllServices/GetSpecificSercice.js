@@ -4,7 +4,7 @@ const GetSpecificServiceList = async (req, res) => {
     try {       
         let id=req.params.id;
         
-let result=await serviceListModel.findById({_id:id});
+let result=await serviceListModel.findById(id);
 if(!result){
     res.json({message: 'No data found', status: 400, data: {}, success: false, error: true});
 }
