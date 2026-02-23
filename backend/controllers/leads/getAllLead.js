@@ -73,11 +73,20 @@ const getAllLead = async (req, res) => {
             .find()
             .sort({ createdAt: -1 }) // Sort by newest first
             .populate('userId', 'name email phone pincode district'); // Include pincode and district in populated user data
-
+let fullData = result.map(lead => ({
+    _id: lead._id,
+    userId: lead.userId?._id,
+    serviceid: lead.serviceid,
+    businessid: lead.businessid,
+    userPincode: lead.userId?.pincode,
+    userDistrict: lead.userId?.district
+}));
+console.log("fullData",fullData)
         // Debug log for lead IDs
         result.forEach(lead => {
             console.log('DEBUG: Lead fetched:', {
                 _id: lead._id,
+                userId: lead.userId?._id,
                 serviceid: lead.serviceid,
                 businessid: lead.businessid
             });
@@ -104,6 +113,7 @@ const getAllLead = async (req, res) => {
             message: 'Leads fetched successfully',
             status: 200,
             data: result,
+fullData: fullData,
             success: true,
             error: false,
             total,
