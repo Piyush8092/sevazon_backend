@@ -2,6 +2,7 @@ const user = require('../model/userModel');
 const TempSignup = require('../model/tempSignupModel');
 const otpModel = require('../model/otpModel');
 const jwt = require('jsonwebtoken');
+const VerifiedPhone = require('../model/verifiedPhoneModel');
 
 /**
  * Verify Signup OTP and Create User Account
@@ -96,7 +97,12 @@ const verifySignupOTP = async (req, res) => {
 
         const savedUser = await newUser.save();
         console.log('✅ User account created successfully:', savedUser._id);
-
+let verifiedPhone = await VerifiedPhone.markAsVerified(
+    savedUser._id,
+    savedUser.phone,
+    'other'
+);
+console.log('verifiedPhone',verifiedPhone);
         // Generate JWT token for auto-login
         const token = jwt.sign(
             { id: savedUser._id },
