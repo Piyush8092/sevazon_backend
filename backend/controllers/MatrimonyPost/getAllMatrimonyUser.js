@@ -8,7 +8,7 @@ const getAllMatrimonyUser = async (req, res) => {
         const skip = (page - 1) * limit;
 
         // Populate applyMatrimony.applyUserId and userId for frontend checking and chat
-        const result = await MatrimonyModel.find(queryFilter)
+        const result = await MatrimonyModel.find({})
             .populate('userId', '_id name email phone')
             .populate('applyMatrimony.applyUserId', '_id name email phone')
             .skip(skip)
