@@ -8,14 +8,19 @@ const getRejectMatrimony = async (req, res) => {
         let userId = req.user._id;
         const result = await MatrimonyModel.find({
           $and: [
-            { userId: userId },
+            { 'applyMatrimony.applyUserId': userId },
             { 'applyMatrimony.reject': true }
           ]
         }).populate('userId', 'name email phone')
             .populate('applyMatrimony.applyUserId', 'name email phone')
             .skip(skip)
             .limit(limit);
-            const total = await MatrimonyModel.countDocuments();
+            const total = await MatrimonyModel.countDocuments({
+          $and: [
+            { 'applyMatrimony.applyUserId': userId },
+            { 'applyMatrimony.reject': true }
+          ]
+        });
             const totalPages = Math.ceil(total / limit);
 
             res.json({message: 'All applications retrieved successfully', status: 200, data: result, success: true, error: false, total, totalPages});

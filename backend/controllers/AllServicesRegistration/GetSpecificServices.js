@@ -8,7 +8,7 @@ const GetSpecificServices = async (req, res) => {
 
         let id=req.params.id;
   
-        const result = await createServiceModel.findById({_id:id});
+        const result = await createServiceModel.findById(id);
 if(!result){
     res.json({message: 'No data found', status: 400, data: {}, success: false, error: true});
 }
