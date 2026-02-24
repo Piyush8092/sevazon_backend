@@ -377,6 +377,10 @@ router.delete('/user/remove-fcm-token', authGuard, removeFcmToken);
 router.get('/user/fcm-status/:userId', authGuard, getFcmStatus);
 router.post('/user/report-device', reportDevice);
 
+// Image upload routes
+const { upload, uploadSingleImage, uploadMultipleImages } = require('../controllers/upload/uploadImage');
+const { updateEditorVerifyStatus } = require('../controllers/newsEditor/updateEditorVerifyStatus');
+
 // User Report and Block Management
 router.post('/report-user', authGuard, reportUser);
 router.get('/admin/reports', authGuard, getAllReports);
@@ -702,6 +706,7 @@ router.get('/get-query-editor', queryEditors);
 router.put('/update-follower-detail/:id', authGuard, updateFollower);
 router.get('/verified-editor', authGuard, getVerifiedUser);
 router.get('/not-verified-editor', authGuard, getNotVerifiedUser);
+router.put('/update-editor-role/:id', authGuard, updateEditorVerifyStatus);
 
 
 
@@ -1014,9 +1019,6 @@ const chatRoutes = require('./chatRoutes');
 const { auth } = require('firebase-admin');
 
 router.use('/chat', chatRoutes);
-
-// Image upload routes
-const { upload, uploadSingleImage, uploadMultipleImages } = require('../controllers/upload/uploadImage');
  
   router.post('/upload/image', authGuard, upload.single('image'), uploadSingleImage);
 router.post('/upload/images', authGuard, upload.array('images', 10), uploadMultipleImages);
