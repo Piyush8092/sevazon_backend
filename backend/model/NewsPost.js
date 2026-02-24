@@ -23,13 +23,7 @@ let NewsSchame=new mongoose.Schema({
             type:String,
         },
         newsImages:{
-            type:[String],
-            validate:{
-                validator: function(v) {
-                    return v && v.length >= 1 && v.length <= 5;
-                },
-                message: 'Minimum 1 and maximum 5 news images are required'
-            }
+            type:[String],           
         },
         NewsReport:[{
             report:{
