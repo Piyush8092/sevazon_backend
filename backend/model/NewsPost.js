@@ -29,7 +29,9 @@ let NewsSchame = new mongoose.Schema(
         "Startups",
         "Opinion",
         "Breaking News",
+        "Others"
       ],
+      default: "Others"
     },
     title: {
       type: String,
