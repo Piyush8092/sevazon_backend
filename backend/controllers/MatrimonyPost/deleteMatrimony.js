@@ -1,4 +1,6 @@
 let MatrimonyModel = require('../../model/Matrimony');
+const User = require('../../model/userModel');
+
 
 const deleteMatrimony = async (req, res) => {
     try {       
@@ -15,6 +17,14 @@ const deleteMatrimony = async (req, res) => {
         }
 
         const result = await MatrimonyModel.findByIdAndDelete(id);
+
+         // Update user hasMatrimony to false
+        await User.findByIdAndUpdate(
+            ExistMatrimony.userId,
+            { hasMatrimonyProfile: false },
+            { new: true }
+        );
+
         
         res.json({
             message: 'Matrimony profile deleted successfully', 
