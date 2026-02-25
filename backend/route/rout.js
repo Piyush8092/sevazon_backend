@@ -14,6 +14,11 @@ const { GetAllServiceListName } = require('../controllers/CreateAllServices/GetA
 const { GetAllServiceListSubName } = require('../controllers/CreateAllServices/GetAllServiceListSubName');
 const { getNonProfileUser } = require('../controllers/user/getNonProfileUser');
 
+// Chat routes
+const chatRoutes = require('./chatRoutes');
+const { auth } = require('firebase-admin');
+const { getRecommendedServices } = require('../controllers/recommendation/getRecommendedServices');
+
 const { GetSpecificServices } = require('../controllers/AllServicesRegistration/GetSpecificServices');
 const { FilterServices } = require('../controllers/AllServicesRegistration/FilterServices');
 const { DeleteSpecsificServices } = require('../controllers/AllServicesRegistration/DeleteSpecificServices');
@@ -335,6 +340,8 @@ router.post('/fix-matrimony-flag', authGuard, fixMatrimonyProfileFlag);
 router.post('/send-otp', sendOTP);
 router.post('/verify-otp', verifyOTP);
 router.get('/resend-otp/:phone', getOtp);
+
+router.get('/get-recommended-services', authGuard, getRecommendedServices);
 
 // for alternative phone number OTP verification (protected routes)
 router.post('/send-otp-alternative', authGuard, sendOTPAlternative);
@@ -1013,10 +1020,6 @@ router.post('/admin/sync-all-service-profile-types', authGuard, syncAllServicePr
 router.get('/user/active-subscriptions', authGuard, getUserActiveSubscriptions);
 router.post('/user/check-feature-access', authGuard, checkFeatureAccess);
 router.get('/user/check-subscription/:userId', authGuard, checkUserSubscription);
-
-// Chat routes
-const chatRoutes = require('./chatRoutes');
-const { auth } = require('firebase-admin');
 
 router.use('/chat', chatRoutes);
  
