@@ -30,7 +30,7 @@ const setFeaturedPosts = async (req, res) => {
 
     // Validate and fetch each selected post
     const validatedPosts = [];
-    const validPostTypes = ['jobs', 'matrimony', 'ads', 'property'];
+    const validPostTypes = ['job', 'matrimony', 'ad', 'property'];
 
     for (let i = 0; i < postSelections.length; i++) {
       const selection = postSelections[i];
@@ -57,13 +57,13 @@ const setFeaturedPosts = async (req, res) => {
 
       try {
         switch (selection.postType) {
-          case 'jobs':
+          case 'job':
             postData = await jobModel.findById(selection.postId);
             break;
           case 'matrimony':
             postData = await MatrimonyModel.findById(selection.postId);
             break;
-          case 'ads':
+          case 'ad':
             postData = await adModel.findById(selection.postId);
             break;
           case 'property':
@@ -120,9 +120,9 @@ const setFeaturedPosts = async (req, res) => {
         _id: featuredPosts._id,
         totalPosts: validatedPosts.length,
         postsByType: {
-          jobs: validatedPosts.filter(p => p.postType === 'jobs').length,
+          job: validatedPosts.filter(p => p.postType === 'job').length,
           matrimony: validatedPosts.filter(p => p.postType === 'matrimony').length,
-          ads: validatedPosts.filter(p => p.postType === 'ads').length,
+          ad: validatedPosts.filter(p => p.postType === 'ad').length,
           property: validatedPosts.filter(p => p.postType === 'property').length,
         },
         startDate: featuredPosts.startDate,
