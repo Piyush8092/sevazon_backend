@@ -30,7 +30,7 @@ const setFeaturedPosts = async (req, res) => {
 
     // Validate and fetch each selected post
     const validatedPosts = [];
-    const validPostTypes = ['job', 'matrimony', 'ad', 'property'];
+    const validPostTypes = ['jobs', 'matrimony', 'ads', 'property'];
 
     for (let i = 0; i < postSelections.length; i++) {
       const selection = postSelections[i];
