@@ -39,7 +39,7 @@ const queryJobs = async (req, res) => {
             ]
         };
         
-        const result = await jobModel.find(searchQuery).skip(skip).limit(limit);
+        const result = await jobModel.find(searchQuery).skip(skip).limit(limit).populate("profileId", "profileType");
         const total = await jobModel.countDocuments(searchQuery);
         const totalPages = Math.ceil(total / limit);
         

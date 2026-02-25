@@ -5,7 +5,7 @@ const ALLuserJob = async (req, res) => {
         let page = req.query.page || 1;
         let limit = req.query.limit || 10;
         const skip = (page - 1) * limit;
-        const result = await jobModel.find().skip(skip).limit(limit);
+        const result = await jobModel.find().skip(skip).limit(limit).populate("profileId", "profileType");
         const total = await jobModel.countDocuments();
         const totalPages = Math.ceil(total / limit);
 

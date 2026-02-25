@@ -140,7 +140,7 @@ let     getAllOfferUser = async (req, res) => {
         let page = req.query.page || 1;
         let limit = req.query.limit || 10;
         const skip = (page - 1) * limit;
-        const result = await offer.find().skip(skip).limit(limit);
+        const result = await offer.find().skip(skip).limit(limit).populate("profileId", "profileType");
         const total = await offer.countDocuments();
         const totalPages = Math.ceil(total / limit);
         
@@ -429,7 +429,7 @@ const queryOffer = async (req, res) => {
             ]
         };
         
-        const result = await offer.find(searchQuery).skip(skip).limit(limit);
+        const result = await offer.find(searchQuery).skip(skip).limit(limit).populate("profileId", "profileType");
         const total = await offer.countDocuments(searchQuery);
         const totalPages = Math.ceil(total / limit);
         
