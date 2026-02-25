@@ -133,6 +133,7 @@ profileId:{
     annualIncome: {
         type: [String],
         enum: ['Below 1 Lakh', '1-2 Lakhs', '2-3 Lakhs', '3-5 Lakhs', '5-7 Lakhs', '7-10 Lakhs', '10-15 Lakhs', '15-20 Lakhs', '20+ Lakhs'],
+        default: undefined
     },
     
     // Location & Other Details
