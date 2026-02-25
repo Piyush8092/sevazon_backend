@@ -164,14 +164,14 @@ profileId:{
     // Partner Requirements
   partnerAge: [
   {
-    min: { type: Number, required: true },
-    max: { type: Number, required: true }
+    min: { type: Number},
+    max: { type: Number}
   }
 ],
 partnerHeight: [
   {
-    min: { type: String, required: true },
-    max: { type: String, required: true }
+    min: { type: String},
+    max: { type: String}
   }
 ],
     partnerMaritalStatus: {
