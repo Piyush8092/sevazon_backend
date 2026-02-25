@@ -57,13 +57,13 @@ const setFeaturedPosts = async (req, res) => {
 
       try {
         switch (selection.postType) {
-          case 'job':
+          case 'jobs':
             postData = await jobModel.findById(selection.postId);
             break;
           case 'matrimony':
             postData = await MatrimonyModel.findById(selection.postId);
             break;
-          case 'ad':
+          case 'ads':
             postData = await adModel.findById(selection.postId);
             break;
           case 'property':
@@ -120,9 +120,9 @@ const setFeaturedPosts = async (req, res) => {
         _id: featuredPosts._id,
         totalPosts: validatedPosts.length,
         postsByType: {
-          job: validatedPosts.filter(p => p.postType === 'job').length,
+          jobs: validatedPosts.filter(p => p.postType === 'jobs').length,
           matrimony: validatedPosts.filter(p => p.postType === 'matrimony').length,
-          ad: validatedPosts.filter(p => p.postType === 'ad').length,
+          ads: validatedPosts.filter(p => p.postType === 'ads').length,
           property: validatedPosts.filter(p => p.postType === 'property').length,
         },
         startDate: featuredPosts.startDate,
