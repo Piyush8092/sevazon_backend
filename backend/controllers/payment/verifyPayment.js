@@ -123,7 +123,7 @@ const verifyPayment = async (req, res) => {
 
         // Update User Active Plan
         await User.findByIdAndUpdate(userId, {
-            $push: {
+            $set: {
                 activePlan: {
                     planId: plan._id,
                     planTitle: plan.title,

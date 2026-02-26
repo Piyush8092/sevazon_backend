@@ -56,7 +56,7 @@ const userSchema = new mongoose.Schema({
     }],
 
     // Store active plan benefits and details
-    activePlan: [{
+    activePlan: {
         planId: { type: mongoose.Schema.Types.ObjectId, ref: 'PricingPlan' },
         planTitle: String,
         planCategory: String,
@@ -65,7 +65,7 @@ const userSchema = new mongoose.Schema({
         endDate: Date,
         amount: Number,
         status: String,
-    }],
+    },
     LastLoginTime: {
         type: String,
         default: null
