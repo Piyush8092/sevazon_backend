@@ -66,6 +66,9 @@ const userSchema = new mongoose.Schema({
         amount: Number,
         status: String,
     },
+    purchasedPlans:[ {
+        planId: { type: mongoose.Schema.Types.ObjectId, ref: 'PricingPlan' },
+    }],
     LastLoginTime: {
         type: String,
         default: null

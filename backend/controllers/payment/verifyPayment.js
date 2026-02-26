@@ -135,6 +135,11 @@ const verifyPayment = async (req, res) => {
                     status: payment.status
                 }
             },
+            $push: {
+                purchasedPlans: {
+                    planId: plan._id,                   
+                }
+            },
             $addToSet: { subscriptions: payment._id }
         });
 

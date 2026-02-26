@@ -321,6 +321,15 @@ const { sendNotificationToServicePoster } = require('../controllers/AllServicesR
 const { getspecificJobApplyAdminView } = require('../controllers/ApplyJob/getspecificJobApplyAdminView');
 const { createZeroAmountSubscription } = require('../controllers/payment/createZeroAmountSubscription');
 const { verifyZeroAmountSubscription } = require('../controllers/payment/verifyZeroAmountSubscription');
+
+// Image upload routes
+const { upload, uploadSingleImage, uploadMultipleImages } = require('../controllers/upload/uploadImage');
+const { updateEditorVerifyStatus } = require('../controllers/newsEditor/updateEditorVerifyStatus');
+
+// Pricing Settings routes (Admin controls FREE/PAID mode)
+const { getPricingSettings, updatePricingSettings } = require('../controllers/pricingSettingsController');
+const { getUserPlansAdminView } = require('../controllers/user/getUserPlansAdminView');
+
 cookie();
 router.get('/', (req, res) => {
   res.send('Hello savazon!');
@@ -383,10 +392,6 @@ router.post('/user/update-fcm-token', authGuard, updateFcmToken);
 router.delete('/user/remove-fcm-token', authGuard, removeFcmToken);
 router.get('/user/fcm-status/:userId', authGuard, getFcmStatus);
 router.post('/user/report-device', reportDevice);
-
-// Image upload routes
-const { upload, uploadSingleImage, uploadMultipleImages } = require('../controllers/upload/uploadImage');
-const { updateEditorVerifyStatus } = require('../controllers/newsEditor/updateEditorVerifyStatus');
 
 // User Report and Block Management
 router.post('/report-user', authGuard, reportUser);
@@ -989,8 +994,6 @@ router.use('/call', callRoutes);
 router.use('/fcm', fcmRoutes);
 
 
-// Pricing Settings routes (Admin controls FREE/PAID mode)
-const { getPricingSettings, updatePricingSettings } = require('../controllers/pricingSettingsController');
 router.get('/pricing-settings', getPricingSettings);
 router.put('/pricing-settings', authGuard, updatePricingSettings);
 
@@ -1020,6 +1023,7 @@ router.post('/admin/sync-all-service-profile-types', authGuard, syncAllServicePr
 router.get('/user/active-subscriptions', authGuard, getUserActiveSubscriptions);
 router.post('/user/check-feature-access', authGuard, checkFeatureAccess);
 router.get('/user/check-subscription/:userId', authGuard, checkUserSubscription);
+router.get('/getUserPlansAdminView/:id', authGuard, getUserPlansAdminView);
 
 router.use('/chat', chatRoutes);
  
