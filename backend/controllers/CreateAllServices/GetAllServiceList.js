@@ -7,7 +7,7 @@ const GetAllServiceList = async (req, res) => {
         let page = req.query.page || 1;
         let limit = req.query.limit || 10;
         const skip = (page - 1) * limit;
-        const result = await serviceListModel.find().skip(skip).limit(limit);
+        const result = await serviceListModel.find().skip(skip).limit(limit).sort({ createdAt: -1 });
         const total = await serviceListModel.countDocuments();
         const totalPages = Math.ceil(total / limit);
         res.json({message: 'Service List created successfully', status: 200, data: result, success: true, error: false, total, totalPages});

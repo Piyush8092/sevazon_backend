@@ -1,38 +1,44 @@
-let serviceListModel = require('../../model/ServiceListModel');
+let serviceListModel = require("../../model/ServiceListModel");
 
 const GetAllServiceListName = async (req, res) => {
-    try {
-        // Get all unique category names
-        const result = await serviceListModel.find().distinct('name');
+  try {
+    // First get all services sorted by createdAt descending
+    const services = await serviceListModel.find().sort({ createdAt: -1 });
 
-        // Create object with category names as keys and subcategories as values
-        const categoriesObject = {};
+    const categoriesObject = {};
 
-        await Promise.all(
-            result.map(async (categoryName) => {
-                const subResult = await serviceListModel.find({name: categoryName}).distinct('subService.name');
-                // Only add categories that have subcategories
-                if (subResult.length > 0) {
-                    categoriesObject[categoryName] = subResult;
-                }
-            })
-        );
+    services.forEach((service) => {
+      const categoryName = service.name;
 
-        res.json({
-            message: 'Service categories retrieved successfully',
-            status: 200,
-            data: categoriesObject,
-            success: true,
-            error: false
+      if (!categoriesObject[categoryName]) {
+        categoriesObject[categoryName] = [];
+      }
+
+      if (service.subService && service.subService.length > 0) {
+        service.subService.forEach((sub) => {
+          if (!categoriesObject[categoryName].includes(sub.name)) {
+            categoriesObject[categoryName].push(sub.name);
+          }
         });
-    }
-    
-    catch (e) {
-        res.json({message: 'Something went wrong', status: 500, data: e, success: false, error: true});
+      }
+    });
 
-        }
+    res.json({
+      message: "Service categories retrieved successfully",
+      status: 200,
+      data: categoriesObject,
+      success: true,
+      error: false,
+    });
+  } catch (e) {
+    res.json({
+      message: "Something went wrong",
+      status: 500,
+      data: e,
+      success: false,
+      error: true,
+    });
+  }
 };
 
 module.exports = { GetAllServiceListName };
-
-

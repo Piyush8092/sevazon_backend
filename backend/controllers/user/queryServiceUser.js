@@ -11,29 +11,21 @@ const queryServiceUser = async (req, res) => {
         const skip = (page - 1) * limit;
         const result = await userModel.find({
             $or: [
-                {name: {$regex: query, $options: 'i'}},
+                {yourName: {$regex: query, $options: 'i'}},
+                {city: {$regex: query, $options: 'i'}},
+                {selectCategory: {$regex: query, $options: 'i'}},
                 {email: {$regex: query, $options: 'i'}}
             ]
         }).skip(skip).limit(limit);
         const total = await userModel.countDocuments({
             $or: [
-                {name: {$regex: query, $options: 'i'}},
+                {yourName: {$regex: query, $options: 'i'}},
+                {city: {$regex: query, $options: 'i'}},
+                {selectCategory: {$regex: query, $options: 'i'}},
                 {email: {$regex: query, $options: 'i'}}
             ]
         });
         const totalPages = Math.ceil(total / limit);
-
-        if(!result || result.length === 0){
-            return res.status(404).json({message: 'No data found'});
-        }
-
-        if(page < 1){
-            return res.status(400).json({message: 'Invalid page number'});
-        }
-
-        if(page > totalPages){
-            return res.status(400).json({message: 'Page number exceeds total pages'});
-        }
 
         res.json({
             message: 'Users retrieved successfully', 

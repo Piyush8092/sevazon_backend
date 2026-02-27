@@ -24,18 +24,6 @@ const queryFAQ = async (req, res) => {
         const result = await faqModel.find(searchQuery).skip(skip).limit(parseInt(limit));
         const total = await faqModel.countDocuments(searchQuery);
         const totalPages = Math.ceil(total / limit);
-        
-        if(!result || result.length === 0){
-            return res.status(400).json({message: 'No data found'});
-        }
-        
-        if(totalPages < page){
-            return res.status(400).json({message: 'No data found'});
-        }
-        
-        if(page < 1){
-            return res.status(400).json({message: 'Invalid page number'});
-        }
 
         res.json({
             message: 'FAQ retrieved successfully', 

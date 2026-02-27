@@ -65,18 +65,6 @@ const queryMatrimony = async (req, res) => {
         console.log('ankur',result)
         const total = await MatrimonyModel.countDocuments(searchQuery);
         const totalPages = Math.ceil(total / limit);
-        
-        if(!result || result.length === 0){
-            return res.status(404).json({message: 'No data found'});
-        }
-        
-        if(page < 1){
-            return res.status(400).json({message: 'Invalid page number'});
-        }
-        
-        if(page > totalPages){
-            return res.status(400).json({message: 'Page number exceeds total pages'});
-        }
 
         res.json({
             message: 'Matrimony profiles retrieved successfully', 

@@ -70,18 +70,6 @@ const queryServices = async (req, res) => {
         const total = result.length;
         const totalPages = Math.ceil(total / limit);
 
-        if(!result || result.length === 0){
-            return res.status(404).json({message: 'No data found'});
-        }
-
-        if(page < 1){
-            return res.status(400).json({message: 'Invalid page number'});
-        }
-
-        if(page > totalPages){
-            return res.status(400).json({message: 'Page number exceeds total pages'});
-        }
-
         // Apply pagination slice
         result = result.slice(skip, skip + limit);
 

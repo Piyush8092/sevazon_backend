@@ -28,8 +28,7 @@ const queryLocalServices = async (req, res) => {
                 { locationURL: regexQuery },
                 { timing: regexQuery },
                 { experience: regexQuery },
-                { establishedInYear: regexQuery },
-                { locationURL: regexQuery },
+                { establishedInYear: regexQuery },                
                 { workServiceImages: regexQuery },
                 { catalogImages: regexQuery },
                 { timeSlot: regexQuery },
@@ -40,18 +39,6 @@ const queryLocalServices = async (req, res) => {
         const result = await LocalServiceModel.find(searchQuery).skip(skip).limit(limit);
         const total = await LocalServiceModel.countDocuments(searchQuery);
         const totalPages = Math.ceil(total / limit);
-        
-        if(!result || result.length === 0){
-            return res.status(404).json({message: 'No local services found'});
-        }
-        
-        if(page < 1){
-            return res.status(400).json({message: 'Invalid page number'});
-        }
-        
-        if(page > totalPages){
-            return res.status(400).json({message: 'Page number exceeds total pages'});
-        }
 
         res.json({
             message: 'Local services retrieved successfully', 

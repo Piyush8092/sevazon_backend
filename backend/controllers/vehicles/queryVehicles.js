@@ -38,18 +38,6 @@ const queryVehicles = async (req, res) => {
         const result = await VehiclesModel.find(searchQuery).skip(skip).limit(limit);
         const total = await VehiclesModel.countDocuments(searchQuery);
         const totalPages = Math.ceil(total / limit);
-        
-        if(!result || result.length === 0){
-            return res.status(404).json({message: 'No vehicles found'});
-        }
-        
-        if(page < 1){
-            return res.status(400).json({message: 'Invalid page number'});
-        }
-        
-        if(page > totalPages){
-            return res.status(400).json({message: 'Page number exceeds total pages'});
-        }
 
         res.json({
             message: 'Vehicles retrieved successfully', 

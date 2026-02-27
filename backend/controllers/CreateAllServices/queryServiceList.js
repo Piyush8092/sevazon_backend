@@ -21,21 +21,9 @@ const queryServiceList = async (req, res) => {
             ]
         };
         
-        const result = await serviceListModel.find(searchQuery).skip(skip).limit(limit);
+        const result = await serviceListModel.find(searchQuery).skip(skip).limit(limit).sort({ createdAt: -1 });
         const total = await serviceListModel.countDocuments(searchQuery);
         const totalPages = Math.ceil(total / limit);
-        
-        if(!result || result.length === 0){
-            return res.status(404).json({message: 'No data found'});
-        }
-        
-        if(page > totalPages){
-            return res.status(400).json({message: 'Page number exceeds total pages'});
-        }
-        
-        if(page < 1){
-            return res.status(400).json({message: 'Invalid page number'});
-        }
 
         res.json({
             message: 'Service List retrieved successfully', 

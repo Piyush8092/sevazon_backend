@@ -49,18 +49,6 @@ const queryNews = async (req, res) => {
         const total = await NewsPostModel.countDocuments(searchQuery);
         const totalPages = Math.ceil(total / limit);
 
-        if(!result || result.length === 0){
-            return res.status(404).json({message: 'No news found', status: 404, data: [], success: false, error: true});
-        }
-
-        if(page < 1){
-            return res.status(400).json({message: 'Invalid page number', status: 400, success: false, error: true});
-        }
-
-        if(page > totalPages && totalPages > 0){
-            return res.status(400).json({message: 'Page number exceeds total pages', status: 400, success: false, error: true});
-        }
-
         res.json({
             message: 'News retrieved successfully', 
             status: 200, 
