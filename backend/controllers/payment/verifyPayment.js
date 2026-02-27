@@ -123,10 +123,8 @@ const verifyPayment = async (req, res) => {
       },
     };
 
-    // If category is ads, push into adPlansId instead
+    // If category is ads, push into adPlansId
     if (plan.category === "ads") {
-      delete pushFields.purchasedPlans;
-
       pushFields.adPlansId = {
         planId: plan._id,
       };
