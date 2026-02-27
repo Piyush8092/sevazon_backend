@@ -78,6 +78,7 @@ const verifyZeroAmountSubscription = async (req, res) => {
         planId: plan._id,
       };
     }
+    console.log("plan category", plan.category, plan);
 
     // Update User Active Plan
     await User.findByIdAndUpdate(userId, {
