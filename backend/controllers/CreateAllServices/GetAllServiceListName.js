@@ -3,7 +3,7 @@ let serviceListModel = require("../../model/ServiceListModel");
 const GetAllServiceListName = async (req, res) => {
   try {
     // First get all services sorted by createdAt descending
-    const services = await serviceListModel.find().sort({ createdAt: -1 });
+    const services = await serviceListModel.find().sort({ createdAt: 1 });
 
     const categoriesObject = {};
 

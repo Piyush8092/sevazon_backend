@@ -21,7 +21,7 @@ const queryServiceList = async (req, res) => {
             ]
         };
         
-        const result = await serviceListModel.find(searchQuery).skip(skip).limit(limit).sort({ createdAt: -1 });
+        const result = await serviceListModel.find(searchQuery).skip(skip).limit(limit).sort({ createdAt: 1 });
         const total = await serviceListModel.countDocuments(searchQuery);
         const totalPages = Math.ceil(total / limit);
 
