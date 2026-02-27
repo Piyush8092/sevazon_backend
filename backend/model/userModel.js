@@ -49,7 +49,10 @@ const userSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
-
+    adPlansId: [{
+        planId: { type: mongoose.Schema.Types.ObjectId, ref: 'PricingPlan' },
+        _id: false
+    }],
 
     subscriptions: [{
         type: mongoose.Schema.Types.ObjectId,

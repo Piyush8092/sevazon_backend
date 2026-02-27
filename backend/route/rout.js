@@ -7,7 +7,7 @@ const authGuard = require('../middleware/auth');
 const optionalAuth = require('../middleware/optionalAuth');
 const connectDB = require('../DB/connection');
 const cookie = require('cookie-parser');
-const { CreateAdd, GetAllAdds, GetSpecificAdd, UpdateSpecificAdd, DeleteSpecificAdd, queryAdds, AddCreaterView, getAllNotVerifiedAdds, FilterAdds, specificAddAdminView, getTotalAdCount, getAllAdUser, sendNotificationToAddPoster } = require('../controllers/Adds');
+const { CreateAdd, GetAllAdds, GetSpecificAdd, UpdateSpecificAdd, DeleteSpecificAdd, queryAdds, AddCreaterView, getAllNotVerifiedAdds, FilterAdds, specificAddAdminView, getTotalAdCount, getAllAdUser, sendNotificationToAddPoster, getUserAdsPlans } = require('../controllers/Adds');
 const { CreateAllServices } = require('../controllers/AllServicesRegistration/createAllService');
 const { UpdateSpecificServices } = require('../controllers/AllServicesRegistration/UpdateSpecificServices');
 const { GetAllServiceListName } = require('../controllers/CreateAllServices/GetAllServiceListName');
@@ -689,6 +689,7 @@ router.get('/get-specific-offer-admin-view/:id', authGuard, specificOfferAdminVi
 
 // for adds post
 router.post('/create-ad', authGuard, CreateAdd);
+router.get('/get-ad-plan-user-view', authGuard, getUserAdsPlans);
 router.get('/get-all-ad', optionalAuth, GetAllAdds);
 router.get('/get-specific-ad/:id', GetSpecificAdd);
 router.put('/update-specific-ad/:id', authGuard, UpdateSpecificAdd);
