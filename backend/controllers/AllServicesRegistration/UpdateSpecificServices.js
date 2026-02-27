@@ -95,7 +95,7 @@ const UpdateSpecificServices = async (req, res) => {
             // If it's not the registered phone, check if it's verified
             if (registeredPhone !== last10Digits) {
                 const isVerified = await VerifiedPhone.isPhoneVerified(userId, last10Digits);
-                if (!isVerified) {
+                if (!isVerified && req.user.role !== "ADMIN") {
                     return res.status(400).json({
                         message: 'Phone number must be verified via OTP before updating service/business profile. Please verify the phone number first.',
                         status: 400,

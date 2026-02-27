@@ -39,7 +39,7 @@ const createOffer = async (req, res) => {
             if (registeredPhone !== last10Digits) {
                 const isVerified = await VerifiedPhone.isPhoneVerified(req.user._id, last10Digits);
                 console.log(isVerified)
-                if (!isVerified) {
+                if (!isVerified && req.user.role !== "ADMIN") {
                     return res.status(400).json({
                         message: 'Phone number must be verified via OTP before creating offer. Please verify the phone number first.',
                         status: 400,
@@ -270,7 +270,7 @@ const UpdateSpecificOffer = async (req, res) => {
             // If it's not the registered phone, check if it's verified
             if (registeredPhone !== last10Digits) {
                 const isVerified = await VerifiedPhone.isPhoneVerified(UserId, last10Digits);
-                if (!isVerified) {
+                if (!isVerified && req.user.role !== "ADMIN") {
                     return res.status(400).json({
                         message: 'Phone number must be verified via OTP before updating offer. Please verify the phone number first.',
                         status: 400,
