@@ -1,4 +1,4 @@
-const FeaturedPostsModel = require('../../model/FeaturedPostsModel');
+const FeaturedPostsModel = require("../../model/FeaturedPostsModel");
 
 /**
  * Clear featured posts configuration
@@ -9,27 +9,23 @@ const FeaturedPostsModel = require('../../model/FeaturedPostsModel');
 const clearFeaturedPosts = async (req, res) => {
   try {
     // Deactivate all featured posts configurations
-    const result = await FeaturedPostsModel.updateMany(
-      { isActive: true },
-      { isActive: false }
-    );
+    const result = await FeaturedPostsModel.updateMany({ isActive: true }, { isActive: false });
 
     res.status(200).json({
       success: true,
-      message: 'Featured posts cleared successfully',
+      message: "Featured posts cleared successfully",
       data: {
         deactivatedCount: result.modifiedCount,
       },
     });
   } catch (error) {
-    console.error('Error clearing featured posts:', error);
+    console.error("Error clearing featured posts:", error);
     res.status(500).json({
       success: false,
-      message: 'Failed to clear featured posts',
+      message: "Failed to clear featured posts",
       error: error.message,
     });
   }
 };
 
 module.exports = clearFeaturedPosts;
-

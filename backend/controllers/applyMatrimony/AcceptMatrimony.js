@@ -1,10 +1,10 @@
-let MatrimonyModel = require('../../model/Matrimony');
+let MatrimonyModel = require("../../model/Matrimony");
 
 const acceptMatrimony = async (req, res) => {
   try {
     const id = req.params.id;
     const index = parseInt(req.params.index);
-    const { accept } = req.body; 
+    const { accept } = req.body;
     const userId = req.user._id;
 
     const existMatrimony = await MatrimonyModel.findById(id);
@@ -13,10 +13,7 @@ const acceptMatrimony = async (req, res) => {
     }
 
     // Only profile owner or admin can accept/reject
-    if (
-      existMatrimony.userId.toString() !== userId.toString() &&
-      req.user.role !== "ADMIN"
-    ) {
+    if (existMatrimony.userId.toString() !== userId.toString() && req.user.role !== "ADMIN") {
       return res.status(403).json({ message: "Not authorized" });
     }
 
@@ -47,7 +44,6 @@ const acceptMatrimony = async (req, res) => {
       success: true,
       data: existMatrimony,
     });
-
   } catch (error) {
     res.status(500).json({
       message: "Something went wrong",
@@ -57,5 +53,3 @@ const acceptMatrimony = async (req, res) => {
 };
 
 module.exports = { acceptMatrimony };
-
-

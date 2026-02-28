@@ -1,8 +1,8 @@
-const FeaturedPostsModel = require('../../model/FeaturedPostsModel');
-const jobModel = require('../../model/jobmodel');
-const MatrimonyModel = require('../../model/Matrimony');
-const adModel = require('../../model/adModel');
-const PropertyModel = require('../../model/property');
+const FeaturedPostsModel = require("../../model/FeaturedPostsModel");
+const jobModel = require("../../model/jobmodel");
+const MatrimonyModel = require("../../model/Matrimony");
+const adModel = require("../../model/adModel");
+const PropertyModel = require("../../model/property");
 
 /**
  * Get active featured posts configuration
@@ -13,14 +13,15 @@ const PropertyModel = require('../../model/property');
 const getFeaturedPosts = async (req, res) => {
   try {
     // Find active featured posts configuration
-    const featuredPostsConfig = await FeaturedPostsModel.findOne({ isActive: true })
-      .sort({ createdAt: -1 });
+    const featuredPostsConfig = await FeaturedPostsModel.findOne({ isActive: true }).sort({
+      createdAt: -1,
+    });
 
     // If no configuration exists, return empty array
     if (!featuredPostsConfig) {
       return res.status(200).json({
         success: true,
-        message: 'No featured posts configured',
+        message: "No featured posts configured",
         data: {
           posts: [],
           totalCount: 0,
@@ -32,10 +33,10 @@ const getFeaturedPosts = async (req, res) => {
     if (featuredPostsConfig.isExpired()) {
       featuredPostsConfig.isActive = false;
       await featuredPostsConfig.save();
-      
+
       return res.status(200).json({
         success: true,
-        message: 'Featured posts configuration has expired',
+        message: "Featured posts configuration has expired",
         data: {
           posts: [],
           totalCount: 0,
@@ -49,29 +50,33 @@ const getFeaturedPosts = async (req, res) => {
     for (const selectedPost of featuredPostsConfig.selectedPosts) {
       try {
         let postData = null;
-        
+
         // Fetch post based on type
         switch (selectedPost.postType) {
-          case 'job':
-            postData = await jobModel.findById(selectedPost.postId)
-              .populate('userId', 'name email profileImage')
-              .populate('profileId', 'displayName profileImage');
+          case "job":
+            postData = await jobModel
+              .findById(selectedPost.postId)
+              .populate("userId", "name email profileImage")
+              .populate("profileId", "displayName profileImage");
             break;
-            
-          case 'matrimony':
-            postData = await MatrimonyModel.findById(selectedPost.postId)
-              .populate('userId', 'name email profileImage');
+
+          case "matrimony":
+            postData = await MatrimonyModel.findById(selectedPost.postId).populate(
+              "userId",
+              "name email profileImage"
+            );
             break;
-            
-          case 'ad':
-            postData = await adModel.findById(selectedPost.postId)
-              .populate('userId', 'name email profileImage');
+
+          case "ad":
+            postData = await adModel
+              .findById(selectedPost.postId)
+              .populate("userId", "name email profileImage");
             break;
-            
-          case 'property':
+
+          case "property":
             postData = await PropertyModel.findById(selectedPost.postId)
-              .populate('userId', 'name email profileImage')
-              .populate('profileId', 'displayName profileImage');
+              .populate("userId", "name email profileImage")
+              .populate("profileId", "displayName profileImage");
             break;
         }
 
@@ -86,7 +91,10 @@ const getFeaturedPosts = async (req, res) => {
           });
         }
       } catch (error) {
-        console.error(`Error fetching ${selectedPost.postType} post ${selectedPost.postId}:`, error);
+        console.error(
+          `Error fetching ${selectedPost.postType} post ${selectedPost.postId}:`,
+          error
+        );
         // Continue with other posts even if one fails
       }
     }
@@ -96,7 +104,7 @@ const getFeaturedPosts = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      message: 'Featured posts fetched successfully',
+      message: "Featured posts fetched successfully",
       data: {
         posts: postsWithData,
         totalCount: postsWithData.length,
@@ -108,14 +116,13 @@ const getFeaturedPosts = async (req, res) => {
       },
     });
   } catch (error) {
-    console.error('Error fetching featured posts:', error);
+    console.error("Error fetching featured posts:", error);
     res.status(500).json({
       success: false,
-      message: 'Failed to fetch featured posts',
+      message: "Failed to fetch featured posts",
       error: error.message,
     });
   }
 };
 
 module.exports = getFeaturedPosts;
-

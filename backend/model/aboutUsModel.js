@@ -33,4 +33,3 @@ const aboutUsSchema = new mongoose.Schema(
 );
 
 module.exports = mongoose.model("AboutUs", aboutUsSchema);
-

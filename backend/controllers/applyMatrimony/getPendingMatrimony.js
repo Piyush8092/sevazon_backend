@@ -1,5 +1,4 @@
-let MatrimonyModel = require('../../model/Matrimony');
-
+let MatrimonyModel = require("../../model/Matrimony");
 
 const getPendingMatrimony = async (req, res) => {
   try {
@@ -9,38 +8,30 @@ const getPendingMatrimony = async (req, res) => {
     const userId = req.user._id;
     console.log(`[getPendingMatrimony] userId: ${userId}, page: ${page}, limit: ${limit}`);
     const result = await MatrimonyModel.find({
-      $and: [
-        { 'applyMatrimony.applyUserId': userId },
-        { 'applyMatrimony.status': 'Pending' }
-      ]
+      $and: [{ "applyMatrimony.applyUserId": userId }, { "applyMatrimony.status": "Pending" }],
     })
-      .populate('userId', 'name email phone')
+      .populate("userId", "name email phone")
       .skip(skip)
       .limit(limit);
     const total = await MatrimonyModel.countDocuments({
-      $and: [
-        { 'applyMatrimony.applyUserId': userId },
-        { 'applyMatrimony.status': 'Pending' }
-      ]
+      $and: [{ "applyMatrimony.applyUserId": userId }, { "applyMatrimony.status": "Pending" }],
     });
     const totalPages = Math.ceil(total / limit);
     return res.json({
       success: true,
-      message: 'All pending applications retrieved successfully',
+      message: "All pending applications retrieved successfully",
       data: result,
       total,
-      totalPages
+      totalPages,
     });
   } catch (e) {
-    console.error('[getPendingMatrimony] Error:', e);
+    console.error("[getPendingMatrimony] Error:", e);
     return res.status(500).json({
       success: false,
-      message: 'Something went wrong',
-      data: e.message || e
+      message: "Something went wrong",
+      data: e.message || e,
     });
   }
 };
 
 module.exports = { getPendingMatrimony };
-
-

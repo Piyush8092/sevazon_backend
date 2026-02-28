@@ -2,13 +2,13 @@ const mongoose = require("mongoose");
 
 const userModel = require("../../model/userModel");
 const adModel = require("../../model/adModel");
-const ApplyModel = require('../../model/ApplyModel');
+const ApplyModel = require("../../model/ApplyModel");
 const ProfileModel = require("../../model/createAllServiceProfileModel");
-const EditorModel = require('../../model/EditorModel');
-const faqModel = require('../../model/FaqModel');
+const EditorModel = require("../../model/EditorModel");
+const faqModel = require("../../model/FaqModel");
 const FCMToken = require("../../model/fcmTokenModel");
 const FeedbackModel = require("../../model/feedbackModel");
-const jobModel = require('../../model/jobmodel');
+const jobModel = require("../../model/jobmodel");
 const leadModel = require("../../model/leadModel");
 const LocalServiceModel = require("../../model/localServices");
 const MatrimonyModel = require("../../model/Matrimony");
@@ -18,9 +18,9 @@ const NotificationPreferences = require("../../model/notificationPreferencesMode
 const offer = require("../../model/OfferModel");
 const Payment = require("../../model/paymentModel");
 const PropertyModel = require("../../model/property");
-const serviceListModel = require('../../model/ServiceListModel');
+const serviceListModel = require("../../model/ServiceListModel");
 const UserActivity = require("../../model/userActivityModel");
-const UserReport = require('../../model/UserReportModel');
+const UserReport = require("../../model/UserReportModel");
 const VehiclesModel = require("../../model/vehiclesModel");
 
 const deleteUser = async (req, res) => {
@@ -85,7 +85,7 @@ const deleteUser = async (req, res) => {
       // Matrimony nested reference
       await MatrimonyModel.updateMany(
         {},
-        { $pull: { applyMatrimony: { applyUserId: id } } },
+        { $pull: { applyMatrimony: { applyUserId: id } } }
       ).session(session);
 
       // Profile nested cleanups
@@ -97,7 +97,7 @@ const deleteUser = async (req, res) => {
             dislikes: { userId: id },
             comments: { userId: id },
           },
-        },
+        }
       ).session(session);
 
       await ProfileModel.deleteMany({ userId: id }).session(session);
@@ -112,7 +112,7 @@ const deleteUser = async (req, res) => {
             comments: { userId: id },
             emojiReactions: { userId: id },
           },
-        },
+        }
       ).session(session);
 
       await NewsPostModel.deleteMany({ userId: id }).session(session);

@@ -1,5 +1,5 @@
-const { RtcTokenBuilder, RtcRole } = require('agora-token');
-const crypto = require('crypto');
+const { RtcTokenBuilder, RtcRole } = require("agora-token");
+const crypto = require("crypto");
 
 // UUID replacement using Node.js built-in crypto
 const uuidv4 = () => {
@@ -13,16 +13,18 @@ const uuidv4 = () => {
 class AgoraService {
   constructor() {
     // Agora App ID and App Certificate from environment variables
-    this.appId = process.env.AGORA_APP_ID || '400bb82ebad34539aebcb6de61e5a976';
+    this.appId = process.env.AGORA_APP_ID || "400bb82ebad34539aebcb6de61e5a976";
     this.appCertificate = process.env.AGORA_APP_CERTIFICATE;
     this.appCertificateBackup = process.env.AGORA_APP_CERTIFICATE_BACKUP;
 
     // For development, provide a fallback certificate if not set
-    if (!this.appCertificate && process.env.NODE_ENV === 'development') {
+    if (!this.appCertificate && process.env.NODE_ENV === "development") {
       // This is a placeholder certificate for development only
       // In production, you MUST set the AGORA_APP_CERTIFICATE environment variable
-      console.warn('⚠️ Using development fallback certificate. Set AGORA_APP_CERTIFICATE for production!');
-      this.appCertificate = 'development_certificate_placeholder';
+      console.warn(
+        "⚠️ Using development fallback certificate. Set AGORA_APP_CERTIFICATE for production!"
+      );
+      this.appCertificate = "development_certificate_placeholder";
     }
 
     this.currentCertificate = this.appCertificate; // Track which certificate is currently being used
@@ -33,12 +35,14 @@ class AgoraService {
     // In-memory storage for active calls (in production, use Redis or database)
     this.activeCalls = new Map();
 
-    console.log('🎥 AgoraService initialized');
+    console.log("🎥 AgoraService initialized");
     console.log(`📱 App ID: ${this.appId}`);
-    console.log(`🔐 App Certificate: ${this.appCertificate ? 'Configured' : 'Not configured'}`);
-    console.log(`🔐 Backup Certificate: ${this.appCertificateBackup ? 'Available' : 'Not available'}`);
-    console.log(`🔐 Current Certificate: ${this.currentCertificate ? 'Active' : 'None'}`);
-    console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
+    console.log(`🔐 App Certificate: ${this.appCertificate ? "Configured" : "Not configured"}`);
+    console.log(
+      `🔐 Backup Certificate: ${this.appCertificateBackup ? "Available" : "Not available"}`
+    );
+    console.log(`🔐 Current Certificate: ${this.currentCertificate ? "Active" : "None"}`);
+    console.log(`🌍 Environment: ${process.env.NODE_ENV || "development"}`);
   }
 
   /**
@@ -49,36 +53,39 @@ class AgoraService {
    * @param {number} existingUid - Optional existing UID to reuse
    * @returns {Object} Token and channel information
    */
-  generateToken(channelName, userId, role = 'publisher', existingUid = null) {
+  generateToken(channelName, userId, role = "publisher", existingUid = null) {
     try {
       // Validate inputs
-      if (!channelName || typeof channelName !== 'string') {
-        throw new Error('Invalid channelName: must be a non-empty string');
+      if (!channelName || typeof channelName !== "string") {
+        throw new Error("Invalid channelName: must be a non-empty string");
       }
-      if (!userId || typeof userId !== 'string') {
-        throw new Error('Invalid userId: must be a non-empty string');
+      if (!userId || typeof userId !== "string") {
+        throw new Error("Invalid userId: must be a non-empty string");
       }
 
       // Use existing UID if provided, otherwise generate stable UID from userId
       const uid = existingUid || this.generateUid(userId);
 
       // For development mode without proper certificate
-      if (!this.currentCertificate || this.currentCertificate === 'development_certificate_placeholder') {
-        console.warn('⚠️ Development mode: Using null token (certificate not properly configured)');
+      if (
+        !this.currentCertificate ||
+        this.currentCertificate === "development_certificate_placeholder"
+      ) {
+        console.warn("⚠️ Development mode: Using null token (certificate not properly configured)");
         return {
           token: null,
           channelName,
           userId,
           uid,
-          expiresAt: Date.now() + (this.tokenExpirationInSeconds * 1000),
+          expiresAt: Date.now() + this.tokenExpirationInSeconds * 1000,
           appId: this.appId,
-          certificateStatus: 'not_configured',
-          developmentMode: true
+          certificateStatus: "not_configured",
+          developmentMode: true,
         };
       }
 
       // Determine Agora role
-      const agoraRole = role === 'publisher' ? RtcRole.PUBLISHER : RtcRole.SUBSCRIBER;
+      const agoraRole = role === "publisher" ? RtcRole.PUBLISHER : RtcRole.SUBSCRIBER;
 
       // Calculate expiration time
       const currentTimestamp = Math.floor(Date.now() / 1000);
@@ -86,7 +93,7 @@ class AgoraService {
 
       // Try to generate token with current certificate
       let token;
-      let certificateUsed = 'primary';
+      let certificateUsed = "primary";
 
       try {
         token = RtcTokenBuilder.buildTokenWithUid(
@@ -98,14 +105,18 @@ class AgoraService {
           privilegeExpiredTs
         );
 
-        console.log(`✅ Generated token with ${this.currentCertificate === this.appCertificate ? 'primary' : 'backup'} certificate`);
-
+        console.log(
+          `✅ Generated token with ${this.currentCertificate === this.appCertificate ? "primary" : "backup"} certificate`
+        );
       } catch (tokenError) {
-        console.error(`❌ Failed to generate token with ${this.currentCertificate === this.appCertificate ? 'primary' : 'backup'} certificate:`, tokenError);
+        console.error(
+          `❌ Failed to generate token with ${this.currentCertificate === this.appCertificate ? "primary" : "backup"} certificate:`,
+          tokenError
+        );
 
         // Try fallback to backup certificate if available and not already using it
         if (this.appCertificateBackup && this.currentCertificate !== this.appCertificateBackup) {
-          console.log('🔄 Attempting fallback to backup certificate...');
+          console.log("🔄 Attempting fallback to backup certificate...");
 
           try {
             token = RtcTokenBuilder.buildTokenWithUid(
@@ -119,46 +130,47 @@ class AgoraService {
 
             // Switch to backup certificate for future requests
             this.currentCertificate = this.appCertificateBackup;
-            certificateUsed = 'backup';
+            certificateUsed = "backup";
 
-            console.log('✅ Successfully generated token with backup certificate');
-            console.log('🔄 Switched to backup certificate for future requests');
-
+            console.log("✅ Successfully generated token with backup certificate");
+            console.log("🔄 Switched to backup certificate for future requests");
           } catch (backupError) {
-            console.error('❌ Backup certificate also failed:', backupError);
+            console.error("❌ Backup certificate also failed:", backupError);
 
             // Fallback for development
-            if (process.env.NODE_ENV === 'development') {
-              console.warn('⚠️ Falling back to null token for development');
+            if (process.env.NODE_ENV === "development") {
+              console.warn("⚠️ Falling back to null token for development");
               return {
                 token: null,
                 channelName,
                 userId,
                 uid,
-                expiresAt: Date.now() + (this.tokenExpirationInSeconds * 1000),
+                expiresAt: Date.now() + this.tokenExpirationInSeconds * 1000,
                 appId: this.appId,
-                certificateStatus: 'error',
+                certificateStatus: "error",
                 developmentMode: true,
-                error: `Both certificates failed. Primary: ${tokenError.message}, Backup: ${backupError.message}`
+                error: `Both certificates failed. Primary: ${tokenError.message}, Backup: ${backupError.message}`,
               };
             }
 
-            throw new Error(`Both primary and backup certificates failed. Primary: ${tokenError.message}, Backup: ${backupError.message}`);
+            throw new Error(
+              `Both primary and backup certificates failed. Primary: ${tokenError.message}, Backup: ${backupError.message}`
+            );
           }
         } else {
           // Fallback for development
-          if (process.env.NODE_ENV === 'development') {
-            console.warn('⚠️ Falling back to null token for development');
+          if (process.env.NODE_ENV === "development") {
+            console.warn("⚠️ Falling back to null token for development");
             return {
               token: null,
               channelName,
               userId,
               uid,
-              expiresAt: Date.now() + (this.tokenExpirationInSeconds * 1000),
+              expiresAt: Date.now() + this.tokenExpirationInSeconds * 1000,
               appId: this.appId,
-              certificateStatus: 'error',
+              certificateStatus: "error",
               developmentMode: true,
-              error: tokenError.message
+              error: tokenError.message,
             };
           }
 
@@ -176,25 +188,25 @@ class AgoraService {
         expiresAt: privilegeExpiredTs * 1000,
         appId: this.appId,
         certificateUsed,
-        certificateStatus: 'configured',
-        developmentMode: false
+        certificateStatus: "configured",
+        developmentMode: false,
       };
     } catch (error) {
-      console.error('❌ Error generating Agora token:', error);
+      console.error("❌ Error generating Agora token:", error);
 
       // Fallback for development
-      if (process.env.NODE_ENV === 'development') {
-        console.warn('⚠️ Falling back to null token for development');
+      if (process.env.NODE_ENV === "development") {
+        console.warn("⚠️ Falling back to null token for development");
         return {
           token: null,
           channelName,
           userId,
           uid: this.generateUid(),
-          expiresAt: Date.now() + (this.tokenExpirationInSeconds * 1000),
+          expiresAt: Date.now() + this.tokenExpirationInSeconds * 1000,
           appId: this.appId,
-          certificateStatus: 'error',
+          certificateStatus: "error",
           developmentMode: true,
-          error: error.message
+          error: error.message,
         };
       }
 
@@ -218,12 +230,12 @@ class AgoraService {
     let hash = 0;
     for (let i = 0; i < userId.length; i++) {
       const char = userId.charCodeAt(i);
-      hash = ((hash << 5) - hash) + char;
+      hash = (hash << 5) - hash + char;
       hash = hash & hash; // Convert to 32-bit integer
     }
 
     // Ensure positive number within Agora's UID range (1 to 2^32-1)
-    const uid = Math.abs(hash) % 4294967295 + 1;
+    const uid = (Math.abs(hash) % 4294967295) + 1;
 
     console.log(`🔢 Generated stable UID ${uid} for userId: ${userId}`);
     return uid;
@@ -240,8 +252,8 @@ class AgoraService {
     const sortedIds = [userId1, userId2].sort();
 
     // Clean user IDs to ensure they're alphanumeric
-    const cleanId1 = sortedIds[0].replace(/[^a-zA-Z0-9]/g, '');
-    const cleanId2 = sortedIds[1].replace(/[^a-zA-Z0-9]/g, '');
+    const cleanId1 = sortedIds[0].replace(/[^a-zA-Z0-9]/g, "");
+    const cleanId2 = sortedIds[1].replace(/[^a-zA-Z0-9]/g, "");
 
     // Take last 6 chars of each user ID to keep channel name short
     const shortId1 = cleanId1.length > 6 ? cleanId1.substring(cleanId1.length - 6) : cleanId1;
@@ -264,16 +276,16 @@ class AgoraService {
    * @param {string} callType - 'voice' or 'video'
    * @returns {Object} Call information
    */
-  initiateCall(callerId, calleeId, callType = 'voice') {
+  initiateCall(callerId, calleeId, callType = "voice") {
     try {
       // Validate inputs
-      if (!callerId || typeof callerId !== 'string') {
-        throw new Error('Invalid callerId: must be a non-empty string');
+      if (!callerId || typeof callerId !== "string") {
+        throw new Error("Invalid callerId: must be a non-empty string");
       }
-      if (!calleeId || typeof calleeId !== 'string') {
-        throw new Error('Invalid calleeId: must be a non-empty string');
+      if (!calleeId || typeof calleeId !== "string") {
+        throw new Error("Invalid calleeId: must be a non-empty string");
       }
-      if (!['voice', 'video'].includes(callType)) {
+      if (!["voice", "video"].includes(callType)) {
         throw new Error('Invalid callType: must be "voice" or "video"');
       }
 
@@ -281,36 +293,38 @@ class AgoraService {
       const channelName = this.generateChannelName(callerId, calleeId);
 
       // Generate tokens for both users with stable UIDs
-      const callerToken = this.generateToken(channelName, callerId, 'publisher');
-      const calleeToken = this.generateToken(channelName, calleeId, 'publisher');
+      const callerToken = this.generateToken(channelName, callerId, "publisher");
+      const calleeToken = this.generateToken(channelName, calleeId, "publisher");
 
       const callData = {
         callId,
         channelName,
         callType,
-        status: 'initiated',
+        status: "initiated",
         caller: {
           userId: callerId,
-          ...callerToken
+          ...callerToken,
         },
         callee: {
           userId: calleeId,
-          ...calleeToken
+          ...calleeToken,
         },
         createdAt: new Date(),
-        updatedAt: new Date()
+        updatedAt: new Date(),
       };
 
       // Store call data
       this.activeCalls.set(callId, callData);
 
-      console.log(`📞 CallInitiated: callId=${callId}, type=${callType}, caller=${callerId}, callee=${calleeId}, channel=${channelName}`);
+      console.log(
+        `📞 CallInitiated: callId=${callId}, type=${callType}, caller=${callerId}, callee=${calleeId}, channel=${channelName}`
+      );
       console.log(`   - Caller UID: ${callerToken.uid}`);
       console.log(`   - Callee UID: ${calleeToken.uid}`);
 
       return callData;
     } catch (error) {
-      console.error('❌ Error initiating call:', error);
+      console.error("❌ Error initiating call:", error);
       throw new Error(`Failed to initiate call: ${error.message}`);
     }
   }
@@ -324,11 +338,11 @@ class AgoraService {
   answerCall(callId, userId) {
     try {
       // Validate inputs
-      if (!callId || typeof callId !== 'string') {
-        throw new Error('Invalid callId: must be a non-empty string');
+      if (!callId || typeof callId !== "string") {
+        throw new Error("Invalid callId: must be a non-empty string");
       }
-      if (!userId || typeof userId !== 'string') {
-        throw new Error('Invalid userId: must be a non-empty string');
+      if (!userId || typeof userId !== "string") {
+        throw new Error("Invalid userId: must be a non-empty string");
       }
 
       let call = this.activeCalls.get(callId);
@@ -336,33 +350,37 @@ class AgoraService {
       // If call not found in memory, create a minimal call object
       // This handles cases where the call was lost due to server restart
       if (!call) {
-        console.warn(`⚠️ Call ${callId} not found in memory, creating minimal call object for answer`);
+        console.warn(
+          `⚠️ Call ${callId} not found in memory, creating minimal call object for answer`
+        );
         call = {
           callId,
-          status: 'initiated',
-          caller: { userId: 'unknown' },
+          status: "initiated",
+          caller: { userId: "unknown" },
           callee: { userId: userId },
           createdAt: new Date(),
-          updatedAt: new Date()
+          updatedAt: new Date(),
         };
       }
 
       // Verify the user is the callee (or callee is unknown)
-      if (call.callee.userId !== 'unknown' && call.callee.userId !== userId) {
-        throw new Error('Unauthorized to answer this call');
+      if (call.callee.userId !== "unknown" && call.callee.userId !== userId) {
+        throw new Error("Unauthorized to answer this call");
       }
 
-      call.status = 'active';
+      call.status = "active";
       call.answeredAt = new Date();
       call.updatedAt = new Date();
 
       this.activeCalls.set(callId, call);
 
-      console.log(`✅ CallAccepted: callId=${callId}, userId=${userId}, channel=${call.channelName || 'unknown'}`);
+      console.log(
+        `✅ CallAccepted: callId=${callId}, userId=${userId}, channel=${call.channelName || "unknown"}`
+      );
 
       return call;
     } catch (error) {
-      console.error('❌ Error answering call:', error);
+      console.error("❌ Error answering call:", error);
       throw new Error(`Failed to answer call: ${error.message}`);
     }
   }
@@ -376,11 +394,11 @@ class AgoraService {
   endCall(callId, userId) {
     try {
       // Validate inputs
-      if (!callId || typeof callId !== 'string') {
-        throw new Error('Invalid callId: must be a non-empty string');
+      if (!callId || typeof callId !== "string") {
+        throw new Error("Invalid callId: must be a non-empty string");
       }
-      if (!userId || typeof userId !== 'string') {
-        throw new Error('Invalid userId: must be a non-empty string');
+      if (!userId || typeof userId !== "string") {
+        throw new Error("Invalid userId: must be a non-empty string");
       }
 
       // First check in-memory storage
@@ -392,28 +410,28 @@ class AgoraService {
         console.warn(`⚠️ Call ${callId} not found in memory, creating minimal call object`);
         call = {
           callId,
-          status: 'initiated',
-          caller: { userId: 'unknown' },
-          callee: { userId: 'unknown' },
+          status: "initiated",
+          caller: { userId: "unknown" },
+          callee: { userId: "unknown" },
           createdAt: new Date(),
-          updatedAt: new Date()
+          updatedAt: new Date(),
         };
       }
 
       // Prevent double-ending
-      if (call.status === 'ended') {
+      if (call.status === "ended") {
         console.log(`⚠️ Call ${callId} already ended, skipping duplicate end`);
         return call;
       }
 
       // Allow either participant to end the call (or allow if caller/callee is unknown)
-      if (call.caller.userId !== 'unknown' && call.callee.userId !== 'unknown') {
+      if (call.caller.userId !== "unknown" && call.callee.userId !== "unknown") {
         if (call.caller.userId !== userId && call.callee.userId !== userId) {
-          throw new Error('Unauthorized to end this call');
+          throw new Error("Unauthorized to end this call");
         }
       }
 
-      call.status = 'ended';
+      call.status = "ended";
       call.endedAt = new Date();
       call.endedBy = userId;
       call.updatedAt = new Date();
@@ -443,7 +461,7 @@ class AgoraService {
 
       return call;
     } catch (error) {
-      console.error('❌ Error ending call:', error);
+      console.error("❌ Error ending call:", error);
       throw new Error(`Failed to end call: ${error.message}`);
     }
   }
@@ -460,10 +478,10 @@ class AgoraService {
       // Return a minimal call object instead of throwing error
       return {
         callId,
-        status: 'unknown',
-        message: 'Call information not available (may have been cleared from memory)',
+        status: "unknown",
+        message: "Call information not available (may have been cleared from memory)",
         createdAt: new Date(),
-        updatedAt: new Date()
+        updatedAt: new Date(),
       };
     }
     return call;
@@ -477,8 +495,10 @@ class AgoraService {
   getUserActiveCalls(userId) {
     const userCalls = [];
     for (const call of this.activeCalls.values()) {
-      if ((call.caller.userId === userId || call.callee.userId === userId) && 
-          call.status !== 'ended') {
+      if (
+        (call.caller.userId === userId || call.callee.userId === userId) &&
+        call.status !== "ended"
+      ) {
         userCalls.push(call);
       }
     }
@@ -494,23 +514,23 @@ class AgoraService {
   declineCall(callId, userId) {
     try {
       // Validate inputs
-      if (!callId || typeof callId !== 'string') {
-        throw new Error('Invalid callId: must be a non-empty string');
+      if (!callId || typeof callId !== "string") {
+        throw new Error("Invalid callId: must be a non-empty string");
       }
-      if (!userId || typeof userId !== 'string') {
-        throw new Error('Invalid userId: must be a non-empty string');
+      if (!userId || typeof userId !== "string") {
+        throw new Error("Invalid userId: must be a non-empty string");
       }
 
       const call = this.activeCalls.get(callId);
       if (!call) {
-        throw new Error('Call not found');
+        throw new Error("Call not found");
       }
 
       if (call.callee.userId !== userId) {
-        throw new Error('Unauthorized to decline this call');
+        throw new Error("Unauthorized to decline this call");
       }
 
-      call.status = 'declined';
+      call.status = "declined";
       call.declinedAt = new Date();
       call.updatedAt = new Date();
 
@@ -520,7 +540,7 @@ class AgoraService {
 
       return call;
     } catch (error) {
-      console.error('❌ Error declining call:', error);
+      console.error("❌ Error declining call:", error);
       throw new Error(`Failed to decline call: ${error.message}`);
     }
   }
@@ -530,36 +550,48 @@ class AgoraService {
    * @returns {Object} Service status
    */
   getStatus() {
-    const isDevelopmentMode = process.env.NODE_ENV === 'development';
-    const isUsingPlaceholder = this.currentCertificate === 'development_certificate_placeholder';
+    const isDevelopmentMode = process.env.NODE_ENV === "development";
+    const isUsingPlaceholder = this.currentCertificate === "development_certificate_placeholder";
 
     return {
-      status: 'healthy',
+      status: "healthy",
       appId: this.appId,
-      environment: process.env.NODE_ENV || 'development',
+      environment: process.env.NODE_ENV || "development",
       developmentMode: isDevelopmentMode,
       certificates: {
         primary: {
-          configured: !!this.appCertificate && this.appCertificate !== 'development_certificate_placeholder',
-          value: this.appCertificate && this.appCertificate !== 'development_certificate_placeholder' ?
-                 `${this.appCertificate.substring(0, 8)}...` : null,
-          isPlaceholder: this.appCertificate === 'development_certificate_placeholder'
+          configured:
+            !!this.appCertificate && this.appCertificate !== "development_certificate_placeholder",
+          value:
+            this.appCertificate && this.appCertificate !== "development_certificate_placeholder"
+              ? `${this.appCertificate.substring(0, 8)}...`
+              : null,
+          isPlaceholder: this.appCertificate === "development_certificate_placeholder",
         },
         backup: {
           configured: !!this.appCertificateBackup,
-          value: this.appCertificateBackup ? `${this.appCertificateBackup.substring(0, 8)}...` : null
+          value: this.appCertificateBackup
+            ? `${this.appCertificateBackup.substring(0, 8)}...`
+            : null,
         },
-        currentlyUsing: this.currentCertificate === this.appCertificate ? 'primary' :
-                       this.currentCertificate === this.appCertificateBackup ? 'backup' : 'none',
-        usingPlaceholder: isUsingPlaceholder
+        currentlyUsing:
+          this.currentCertificate === this.appCertificate
+            ? "primary"
+            : this.currentCertificate === this.appCertificateBackup
+              ? "backup"
+              : "none",
+        usingPlaceholder: isUsingPlaceholder,
       },
       tokenGeneration: {
         willGenerateNullTokens: !this.currentCertificate || isUsingPlaceholder,
-        reason: !this.currentCertificate ? 'No certificate configured' :
-                isUsingPlaceholder ? 'Using development placeholder certificate' : 'Certificates properly configured'
+        reason: !this.currentCertificate
+          ? "No certificate configured"
+          : isUsingPlaceholder
+            ? "Using development placeholder certificate"
+            : "Certificates properly configured",
       },
       activeCalls: this.activeCalls.size,
-      timestamp: new Date()
+      timestamp: new Date(),
     };
   }
 
@@ -569,7 +601,7 @@ class AgoraService {
   resetToPrimaryCertificate() {
     if (this.appCertificate) {
       this.currentCertificate = this.appCertificate;
-      console.log('🔄 Reset to primary certificate');
+      console.log("🔄 Reset to primary certificate");
       return true;
     }
     return false;
@@ -581,7 +613,7 @@ class AgoraService {
   switchToBackupCertificate() {
     if (this.appCertificateBackup) {
       this.currentCertificate = this.appCertificateBackup;
-      console.log('🔄 Switched to backup certificate');
+      console.log("🔄 Switched to backup certificate");
       return true;
     }
     return false;

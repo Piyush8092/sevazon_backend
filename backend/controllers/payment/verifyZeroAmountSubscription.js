@@ -7,8 +7,7 @@ const PricingPlan = require("../../model/pricingPlanModel");
 const calculateExpiryDate = (plan, durationValue) => {
   const endDate = new Date();
 
-  const durationText =
-    plan.duration1?.toLowerCase() || plan.duration2?.toLowerCase() || "";
+  const durationText = plan.duration1?.toLowerCase() || plan.duration2?.toLowerCase() || "";
 
   if (durationText.includes("day")) {
     endDate.setDate(endDate.getDate() + durationValue);
@@ -36,7 +35,7 @@ const updateUserServiceProfiles = async (userId, plan) => {
         isPremium: serviceType === "premium",
         isFeatured: serviceType === "featured",
       },
-    },
+    }
   );
 };
 

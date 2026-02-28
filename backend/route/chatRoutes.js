@@ -1,12 +1,16 @@
-const router = require('express').Router();
-const authGuard = require('../middleware/auth');
+const router = require("express").Router();
+const authGuard = require("../middleware/auth");
 
-const chatNotificationController = require('../controllers/chat/chatNotificationController');
-const chatController = require('../controllers/chat/chatController');
-const checkSubscription = require('../middleware/checkSubscription');
+const chatNotificationController = require("../controllers/chat/chatNotificationController");
+const chatController = require("../controllers/chat/chatController");
+const checkSubscription = require("../middleware/checkSubscription");
 
 // Import rate limiting middleware
-const { fcmRateLimit, spamPrevention, notificationSpamDetection } = require('../middleware/rateLimiter');
+const {
+  fcmRateLimit,
+  spamPrevention,
+  notificationSpamDetection,
+} = require("../middleware/rateLimiter");
 
 // ============================================================================
 // CHAT NOTIFICATION ROUTES
@@ -15,7 +19,7 @@ const { fcmRateLimit, spamPrevention, notificationSpamDetection } = require('../
 /**
  * Send notification for new chat message
  * POST /api/chat/send-message-notification
- * 
+ *
  * Request body:
  * {
  *   "recipientId": "user_id",
@@ -25,30 +29,29 @@ const { fcmRateLimit, spamPrevention, notificationSpamDetection } = require('../
  *   "messageId": "message_id" (optional)
  * }
  */
-router.post('/send-message-notification',
-    authGuard,
-    fcmRateLimit,
-    spamPrevention,
-    notificationSpamDetection,
-    chatNotificationController.sendMessageNotification
+router.post(
+  "/send-message-notification",
+  authGuard,
+  fcmRateLimit,
+  spamPrevention,
+  notificationSpamDetection,
+  chatNotificationController.sendMessageNotification
 );
 
 // =============================
 // CHAT MESSAGE/ROOM ROUTES
 // =============================
 
-
 // Create or get a chat room (protected)
-router.post('/room', authGuard, checkSubscription, chatController.createOrGetRoom);
+router.post("/room", authGuard, checkSubscription, chatController.createOrGetRoom);
 
 // Send a message (protected)
-router.post('/message', authGuard, checkSubscription, chatController.sendMessage);
+router.post("/message", authGuard, checkSubscription, chatController.sendMessage);
 
 // Get messages for a room (protected)
-router.get('/messages/:roomId', authGuard, checkSubscription, chatController.getMessages);
+router.get("/messages/:roomId", authGuard, checkSubscription, chatController.getMessages);
 
 // Get all rooms for the user (protected)
-router.get('/rooms', authGuard, checkSubscription, chatController.getRooms);
+router.get("/rooms", authGuard, checkSubscription, chatController.getRooms);
 
 module.exports = router;
-

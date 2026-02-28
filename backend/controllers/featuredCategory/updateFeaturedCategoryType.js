@@ -1,4 +1,4 @@
-const FeaturedCategoryTypeModel = require('../../model/FeaturedCategoryTypeModel');
+const FeaturedCategoryTypeModel = require("../../model/FeaturedCategoryTypeModel");
 
 /**
  * Update a featured category type's label and description
@@ -12,16 +12,16 @@ const updateFeaturedCategoryType = async (req, res) => {
     if (!typeKey || !label) {
       return res.status(400).json({
         success: false,
-        message: 'Type key and label are required',
+        message: "Type key and label are required",
       });
     }
 
     // Validate type key
-    const validTypes = ['seasonal', 'wedding', 'education'];
+    const validTypes = ["seasonal", "wedding", "education"];
     if (!validTypes.includes(typeKey)) {
       return res.status(400).json({
         success: false,
-        message: `Invalid type key. Must be one of: ${validTypes.join(', ')}`,
+        message: `Invalid type key. Must be one of: ${validTypes.join(", ")}`,
       });
     }
 
@@ -33,7 +33,7 @@ const updateFeaturedCategoryType = async (req, res) => {
       categoryType = new FeaturedCategoryTypeModel({
         typeKey,
         label,
-        description: description || '',
+        description: description || "",
         isActive: true,
       });
     } else {
@@ -48,18 +48,17 @@ const updateFeaturedCategoryType = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      message: 'Featured category type updated successfully',
+      message: "Featured category type updated successfully",
       data: categoryType,
     });
   } catch (error) {
-    console.error('Error updating featured category type:', error);
+    console.error("Error updating featured category type:", error);
     res.status(500).json({
       success: false,
-      message: 'Failed to update featured category type',
+      message: "Failed to update featured category type",
       error: error.message,
     });
   }
 };
 
 module.exports = updateFeaturedCategoryType;
-

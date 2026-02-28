@@ -9,7 +9,7 @@ const termsAndConditionsSchema = new mongoose.Schema(
     },
     lastUpdated: {
       type: String,
-     default: Date.now,
+      default: Date.now,
     },
     sections: [
       {

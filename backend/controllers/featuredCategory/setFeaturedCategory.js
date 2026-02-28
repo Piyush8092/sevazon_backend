@@ -1,5 +1,5 @@
-const FeaturedCategoryModel = require('../../model/FeaturedCategoryModel');
-const serviceListModel = require('../../model/ServiceListModel');
+const FeaturedCategoryModel = require("../../model/FeaturedCategoryModel");
+const serviceListModel = require("../../model/ServiceListModel");
 
 /**
  * Set a featured category collection with subcategories from multiple categories
@@ -21,23 +21,23 @@ const setFeaturedCategory = async (req, res) => {
       subcategorySelections,
       startDate,
       endDate,
-      displayOrder
+      displayOrder,
     } = req.body;
 
     // Validate required fields
     if (!categoryType || !customName || !subcategorySelections) {
       return res.status(400).json({
         success: false,
-        message: 'Category type, custom name, and subcategory selections are required',
+        message: "Category type, custom name, and subcategory selections are required",
       });
     }
 
     // Validate category type
-    const validTypes = ['seasonal', 'wedding', 'education'];
+    const validTypes = ["seasonal", "wedding", "education"];
     if (!validTypes.includes(categoryType)) {
       return res.status(400).json({
         success: false,
-        message: `Invalid category type. Must be one of: ${validTypes.join(', ')}`,
+        message: `Invalid category type. Must be one of: ${validTypes.join(", ")}`,
       });
     }
 
@@ -45,7 +45,7 @@ const setFeaturedCategory = async (req, res) => {
     if (!Array.isArray(subcategorySelections) || subcategorySelections.length === 0) {
       return res.status(400).json({
         success: false,
-        message: 'At least one subcategory selection is required',
+        message: "At least one subcategory selection is required",
       });
     }
 
@@ -66,15 +66,15 @@ const setFeaturedCategory = async (req, res) => {
       }
 
       // Find matching subcategories in this category
-      const matchingSubcategories = category.subService.filter(sub =>
-        subcategoryIds.includes(sub._id.toString())
-      ).map(sub => ({
-        _id: sub._id,
-        name: sub.name,
-        image: sub.image || '',
-        parentCategoryId: category._id,
-        parentCategoryName: category.name,
-      }));
+      const matchingSubcategories = category.subService
+        .filter((sub) => subcategoryIds.includes(sub._id.toString()))
+        .map((sub) => ({
+          _id: sub._id,
+          name: sub.name,
+          image: sub.image || "",
+          parentCategoryId: category._id,
+          parentCategoryName: category.name,
+        }));
 
       selectedSubcategories.push(...matchingSubcategories);
     }
@@ -83,26 +83,23 @@ const setFeaturedCategory = async (req, res) => {
     if (selectedSubcategories.length === 0) {
       return res.status(400).json({
         success: false,
-        message: 'No valid subcategories found. Please select at least one subcategory.',
+        message: "No valid subcategories found. Please select at least one subcategory.",
       });
     }
 
     // Deactivate any existing featured category of this type
-    await FeaturedCategoryModel.updateMany(
-      { categoryType, isActive: true },
-      { isActive: false }
-    );
+    await FeaturedCategoryModel.updateMany({ categoryType, isActive: true }, { isActive: false });
 
     // Create new featured category
     const featuredCategory = new FeaturedCategoryModel({
       categoryType,
       customName: customName.trim(),
-      customDescription: customDescription?.trim() || '',
+      customDescription: customDescription?.trim() || "",
       selectedSubcategories,
       isActive: true,
       startDate: startDate || null,
       endDate: endDate || null,
-      setBy: req.user?.email || req.user?.name || 'admin',
+      setBy: req.user?.email || req.user?.name || "admin",
       displayOrder: displayOrder || 0,
     });
 
@@ -124,14 +121,13 @@ const setFeaturedCategory = async (req, res) => {
       },
     });
   } catch (error) {
-    console.error('Error setting featured category:', error);
+    console.error("Error setting featured category:", error);
     res.status(500).json({
       success: false,
-      message: 'Failed to set featured category',
+      message: "Failed to set featured category",
       error: error.message,
     });
   }
 };
 
 module.exports = setFeaturedCategory;
-

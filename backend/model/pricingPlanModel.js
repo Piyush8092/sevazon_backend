@@ -72,12 +72,12 @@ const pricingPlanSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
-  PaymentType:{
-type: String,
-enum: ['paid', 'free'],
-default: 'free',
+  PaymentType: {
+    type: String,
+    enum: ["paid", "free"],
+    default: "free",
   },
-  
+
   titleColor: {
     type: String,
     default: "#E74C3C", // Red color

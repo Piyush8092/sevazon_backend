@@ -14,10 +14,7 @@ const updateEditor = async (req, res) => {
     const UserId = req.user._id;
 
     // Authorization check FIRST
-    if (
-      ExistEditor.userId.toString() !== UserId.toString() &&
-      req.user.role !== "ADMIN"
-    ) {
+    if (ExistEditor.userId.toString() !== UserId.toString() && req.user.role !== "ADMIN") {
       return res.status(403).json({ message: "Unauthorized access" });
     }
 
@@ -30,20 +27,12 @@ const updateEditor = async (req, res) => {
 
       // If verified → make user EDITOR
       if (payload.isVerified === true) {
-        await userModel.findByIdAndUpdate(
-          ExistEditor.userId,
-          { role: "EDITOR" },
-          { new: true },
-        );
+        await userModel.findByIdAndUpdate(ExistEditor.userId, { role: "EDITOR" }, { new: true });
       }
 
       // If unverified → revert role
       if (payload.isVerified === false) {
-        await userModel.findByIdAndUpdate(
-          ExistEditor.userId,
-          { role: "USER" },
-          { new: true },
-        );
+        await userModel.findByIdAndUpdate(ExistEditor.userId, { role: "USER" }, { new: true });
       }
     }
 
@@ -57,7 +46,7 @@ const updateEditor = async (req, res) => {
       }
 
       const isAlreadyFollowing = ExistEditor.following.some(
-        (f) => f.following_Id.toString() === payload.targetEditorId,
+        (f) => f.following_Id.toString() === payload.targetEditorId
       );
 
       if (!isAlreadyFollowing) {
@@ -65,9 +54,7 @@ const updateEditor = async (req, res) => {
         await ExistEditor.save();
       }
 
-      const isAlreadyFollower = TargetEditor.followers.some(
-        (f) => f.editor_Id.toString() === id,
-      );
+      const isAlreadyFollower = TargetEditor.followers.some((f) => f.editor_Id.toString() === id);
 
       if (!isAlreadyFollower) {
         TargetEditor.followers.push({ editor_Id: id });
@@ -83,7 +70,7 @@ const updateEditor = async (req, res) => {
 
     if (payload.action === "unfollow" && payload.targetEditorId) {
       ExistEditor.following = ExistEditor.following.filter(
-        (f) => f.following_Id.toString() !== payload.targetEditorId,
+        (f) => f.following_Id.toString() !== payload.targetEditorId
       );
 
       await ExistEditor.save();
@@ -91,7 +78,7 @@ const updateEditor = async (req, res) => {
       const TargetEditor = await editorModel.findById(payload.targetEditorId);
       if (TargetEditor) {
         TargetEditor.followers = TargetEditor.followers.filter(
-          (f) => f.editor_Id.toString() !== id,
+          (f) => f.editor_Id.toString() !== id
         );
         await TargetEditor.save();
       }

@@ -1,85 +1,98 @@
-let mongoose = require('mongoose');
+let mongoose = require("mongoose");
 
-const adSchema = new mongoose.Schema({
+const adSchema = new mongoose.Schema(
+  {
     title: {
-        type: String,
-        // required: [true, 'Title is required'],
+      type: String,
+      // required: [true, 'Title is required'],
     },
     description: {
-        type: String,
-        // required: [true, 'Description is required'],
+      type: String,
+      // required: [true, 'Description is required'],
     },
     userId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'user',
-        required: [true, 'User is required'],
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "user",
+      required: [true, "User is required"],
     },
     paymentId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Payment',
-        // Payment reference - links ad to the payment record
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Payment",
+      // Payment reference - links ad to the payment record
     },
     isVerified: {
-        type: Boolean,
-        default: false
+      type: Boolean,
+      default: false,
     },
     category: {
-        type: String,
-        // required: [true, 'Category is required'],
+      type: String,
+      // required: [true, 'Category is required'],
     },
     // Ad plan type - which pricing plan the user selected
     adPlanType: {
-        type: String,
-        enum: ['banner', 'full-page', 'video-banner', 'full-page-video'],
-        default: 'banner',
-        required: [true, 'Ad plan type is required'],
+      type: String,
+      enum: ["banner", "full-page", "video-banner", "full-page-video"],
+      default: "banner",
+      required: [true, "Ad plan type is required"],
     },
     // User-controlled placement pages - where the ad should be displayed
     placementPages: {
-        type: [String],
-        enum: ['home', 'news', 'service', 'property', 'job', 'matrimony', 'vehicle', 'offer', 'editor'],
-        default: ['home']
+      type: [String],
+      enum: [
+        "home",
+        "news",
+        "service",
+        "property",
+        "job",
+        "matrimony",
+        "vehicle",
+        "offer",
+        "editor",
+      ],
+      default: ["home"],
     },
     // Legacy fields - kept for backward compatibility but no longer used for placement control
-    route:{
-        type: String,
-        //give all get route of backend as enum
-        // enum: ['service','job','/property','/get-all-news','/get-all-local-services','/get-all-vehicle','/get-all-matrimony','/get-all-editor','/get-all-offer',],
-        // required: [true, 'Route is required'],
+    route: {
+      type: String,
+      //give all get route of backend as enum
+      // enum: ['service','job','/property','/get-all-news','/get-all-local-services','/get-all-vehicle','/get-all-matrimony','/get-all-editor','/get-all-offer',],
+      // required: [true, 'Route is required'],
     },
     position: {
-        type:  Number,
-        // required: [true, 'Position is required'],
+      type: Number,
+      // required: [true, 'Position is required'],
     },
     isActive: {
-        type: Boolean,
-        default: true
+      type: Boolean,
+      default: true,
     },
     validTill: {
-        type: Date,
-        // required: [true, 'Valid till date is required'],
+      type: Date,
+      // required: [true, 'Valid till date is required'],
     },
     location: {
-        type: String,
-        // required: [true, 'Location is required'],
+      type: String,
+      // required: [true, 'Location is required'],
     },
     pincode: {
-        type: String,
-        // Location-based filtering - pincode where the ad should be displayed
+      type: String,
+      // Location-based filtering - pincode where the ad should be displayed
     },
     adImages: {
-        type: [String]
+      type: [String],
     },
     rejectionReason: {
-        type: String,
+      type: String,
     },
     status: {
-        type: String,
-        enum: ['Pending', 'Approved', 'Rejected'],
-        default: 'Pending'
-    }
-}, {timestamps: true});
+      type: String,
+      enum: ["Pending", "Approved", "Rejected"],
+      default: "Pending",
+    },
+  },
+  { timestamps: true }
+);
 
-let adModel = mongoose.model('adModel', adSchema);
+let adModel = mongoose.model("adModel", adSchema);
 
 module.exports = adModel;

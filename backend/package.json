@@ -6,6 +6,7 @@
     "start": "node index.js",
     "dev": "node index.js",
     "test": "jest",
+    "format": "prettier --write .",
     "test:fcm": "jest tests/fcmRoutes.functional.test.js",
     "test:fcm:watch": "jest tests/fcmRoutes.functional.test.js --watch",
     "test:agora": "node scripts/testAgoraService.js",
@@ -53,6 +54,7 @@
   },
   "devDependencies": {
     "jest": "^30.2.0",
+    "prettier": "^3.8.1",
     "supertest": "^7.1.4"
   },
   "jest": {

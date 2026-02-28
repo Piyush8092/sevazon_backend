@@ -1,8 +1,8 @@
-const FeaturedPostsModel = require('../../model/FeaturedPostsModel');
-const jobModel = require('../../model/jobmodel');
-const MatrimonyModel = require('../../model/Matrimony');
-const adModel = require('../../model/adModel');
-const PropertyModel = require('../../model/property');
+const FeaturedPostsModel = require("../../model/FeaturedPostsModel");
+const jobModel = require("../../model/jobmodel");
+const MatrimonyModel = require("../../model/Matrimony");
+const adModel = require("../../model/adModel");
+const PropertyModel = require("../../model/property");
 
 /**
  * Set featured posts configuration
@@ -14,32 +14,28 @@ const PropertyModel = require('../../model/property');
  */
 const setFeaturedPosts = async (req, res) => {
   try {
-    const {
-      postSelections,
-      startDate,
-      endDate,
-    } = req.body;
+    const { postSelections, startDate, endDate } = req.body;
 
     // Validate input
     if (!postSelections || !Array.isArray(postSelections)) {
       return res.status(400).json({
         success: false,
-        message: 'postSelections must be an array',
+        message: "postSelections must be an array",
       });
     }
 
     // Validate and fetch each selected post
     const validatedPosts = [];
-    const validPostTypes = ['job', 'matrimony', 'ad', 'property'];
+    const validPostTypes = ["job", "matrimony", "ad", "property"];
 
     for (let i = 0; i < postSelections.length; i++) {
       const selection = postSelections[i];
-      
+
       // Validate post type
       if (!validPostTypes.includes(selection.postType)) {
         return res.status(400).json({
           success: false,
-          message: `Invalid post type: ${selection.postType}. Must be one of: ${validPostTypes.join(', ')}`,
+          message: `Invalid post type: ${selection.postType}. Must be one of: ${validPostTypes.join(", ")}`,
         });
       }
 
@@ -57,16 +53,16 @@ const setFeaturedPosts = async (req, res) => {
 
       try {
         switch (selection.postType) {
-          case 'job':
+          case "job":
             postData = await jobModel.findById(selection.postId);
             break;
-          case 'matrimony':
+          case "matrimony":
             postData = await MatrimonyModel.findById(selection.postId);
             break;
-          case 'ad':
+          case "ad":
             postData = await adModel.findById(selection.postId);
             break;
-          case 'property':
+          case "property":
             postData = await PropertyModel.findById(selection.postId);
             break;
         }
@@ -88,7 +84,7 @@ const setFeaturedPosts = async (req, res) => {
         postType: selection.postType,
         postId: selection.postId,
         postData: {
-          title: postData.title || postData.jobTitle || postData.propertyType || 'Untitled',
+          title: postData.title || postData.jobTitle || postData.propertyType || "Untitled",
           // Store minimal data for quick reference
         },
         displayOrder: selection.displayOrder || i,
@@ -97,10 +93,7 @@ const setFeaturedPosts = async (req, res) => {
     }
 
     // Deactivate any existing featured posts configuration
-    await FeaturedPostsModel.updateMany(
-      { isActive: true },
-      { isActive: false }
-    );
+    await FeaturedPostsModel.updateMany({ isActive: true }, { isActive: false });
 
     // Create new featured posts configuration
     const featuredPosts = new FeaturedPostsModel({
@@ -108,22 +101,22 @@ const setFeaturedPosts = async (req, res) => {
       isActive: true,
       startDate: startDate || null,
       endDate: endDate || null,
-      setBy: req.user?.email || req.user?.name || 'admin',
+      setBy: req.user?.email || req.user?.name || "admin",
     });
 
     await featuredPosts.save();
 
     res.status(201).json({
       success: true,
-      message: 'Featured posts configured successfully',
+      message: "Featured posts configured successfully",
       data: {
         _id: featuredPosts._id,
         totalPosts: validatedPosts.length,
         postsByType: {
-          job: validatedPosts.filter(p => p.postType === 'job').length,
-          matrimony: validatedPosts.filter(p => p.postType === 'matrimony').length,
-          ad: validatedPosts.filter(p => p.postType === 'ad').length,
-          property: validatedPosts.filter(p => p.postType === 'property').length,
+          job: validatedPosts.filter((p) => p.postType === "job").length,
+          matrimony: validatedPosts.filter((p) => p.postType === "matrimony").length,
+          ad: validatedPosts.filter((p) => p.postType === "ad").length,
+          property: validatedPosts.filter((p) => p.postType === "property").length,
         },
         startDate: featuredPosts.startDate,
         endDate: featuredPosts.endDate,
@@ -131,14 +124,13 @@ const setFeaturedPosts = async (req, res) => {
       },
     });
   } catch (error) {
-    console.error('Error setting featured posts:', error);
+    console.error("Error setting featured posts:", error);
     res.status(500).json({
       success: false,
-      message: 'Failed to set featured posts',
+      message: "Failed to set featured posts",
       error: error.message,
     });
   }
 };
 
 module.exports = setFeaturedPosts;
-

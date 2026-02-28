@@ -11,9 +11,7 @@ const getRecommendedServices = async (req, res) => {
 
     const user = await userModel.findById(userId).lean();
     if (!user) {
-      return res
-        .status(404)
-        .json({ success: false, message: "User not found" });
+      return res.status(404).json({ success: false, message: "User not found" });
     }
 
     // ============================
@@ -105,15 +103,11 @@ const getRecommendedServices = async (req, res) => {
       }).lean();
 
       matrimony.forEach((m) => {
-        if (m.gender)
-          matrimonyGender.add(m.gender === "Male" ? "Female" : "Male");
+        if (m.gender) matrimonyGender.add(m.gender === "Male" ? "Female" : "Male");
         if (m.maritalStatus) matrimonyMarital.add(m.maritalStatus);
-        if (m.religion?.length)
-          m.religion.forEach((r) => matrimonyReligion.add(r));
-        if (m.profession?.length)
-          m.profession.forEach((p) => matrimonyProfession.add(p));
-        if (m.employmentType?.length)
-          m.employmentType.forEach((e) => matrimonyEmployment.add(e));
+        if (m.religion?.length) m.religion.forEach((r) => matrimonyReligion.add(r));
+        if (m.profession?.length) m.profession.forEach((p) => matrimonyProfession.add(p));
+        if (m.employmentType?.length) m.employmentType.forEach((e) => matrimonyEmployment.add(e));
         if (m.state?.length) m.state.forEach((s) => matrimonyState.add(s));
       });
     }
@@ -123,10 +117,7 @@ const getRecommendedServices = async (req, res) => {
     // ============================
 
     const newsActivity = await NewsPostModel.find({
-      $or: [
-        { "likes.userId": userId.toString() },
-        { "comments.userId": userId.toString() },
-      ],
+      $or: [{ "likes.userId": userId.toString() }, { "comments.userId": userId.toString() }],
     }).lean();
 
     newsActivity.forEach((n) => {

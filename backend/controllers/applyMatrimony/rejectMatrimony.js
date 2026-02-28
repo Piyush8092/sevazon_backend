@@ -1,5 +1,4 @@
-let MatrimonyModel = require('../../model/Matrimony');
-
+let MatrimonyModel = require("../../model/Matrimony");
 
 const rejectMatrimony = async (req, res) => {
   try {
@@ -8,9 +7,7 @@ const rejectMatrimony = async (req, res) => {
     const { reject } = req.body; // 👈 read from body
     const userId = req.user._id;
 
-    console.log(
-      `[rejectMatrimony] userId: ${userId}, profileId: ${id}, index: ${index}`
-    );
+    console.log(`[rejectMatrimony] userId: ${userId}, profileId: ${id}, index: ${index}`);
 
     // ✅ Validate body
     if (typeof reject !== "boolean") {
@@ -49,10 +46,7 @@ const rejectMatrimony = async (req, res) => {
     }
 
     // Verify ownership
-    if (
-      existMatrimony.userId.toString() !== userId.toString() &&
-      req.user.role !== "ADMIN"
-    ) {
+    if (existMatrimony.userId.toString() !== userId.toString() && req.user.role !== "ADMIN") {
       return res.status(403).json({
         success: false,
         message: "You cannot reject applications for this profile",
@@ -106,6 +100,3 @@ const rejectMatrimony = async (req, res) => {
   }
 };
 module.exports = { rejectMatrimony };
-
-
-

@@ -1,17 +1,17 @@
-const jobModel = require('../../model/jobmodel');
-const userModel = require('../../model/userModel');
+const jobModel = require("../../model/jobmodel");
+const userModel = require("../../model/userModel");
 
 const updateFavourit = async (req, res) => {
   try {
     const jobId = req.params.id;
     const userId = req.user._id;
     const { isFavorite } = req.body;
- 
+
     // 1️⃣ Check job existence
     const existingJob = await jobModel.findById(jobId);
     if (!existingJob) {
       return res.status(404).json({
-        message: 'Job not found',
+        message: "Job not found",
         success: false,
         error: true,
       });
@@ -21,7 +21,7 @@ const updateFavourit = async (req, res) => {
     const user = await userModel.findById(userId);
     if (!user) {
       return res.status(404).json({
-        message: 'User not found',
+        message: "User not found",
         success: false,
         error: true,
       });
@@ -36,7 +36,7 @@ const updateFavourit = async (req, res) => {
     if (isFavorite === false) {
       if (existingFavoriteIndex === -1) {
         return res.status(400).json({
-          message: 'Job is not currently in favorites',
+          message: "Job is not currently in favorites",
           success: false,
           error: true,
         });
@@ -54,7 +54,7 @@ const updateFavourit = async (req, res) => {
       }
 
       return res.status(200).json({
-        message: 'Job unfavorited successfully',
+        message: "Job unfavorited successfully",
         status: 200,
         success: true,
         error: false,
@@ -66,14 +66,14 @@ const updateFavourit = async (req, res) => {
     if (isFavorite === true) {
       if (existingFavoriteIndex !== -1) {
         return res.status(400).json({
-          message: 'Already favorited',
+          message: "Already favorited",
           success: false,
           error: true,
         });
       }
 
       // Add to job's favorite list
-      existingJob.favoriteJob.push({ userId, isFavorite: true ,jobId: jobId});
+      existingJob.favoriteJob.push({ userId, isFavorite: true, jobId: jobId });
       const result = await existingJob.save();
 
       // Add to user's bookmark list
@@ -84,7 +84,7 @@ const updateFavourit = async (req, res) => {
       }
 
       return res.status(200).json({
-        message: 'Job favorited successfully',
+        message: "Job favorited successfully",
         status: 200,
         success: true,
         error: false,
@@ -94,13 +94,13 @@ const updateFavourit = async (req, res) => {
 
     // 5️⃣ INVALID PAYLOAD
     return res.status(400).json({
-      message: 'Invalid payload: isFavorite must be true or false',
+      message: "Invalid payload: isFavorite must be true or false",
       success: false,
       error: true,
     });
   } catch (err) {
     res.status(500).json({
-      message: 'Something went wrong',
+      message: "Something went wrong",
       status: 500,
       success: false,
       error: true,

@@ -1,5 +1,5 @@
-const editorModel = require('../../model/EditorModel');
-const userModel = require('../../model/userModel');
+const editorModel = require("../../model/EditorModel");
+const userModel = require("../../model/userModel");
 
 const updateEditorVerifyStatus = async (req, res) => {
   try {
@@ -7,11 +7,11 @@ const updateEditorVerifyStatus = async (req, res) => {
     const { isVerified } = req.body;
 
     // Only ADMIN can update
-    if (req.user.role !== 'ADMIN') {
+    if (req.user.role !== "ADMIN") {
       return res.status(403).json({
-        message: 'Only admin can update editor verification status',
+        message: "Only admin can update editor verification status",
         success: false,
-        error: true
+        error: true,
       });
     }
 
@@ -19,9 +19,9 @@ const updateEditorVerifyStatus = async (req, res) => {
     const editor = await editorModel.findById(editorId);
     if (!editor) {
       return res.status(404).json({
-        message: 'Editor not found',
+        message: "Editor not found",
         success: false,
-        error: true
+        error: true,
       });
     }
 
@@ -31,36 +31,27 @@ const updateEditorVerifyStatus = async (req, res) => {
 
     // If verified true → change User role to EDITOR
     if (isVerified === true) {
-      await userModel.findByIdAndUpdate(
-        editor.userId,
-        { role: 'EDITOR' },
-        { new: true }
-      );
+      await userModel.findByIdAndUpdate(editor.userId, { role: "EDITOR" }, { new: true });
     }
 
     // Optional: If unverified → revert role to USER
     if (isVerified === false) {
-      await userModel.findByIdAndUpdate(
-        editor.userId,
-        { role: 'USER' },
-        { new: true }
-      );
+      await userModel.findByIdAndUpdate(editor.userId, { role: "USER" }, { new: true });
     }
 
     return res.json({
-      message: 'Editor verification status updated successfully',
+      message: "Editor verification status updated successfully",
       status: 200,
       data: editor,
       success: true,
-      error: false
+      error: false,
     });
-
   } catch (e) {
     return res.status(500).json({
-      message: 'Something went wrong',
+      message: "Something went wrong",
       data: e.message,
       success: false,
-      error: true
+      error: true,
     });
   }
 };

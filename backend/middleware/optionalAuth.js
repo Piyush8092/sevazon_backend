@@ -1,5 +1,5 @@
-const jwt = require('jsonwebtoken');
-const userModel = require('../model/userModel');
+const jwt = require("jsonwebtoken");
+const userModel = require("../model/userModel");
 
 /**
  * Optional authentication middleware
@@ -14,14 +14,14 @@ const optionalAuth = async (req, res, next) => {
 
     if (req.cookies && req.cookies.jwt) {
       token = req.cookies.jwt;
-    } else if (req.headers.authorization && req.headers.authorization.startsWith('Bearer ')) {
-      token = req.headers.authorization.split(' ')[1];
+    } else if (req.headers.authorization && req.headers.authorization.startsWith("Bearer ")) {
+      token = req.headers.authorization.split(" ")[1];
     } else if (req.headers.authorization) {
       token = req.headers.authorization;
     }
 
     // If no token or invalid token format, continue without authentication
-    if (!token || token === 'null' || token === 'undefined' || token.startsWith('guest_')) {
+    if (!token || token === "null" || token === "undefined" || token.startsWith("guest_")) {
       req.user = null;
       return next();
     }
@@ -30,7 +30,7 @@ const optionalAuth = async (req, res, next) => {
       // Try to decode token
       const decoded = jwt.verify(
         token,
-        process.env.SECRET_KEY || 'me333enneffiimsqoqomcngfehdj3idss'
+        process.env.SECRET_KEY || "me333enneffiimsqoqomcngfehdj3idss"
       );
 
       if (decoded && decoded.id) {
@@ -59,4 +59,3 @@ const optionalAuth = async (req, res, next) => {
 };
 
 module.exports = optionalAuth;
-

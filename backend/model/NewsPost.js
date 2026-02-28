@@ -29,9 +29,9 @@ let NewsSchame = new mongoose.Schema(
         "Startups",
         "Opinion",
         "Breaking News",
-        "Others"
+        "Others",
       ],
-      default: "Others"
+      default: "Others",
     },
     title: {
       type: String,
@@ -136,7 +136,7 @@ let NewsSchame = new mongoose.Schema(
     ],
   },
 
-  { timestamps: true },
+  { timestamps: true }
 );
 
 const NewsPostModel = mongoose.model("NewsPostModel", NewsSchame);

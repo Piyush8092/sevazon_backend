@@ -10,8 +10,7 @@ const ServiceProfile = require("../../model/createAllServiceProfileModel");
 const calculateExpiryDate = (plan, durationValue) => {
   const endDate = new Date();
 
-  const durationText =
-    plan.duration1?.toLowerCase() || plan.duration2?.toLowerCase() || "";
+  const durationText = plan.duration1?.toLowerCase() || plan.duration2?.toLowerCase() || "";
 
   if (durationText.includes("day")) {
     endDate.setDate(endDate.getDate() + durationValue);
@@ -48,12 +47,10 @@ const updateUserServiceProfiles = async (userId, plan) => {
           isPremium: serviceType === "premium",
           isFeatured: serviceType === "featured",
         },
-      },
+      }
     );
 
-    console.log(
-      `✅ Updated ${updateResult.modifiedCount} profiles to ${serviceType}`,
-    );
+    console.log(`✅ Updated ${updateResult.modifiedCount} profiles to ${serviceType}`);
     return updateResult;
   } catch (error) {
     console.error("❌ Profile update error:", error);
@@ -88,7 +85,7 @@ const verifyPayment = async (req, res) => {
     const isValid = razorpayService.verifyPaymentSignature(
       razorpayOrderId,
       razorpayPaymentId,
-      razorpaySignature,
+      razorpaySignature
     );
 
     if (!isValid) {
@@ -129,7 +126,7 @@ const verifyPayment = async (req, res) => {
         planId: plan._id,
       };
     }
-    
+
     console.log("plan category", plan.category);
 
     // Update User Active Plan

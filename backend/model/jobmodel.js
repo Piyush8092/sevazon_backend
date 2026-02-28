@@ -1,153 +1,157 @@
-let mongoose = require('mongoose');
+let mongoose = require("mongoose");
 
-const jobSchema = new mongoose.Schema({   
+const jobSchema = new mongoose.Schema(
+  {
     userId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'user',
-        required: [true, 'User is required'],
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "user",
+      required: [true, "User is required"],
     },
-   profileId:{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'ProfileModel',
-    
-   },
+    profileId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "ProfileModel",
+    },
     title: {
-        type: String,
-        required: [true, 'Title is required'],
+      type: String,
+      required: [true, "Title is required"],
     },
     yourNameBusinessInstituteFirmCompany: {
-        type: String,
-        required: [true, 'Name/Business/Institute/Firm/Company is required'],
+      type: String,
+      required: [true, "Name/Business/Institute/Firm/Company is required"],
     },
     selectCategory: {
-        type: String,
-        required: [true, 'Category is required'],
+      type: String,
+      required: [true, "Category is required"],
     },
     selectSubCategory: {
-        type: String,
-        required: [true, 'Sub-category is required'],
+      type: String,
+      required: [true, "Sub-category is required"],
     },
     subCategoryOther: {
-        type: String,
-        required: function() {
-            return this.selectSubCategory === 'Other';
-        },
+      type: String,
+      required: function () {
+        return this.selectSubCategory === "Other";
+      },
     },
     address: {
-        type: String,
-        required: [true, 'Address is required'],
+      type: String,
+      required: [true, "Address is required"],
     },
     pincode: {
-        type: String,
-        required: [true, 'Pincode is required'],
+      type: String,
+      required: [true, "Pincode is required"],
     },
     district: {
-        type: String,
-        default: null
+      type: String,
+      default: null,
     },
     city: {
-        type: String,
-        default: null
+      type: String,
+      default: null,
     },
     state: {
-        type: String,
-        default: null
+      type: String,
+      default: null,
     },
     description: {
-        type: String,
-        required: [true, 'Description is required'],
+      type: String,
+      required: [true, "Description is required"],
     },
     salaryFrom: {
-        type: Number,
-        required: [true, 'Salary from is required'],
+      type: Number,
+      required: [true, "Salary from is required"],
     },
     salaryTo: {
-        type: Number,
-        required: [true, 'Salary to is required'],
+      type: Number,
+      required: [true, "Salary to is required"],
     },
     salaryPer: {
-        type: String,
-        enum: ['Per Month', 'Per Year', 'Per Day', 'Per Hour'],
-        default: 'Per Month',
-        required: [true, 'Salary period is required'],
+      type: String,
+      enum: ["Per Month", "Per Year", "Per Day", "Per Hour"],
+      default: "Per Month",
+      required: [true, "Salary period is required"],
     },
     locationURL: {
-        type: String,
+      type: String,
     },
     requiredExperience: {
-        type: String,
-        // required: [true, 'Required experience is required'],
+      type: String,
+      // required: [true, 'Required experience is required'],
     },
     workShift: {
-        type: [String],
-        enum: ['Day Shift', 'Night Shift'],
-        required: [true, 'Work shift is required'],
+      type: [String],
+      enum: ["Day Shift", "Night Shift"],
+      required: [true, "Work shift is required"],
     },
     workMode: {
-        type: [String],
-        enum: ['On-site', 'Remote', 'Hybrid'],
-        required: [true, 'Work mode is required'],
+      type: [String],
+      enum: ["On-site", "Remote", "Hybrid"],
+      required: [true, "Work mode is required"],
     },
     workType: {
-        type: [String],
-        enum: ['Full-time', 'Part-time', 'Intern'],
-        required: [true, 'Work type is required'],
+      type: [String],
+      enum: ["Full-time", "Part-time", "Intern"],
+      required: [true, "Work type is required"],
     },
     allowCallInApp: {
-        type: Boolean,
-        default: false,
-        required: [true, 'Allow call in app preference is required'],
+      type: Boolean,
+      default: false,
+      required: [true, "Allow call in app preference is required"],
     },
     allowCallViaPhone: {
-        type: Boolean,
-        default: false,
-        required: [true, 'Allow call via phone preference is required'],
+      type: Boolean,
+      default: false,
+      required: [true, "Allow call via phone preference is required"],
     },
     phoneNumberForCalls: {
-        type: String,
-        required: function() {
-            return this.allowCallViaPhone === true;
-        },
+      type: String,
+      required: function () {
+        return this.allowCallViaPhone === true;
+      },
     },
     allowChat: {
-        type: Boolean,
-        default: false,
-        required: [true, 'Allow chat preference is required'],
+      type: Boolean,
+      default: false,
+      required: [true, "Allow chat preference is required"],
     },
-   reportAndBlock:[{
-    report:{
-       type:String,
-       required:[true,'Report is required'],
-     },
-    block:{
-      type:Boolean,
-      default:false,
-  },
-  reportAndBlockID: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref:'user',
-  }
-}],
+    reportAndBlock: [
+      {
+        report: {
+          type: String,
+          required: [true, "Report is required"],
+        },
+        block: {
+          type: Boolean,
+          default: false,
+        },
+        reportAndBlockID: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "user",
+        },
+      },
+    ],
     // Job type for premium/featured status
     jobType: {
-        type: String,
-        enum: ['premium', 'featured', 'regular'],
-        default: 'regular'
+      type: String,
+      enum: ["premium", "featured", "regular"],
+      default: "regular",
     },
     isActive: {
-        type: Boolean,
-        default: true
+      type: Boolean,
+      default: true,
     },
     isVerified: {
-        type: Boolean,
-        default: false
+      type: Boolean,
+      default: false,
     },
     isFeatured: {
-        type: Boolean,
-        default: false
-    }
-}, {timestamps: true});
+      type: Boolean,
+      default: false,
+    },
+  },
+  { timestamps: true }
+);
 
-const jobModel = mongoose.model('jobModel', jobSchema);
+const jobModel = mongoose.model("jobModel", jobSchema);
 
 module.exports = jobModel;

@@ -4,14 +4,14 @@ const ProfileModel = require("../../model/createAllServiceProfileModel");
 const createServicePlan = async (req, res) => {
   try {
     const { serviceId } = req.params;
-    const { serviceType,isSuccess } = req.body;
+    const { serviceType, isSuccess } = req.body;
     const userId = req.user._id;
 
-    if(isSuccess === false){
-        return res.status(400).json({
-            success:false,
-            message:"Payment failed. Service plan not updated."
-        })
+    if (isSuccess === false) {
+      return res.status(400).json({
+        success: false,
+        message: "Payment failed. Service plan not updated.",
+      });
     }
     // ✅ Validate serviceId
     if (!mongoose.Types.ObjectId.isValid(serviceId)) {
@@ -61,7 +61,6 @@ const createServicePlan = async (req, res) => {
         serviceType: profile.serviceType,
       },
     });
-
   } catch (error) {
     console.error("Update Service Plan Error:", error);
     return res.status(500).json({

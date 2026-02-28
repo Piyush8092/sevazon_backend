@@ -1,4 +1,4 @@
-const FeaturedCategoryModel = require('../../model/FeaturedCategoryModel');
+const FeaturedCategoryModel = require("../../model/FeaturedCategoryModel");
 
 /**
  * Clear/deactivate a featured category for a specific type
@@ -12,16 +12,16 @@ const clearFeaturedCategory = async (req, res) => {
     if (!categoryType) {
       return res.status(400).json({
         success: false,
-        message: 'Category type is required',
+        message: "Category type is required",
       });
     }
 
     // Validate category type
-    const validTypes = ['seasonal', 'wedding', 'education'];
+    const validTypes = ["seasonal", "wedding", "education"];
     if (!validTypes.includes(categoryType)) {
       return res.status(400).json({
         success: false,
-        message: `Invalid category type. Must be one of: ${validTypes.join(', ')}`,
+        message: `Invalid category type. Must be one of: ${validTypes.join(", ")}`,
       });
     }
 
@@ -39,14 +39,13 @@ const clearFeaturedCategory = async (req, res) => {
       },
     });
   } catch (error) {
-    console.error('Error clearing featured category:', error);
+    console.error("Error clearing featured category:", error);
     res.status(500).json({
       success: false,
-      message: 'Failed to clear featured category',
+      message: "Failed to clear featured category",
       error: error.message,
     });
   }
 };
 
 module.exports = clearFeaturedCategory;
-

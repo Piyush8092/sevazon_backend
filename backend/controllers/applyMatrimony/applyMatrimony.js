@@ -1,4 +1,4 @@
-let MatrimonyModel = require('../../model/Matrimony');
+let MatrimonyModel = require("../../model/Matrimony");
 
 const applyMatrimony = async (req, res) => {
   try {
