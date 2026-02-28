@@ -117,6 +117,8 @@ const verifyPayment = async (req, res) => {
     const pushFields = {
       purchasedPlans: {
         planId: plan._id,
+        startDate: payment.startDate,
+        endDate: payment.endDate,
       },
     };
 
@@ -124,6 +126,8 @@ const verifyPayment = async (req, res) => {
     if (plan.category === "ads") {
       pushFields.adPlansId = {
         planId: plan._id,
+        startDate: payment.startDate,
+        endDate: payment.endDate,
       };
     }
 

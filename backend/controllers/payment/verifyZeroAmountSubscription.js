@@ -68,6 +68,8 @@ const verifyZeroAmountSubscription = async (req, res) => {
     const pushFields = {
       purchasedPlans: {
         planId: plan._id,
+        startDate: payment.startDate,
+        endDate: payment.endDate,
       },
     };
 
@@ -75,9 +77,10 @@ const verifyZeroAmountSubscription = async (req, res) => {
     if (plan.category === "ads") {
       pushFields.adPlansId = {
         planId: plan._id,
+        startDate: payment.startDate,
+        endDate: payment.endDate,
       };
     }
-    console.log("plan category", plan.category, plan);
 
     // Update User Active Plan
     await User.findByIdAndUpdate(userId, {

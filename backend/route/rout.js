@@ -453,6 +453,7 @@ const {
   updatePricingSettings,
 } = require("../controllers/pricingSettingsController");
 const { getUserPlansAdminView } = require("../controllers/user/getUserPlansAdminView");
+const { getLoginUserPlans } = require("../controllers/user/getLoginUserPlans");
 
 cookie();
 router.get("/", (req, res) => {
@@ -1132,6 +1133,7 @@ router.get("/user/active-subscriptions", authGuard, getUserActiveSubscriptions);
 router.post("/user/check-feature-access", authGuard, checkFeatureAccess);
 router.get("/user/check-subscription/:userId", authGuard, checkUserSubscription);
 router.get("/getUserPlansAdminView/:id", authGuard, getUserPlansAdminView);
+router.get("/getLoginUserPlans", authGuard, getLoginUserPlans);
 
 router.use("/chat", chatRoutes);
 

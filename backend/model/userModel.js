@@ -53,6 +53,13 @@ const userSchema = new mongoose.Schema(
       {
         planId: { type: mongoose.Schema.Types.ObjectId, ref: "PricingPlan" },
         _id: false,
+        startDate: Date,
+        endDate: Date,
+        status: {
+          type: String,
+          enum: ["active", "expired"],
+          default: null,
+        },
       },
     ],
 
@@ -77,6 +84,13 @@ const userSchema = new mongoose.Schema(
       {
         planId: { type: mongoose.Schema.Types.ObjectId, ref: "PricingPlan" },
         _id: false,
+        startDate: Date,
+        endDate: Date,
+        status: {
+          type: String,
+          enum: ["active", "expired"],
+          default: null,
+        },
       },
     ],
     LastLoginTime: {
