@@ -56,9 +56,22 @@ const verifyZeroAmountSubscription = async (req, res) => {
     }
 
     const plan = await PricingPlan.findById(payment.planId);
-    console.log(plan);
+
     if (!plan) {
       return res.status(404).json({ message: "Plan not found" });
+    }
+
+    // Build dynamic increment object for post limits
+    let incrementField = {};
+
+    if (plan.category === "post" && plan.postLimit > 0) {
+      if (plan.planType === "job") {
+        incrementField.jobPostLimit = plan.postLimit;
+      } else if (plan.planType === "property") {
+        incrementField.propertyPostLimit = plan.postLimit;
+      } else if (plan.planType === "offer") {
+        incrementField.offerPostLimit = plan.postLimit;
+      }
     }
 
     payment.endDate = calculateExpiryDate(plan, payment.duration);
@@ -98,6 +111,7 @@ const verifyZeroAmountSubscription = async (req, res) => {
       },
       $push: pushFields,
       $addToSet: { subscriptions: payment._id },
+      $inc: incrementField,
     });
 
     if (plan.category === "service-business") {

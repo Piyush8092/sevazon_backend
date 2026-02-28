@@ -112,38 +112,34 @@ const createProperty = async (req, res) => {
     payload.fullName = req.user.name;
     payload.isVerified = false;
 
-    const newProperty = new PropertyModel(payload);
-    const result = await newProperty.save();
     let user = await userModel.findById(userId);
 
-    // Update user flags and free post counter
-    let userUpdated = false;
-    if (user.AnyServiceCreate === false) {
-      user.AnyServiceCreate = true;
-      userUpdated = true;
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
     }
 
-    // Increment free post counter if user doesn't have an active subscription
-    // Check if user has any active 'post' category subscription
-    const Payment = require("../../model/paymentModel");
-    const now = new Date();
-    const activePostSubscription = await Payment.findOne({
-      userId: userId,
-      status: "success",
-      planCategory: "post",
-      endDate: { $gt: now },
-    });
-
-    // If no active subscription, increment free post counter
-    if (!activePostSubscription) {
-      user.freePostsUsed = (user.freePostsUsed || 0) + 1;
-      userUpdated = true;
-      console.log(`📊 Free post used: ${user.freePostsUsed}/${user.freePostLimit || 10}`);
+    if (user.role !== "ADMIN") {
+      // If no paid limit
+      if (user.propertyPostLimit <= 0) {
+        return res.status(403).json({
+          message: "Post limit exceeded. Please purchase a plan.",
+        });
+      }
     }
 
-    if (userUpdated) {
-      await user.save();
+    const newProperty = new PropertyModel(payload);
+    const result = await newProperty.save();
+
+    let updateQuery = {
+      $set: { AnyServiceCreate: true },
+    };
+
+    // If user has posts → decrease limit
+    if (user.propertyPostLimit > 0 && user.role !== "ADMIN") {
+      updateQuery.$inc = { propertyPostLimit: -1 };
     }
+
+    await userModel.findByIdAndUpdate(userId, updateQuery);
 
     res.json({
       message: "Property created successfully",

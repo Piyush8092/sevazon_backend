@@ -12,6 +12,9 @@ const pricingPlanSchema = new mongoose.Schema({
     enum: ["service-business", "post", "ads"],
     trim: true,
   },
+   planType: {
+    type: String,
+  },  
   price1: {
     type: Number,
     required: [true, "Price 1 is required"],
@@ -76,6 +79,11 @@ const pricingPlanSchema = new mongoose.Schema({
     type: String,
     enum: ["paid", "free"],
     default: "free",
+  },
+
+  postLimit: {
+    type: Number,
+    default: 0,
   },
 
   titleColor: {

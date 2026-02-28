@@ -83,39 +83,34 @@ const createOffer = async (req, res) => {
 
     payload.isVerified = true;
 
+    let user = await userModel.findById(req.user._id);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    if (user.role !== "ADMIN") {
+      // If no paid limit
+      if (user.offerPostLimit <= 0) {
+        return res.status(403).json({
+          message: "Post limit exceeded. Please purchase a plan.",
+        });
+      }
+    }
+
     const newoffer = new offer(payload);
     const result = await newoffer.save();
 
-    let user = await userModel.findById(req.user._id);
+    let updateQuery = {
+      $set: { AnyServiceCreate: true },
+    };
 
-    // Update user flags and free post counter
-    let userUpdated = false;
-    if (user.AnyServiceCreate === false) {
-      user.AnyServiceCreate = true;
-      userUpdated = true;
+    // If user has posts → decrease limit
+    if (user.offerPostLimit > 0 && user.role !== "ADMIN") {
+      updateQuery.$inc = { offerPostLimit: -1 };
     }
 
-    // Increment free post counter if user doesn't have an active subscription
-    // Check if user has any active 'post' category subscription
-    const Payment = require("../model/paymentModel");
-    const now = new Date();
-    const activePostSubscription = await Payment.findOne({
-      userId: req.user._id,
-      status: "success",
-      planCategory: "post",
-      endDate: { $gt: now },
-    });
-
-    // If no active subscription, increment free post counter
-    if (!activePostSubscription) {
-      user.freePostsUsed = (user.freePostsUsed || 0) + 1;
-      userUpdated = true;
-      console.log(`📊 Free post used: ${user.freePostsUsed}/${user.freePostLimit || 10}`);
-    }
-
-    if (userUpdated) {
-      await user.save();
-    }
+    await userModel.findByIdAndUpdate(req.user._id, updateQuery);
 
     res.json({
       message: "Offer created successfully",

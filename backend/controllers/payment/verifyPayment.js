@@ -104,6 +104,19 @@ const verifyPayment = async (req, res) => {
       return res.status(404).json({ message: "Plan not found" });
     }
 
+    // Build dynamic increment object for post limits
+    let incrementField = {};
+
+    if (plan.category === "post" && plan.postLimit > 0) {
+      if (plan.planType === "job") {
+        incrementField.jobPostLimit = plan.postLimit;
+      } else if (plan.planType === "property") {
+        incrementField.propertyPostLimit = plan.postLimit;
+      } else if (plan.planType === "offer") {
+        incrementField.offerPostLimit = plan.postLimit;
+      }
+    }
+
     // Update Payment Record
     payment.status = "success";
     payment.razorpayPaymentId = razorpayPaymentId;
@@ -131,8 +144,6 @@ const verifyPayment = async (req, res) => {
       };
     }
 
-    console.log("plan category", plan.category);
-
     // Update User Active Plan
     await User.findByIdAndUpdate(userId, {
       $set: {
@@ -149,6 +160,7 @@ const verifyPayment = async (req, res) => {
       },
       $push: pushFields,
       $addToSet: { subscriptions: payment._id },
+      $inc: incrementField,
     });
 
     // ✅ Upgrade ALL service/business profiles

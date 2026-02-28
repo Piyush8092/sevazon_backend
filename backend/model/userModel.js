@@ -93,6 +93,25 @@ const userSchema = new mongoose.Schema(
         },
       },
     ],
+
+    jobPostLimit: {
+      type: Number,
+      default: 10,
+      min: 0,
+    },
+
+    propertyPostLimit: {
+      type: Number,
+      default: 10,
+      min: 0,
+    },
+
+    offerPostLimit: {
+      type: Number,
+      default: 10,
+      min: 0,
+    },
+
     LastLoginTime: {
       type: String,
       default: null,
