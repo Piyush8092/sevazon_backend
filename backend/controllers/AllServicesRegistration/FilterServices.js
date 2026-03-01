@@ -100,7 +100,7 @@ const FilterServices = async (req, res) => {
               branches: [
                 { case: { $eq: ["$serviceType", "premium"] }, then: 1 },
                 { case: { $eq: ["$serviceType", "featured"] }, then: 2 },
-                { case: { $eq: ["$serviceType", "null"] }, then: 3 },
+                { case: { $eq: ["$serviceType", null] }, then: 3 },
               ],
               default: 4,
             },

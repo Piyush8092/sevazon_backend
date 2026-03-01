@@ -26,7 +26,7 @@ const getAllServiceUser = async (req, res) => {
     let queryFilter = {};
 
     // Fetch all results without pincode filtering (we'll sort by distance instead)
-    let result = await createServiceModel.find(queryFilter);
+    let result = await createServiceModel.find(queryFilter).populate("userId", "serviceBusinessFeatures");
 
     // Sort by distance from user's pincode if provided (nearest first)
     if (pincode) {

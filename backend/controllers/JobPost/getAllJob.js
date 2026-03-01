@@ -74,7 +74,7 @@ const getAllJob = async (req, res) => {
     }
 
     // Fetch all results without filtering (we'll sort by district/distance instead)
-    let result = await jobModel.find(queryFilter);
+    let result = await jobModel.find(queryFilter).populate("userId", "postFeatures");
 
     // Sort by district-based 4-tier priority if district is provided
     if (district) {
