@@ -112,6 +112,157 @@ const userSchema = new mongoose.Schema(
       min: 0,
     },
 
+    postFeatures: {
+      job: {
+        featuredProfileBadge: {
+          isActive: { type: Boolean, default: false },
+          expiresAt: { type: Date, default: null },
+        },
+        topVisibilityInSearch: {
+          isActive: { type: Boolean, default: false },
+          expiresAt: { type: Date, default: null },
+        },
+        premiumProfileBadge: {
+          isActive: { type: Boolean, default: false },
+          expiresAt: { type: Date, default: null },
+        },
+        viewContactNumbers: {
+          isActive: { type: Boolean, default: false },
+          expiresAt: { type: Date, default: null },
+        },
+        unlimitedMessages: {
+          isActive: { type: Boolean, default: false },
+          expiresAt: { type: Date, default: null },
+        },
+      },
+
+      matrimony: {
+        featuredProfileBadge: {
+          isActive: { type: Boolean, default: false },
+          expiresAt: { type: Date, default: null },
+        },
+        topVisibilityInSearch: {
+          isActive: { type: Boolean, default: false },
+          expiresAt: { type: Date, default: null },
+        },
+        premiumProfileBadge: {
+          isActive: { type: Boolean, default: false },
+          expiresAt: { type: Date, default: null },
+        },
+        viewContactNumbers: {
+          isActive: { type: Boolean, default: false },
+          expiresAt: { type: Date, default: null },
+        },
+        unlimitedMessages: {
+          isActive: { type: Boolean, default: false },
+          expiresAt: { type: Date, default: null },
+        },
+      },
+
+      property: {
+        featuredProfileBadge: {
+          isActive: { type: Boolean, default: false },
+          expiresAt: { type: Date, default: null },
+        },
+        topVisibilityInSearch: {
+          isActive: { type: Boolean, default: false },
+          expiresAt: { type: Date, default: null },
+        },
+        premiumProfileBadge: {
+          isActive: { type: Boolean, default: false },
+          expiresAt: { type: Date, default: null },
+        },
+        viewContactNumbers: {
+          isActive: { type: Boolean, default: false },
+          expiresAt: { type: Date, default: null },
+        },
+        unlimitedMessages: {
+          isActive: { type: Boolean, default: false },
+          expiresAt: { type: Date, default: null },
+        },
+      },
+
+      offer: {
+        featuredProfileBadge: {
+          isActive: { type: Boolean, default: false },
+          expiresAt: { type: Date, default: null },
+        },
+        topVisibilityInSearch: {
+          isActive: { type: Boolean, default: false },
+          expiresAt: { type: Date, default: null },
+        },
+        premiumProfileBadge: {
+          isActive: { type: Boolean, default: false },
+          expiresAt: { type: Date, default: null },
+        },
+        viewContactNumbers: {
+          isActive: { type: Boolean, default: false },
+          expiresAt: { type: Date, default: null },
+        },
+        unlimitedMessages: {
+          isActive: { type: Boolean, default: false },
+          expiresAt: { type: Date, default: null },
+        },
+      },
+    },
+
+    serviceBusinessFeatures: {
+      featuredProfileBadge: {
+        isActive: { type: Boolean, default: false },
+        expiresAt: { type: Date, default: null },
+      },
+
+      premiumProfileBadge: {
+        isActive: { type: Boolean, default: false },
+        expiresAt: { type: Date, default: null },
+      },
+
+      topVisibilityInSearch: {
+        isActive: { type: Boolean, default: false },
+        expiresAt: { type: Date, default: null },
+      },
+
+      getMoreLeads: {
+        isActive: { type: Boolean, default: false },
+        expiresAt: { type: Date, default: null },
+      },
+
+      videoCallAccess: {
+        isActive: { type: Boolean, default: false },
+        expiresAt: { type: Date, default: null },
+      },
+
+      securePaymentSystem: {
+        isActive: { type: Boolean, default: false },
+        expiresAt: { type: Date, default: null },
+      },
+
+      profileTimeSlots: {
+        isActive: { type: Boolean, default: false },
+        expiresAt: { type: Date, default: null },
+      },
+
+      uploadMoreImages: {
+        isActive: { type: Boolean, default: false },
+        expiresAt: { type: Date, default: null },
+      },
+
+      serviceCatalogue: {
+        isActive: { type: Boolean, default: false },
+        expiresAt: { type: Date, default: null },
+      },
+
+      socialMediaLinks: {
+        isActive: { type: Boolean, default: false },
+        expiresAt: { type: Date, default: null },
+      },
+
+      websiteLink: {
+        isActive: { type: Boolean, default: false },
+        expiresAt: { type: Date, default: null },
+      },
+    },
+
     LastLoginTime: {
       type: String,
       default: null,
