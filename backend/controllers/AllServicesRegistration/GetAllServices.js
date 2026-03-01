@@ -70,7 +70,7 @@ const GetAllServices = async (req, res) => {
     let queryFilter = { userId: { $nin: [req.user._id] } };
 
     // Fetch all results without pincode filtering (we'll sort by district/distance instead)
-    let result = await createServiceModel.find(queryFilter).populate("userId", "name email phone");
+    let result = await createServiceModel.find(queryFilter).populate("userId", "name email phone serviceBusinessFeatures");
 
     // Sort by district-based 4-tier priority if district is provided
     if (district) {
