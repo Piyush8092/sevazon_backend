@@ -9,7 +9,8 @@ const ALLuserJob = async (req, res) => {
       .find()
       .skip(skip)
       .limit(limit)
-      .populate("profileId", "profileType");
+      .populate("profileId", "profileType")
+      .populate("userId", "postFeatures");
     const total = await jobModel.countDocuments();
     const totalPages = Math.ceil(total / limit);
 

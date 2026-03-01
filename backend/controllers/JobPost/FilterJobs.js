@@ -140,7 +140,7 @@ const FilterJobs = async (req, res) => {
     // Execute query with filters, pagination, and sorting
     const result = await jobModel
       .find(filter)
-      .populate("userId", "name email phone profileImage")
+      .populate("userId", "name email phone profileImage postFeatures")
       .sort(sortObj)
       .skip(skip)
       .limit(limitNum);

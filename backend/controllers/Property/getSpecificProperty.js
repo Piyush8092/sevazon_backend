@@ -3,7 +3,7 @@ let PropertyModel = require("../../model/property");
 const getSpecificqueryProperty = async (req, res) => {
   try {
     let id = req.params.id;
-    let result = await PropertyModel.findById({ _id: id });
+    let result = await PropertyModel.findById({ _id: id }).populate("userId", "name email phone postFeatures");
     if (!result) {
       res.json({ message: "No data found", status: 400, data: {}, success: false, error: true });
     }

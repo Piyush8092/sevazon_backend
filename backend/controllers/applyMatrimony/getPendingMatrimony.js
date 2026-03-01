@@ -10,7 +10,7 @@ const getPendingMatrimony = async (req, res) => {
     const result = await MatrimonyModel.find({
       $and: [{ "applyMatrimony.applyUserId": userId }, { "applyMatrimony.status": "Pending" }],
     })
-      .populate("userId", "name email phone")
+      .populate("userId", "name email phone postFeatures")
       .skip(skip)
       .limit(limit);
     const total = await MatrimonyModel.countDocuments({

@@ -11,7 +11,7 @@ const AdminJobView = async (req, res) => {
     if (req.user.role !== "ADMIN") {
       return res.status(403).json({ message: "Unauthorized access" });
     }
-    let result = await jobModel.find({ userId: id });
+    let result = await jobModel.find({ userId: id }).populate("userId", "postFeatures");
     if (!result) {
       res.json({ message: "No data found", status: 400, data: {}, success: false, error: true });
     }

@@ -8,7 +8,8 @@ const getAllPropertyUser = async (req, res) => {
     const result = await PropertyModel.find()
       .skip(skip)
       .limit(limit)
-      .populate("profileId", "profileType");
+      .populate("profileId", "profileType")
+      .populate("userId", "name email phone postFeatures");
     const total = await PropertyModel.countDocuments();
     const totalPages = Math.ceil(total / limit);
 

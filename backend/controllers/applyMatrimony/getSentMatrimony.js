@@ -11,7 +11,7 @@ const getSentMatrimony = async (req, res) => {
     const result = await MatrimonyModel.find({
       "applyMatrimony.applyUserId": userId,
     })
-      .populate("userId", "name email phone")
+      .populate("userId", "name email phone postFeatures")
       .populate("applyMatrimony.applyUserId", "name email phone")
       .skip(skip)
       .limit(limit);

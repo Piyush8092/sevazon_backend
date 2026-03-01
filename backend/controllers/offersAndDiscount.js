@@ -146,7 +146,7 @@ let getAllOfferUser = async (req, res) => {
     let page = req.query.page || 1;
     let limit = req.query.limit || 10;
     const skip = (page - 1) * limit;
-    const result = await offer.find().skip(skip).limit(limit).populate("profileId", "profileType");
+    const result = await offer.find().skip(skip).limit(limit).populate("profileId", "profileType").populate("userId", "postFeatures");;
     const total = await offer.countDocuments();
     const totalPages = Math.ceil(total / limit);
 
@@ -184,7 +184,7 @@ const GetAllOffer = async (req, res) => {
       queryFilter = { userId: { $nin: [req.user._id] } };
     }
 
-    const result = await offer.find(queryFilter).skip(skip).limit(limit);
+    const result = await offer.find(queryFilter).skip(skip).limit(limit).populate("userId", "name email phone postFeatures");
     const total = await offer.countDocuments();
     const totalPages = Math.ceil(total / limit);
 
@@ -213,7 +213,7 @@ const GetAllOffer = async (req, res) => {
 const GetSpecificOffer = async (req, res) => {
   try {
     let id = req.params.id;
-    const result = await offer.findById(id);
+    const result = await offer.findById(id).populate("userId", "postFeatures");
 
     if (!result) {
       return res.status(404).json({
@@ -453,7 +453,8 @@ const queryOffer = async (req, res) => {
       .find(searchQuery)
       .skip(skip)
       .limit(limit)
-      .populate("profileId", "profileType");
+      .populate("profileId", "profileType")
+      .populate("userId", "postFeatures");;
     const total = await offer.countDocuments(searchQuery);
     const totalPages = Math.ceil(total / limit);
 
@@ -555,7 +556,7 @@ const FilterOffer = async (req, res) => {
 
     const result = await offer
       .find(filter)
-      .populate("userId", "name email phone profileImage")
+      .populate("userId", "name email phone profileImage postFeatures")
       .sort(sortObj)
       .skip(skip)
       .limit(limitNum);
@@ -591,7 +592,7 @@ const showCreateOfferView = async (req, res) => {
     let limit = parseInt(req.query.limit) || 10;
     const skip = (page - 1) * limit;
 
-    const result = await offer.find({ userId: userId }).skip(skip).limit(limit);
+    const result = await offer.find({ userId: userId }).skip(skip).limit(limit).populate("userId", "postFeatures");
     const total = await offer.countDocuments({ userId: userId });
     const totalPages = Math.ceil(total / limit);
 
@@ -630,7 +631,7 @@ const specificOfferAdminView = async (req, res) => {
     if (req.user.role !== "ADMIN") {
       return res.status(403).json({ message: "Unauthorized access" });
     }
-    let result = await offer.find({ userId: id });
+    let result = await offer.find({ userId: id }).populate("userId", "postFeatures");
     if (!result) {
       res.json({ message: "No data found", status: 400, data: {}, success: false, error: true });
     }

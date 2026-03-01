@@ -210,7 +210,7 @@ const FilterMatrimony = async (req, res) => {
 
     // Execute query with filters, pagination, and sorting
     const result = await MatrimonyModel.find(filter)
-      .populate("userId", "name email phone profileImage")
+      .populate("userId", "name email phone profileImage postFeatures")
       .populate("applyMatrimony.applyUserId", "_id name email phone")
       .sort(sortObj)
       .skip(skip)

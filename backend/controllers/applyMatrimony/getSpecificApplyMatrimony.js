@@ -5,7 +5,7 @@ const getSpecificApplyMatrimony = async (req, res) => {
     const id = req.params.id;
     console.log(`[getSpecificApplyMatrimony] profileId: ${id}`);
     const result = await MatrimonyModel.find({ _id: id })
-      .populate("userId", "name email phone")
+      .populate("userId", "name email phone postFeatures")
       .populate("applyMatrimony.applyUserId", "name email phone");
     return res.json({
       success: true,

@@ -3,7 +3,7 @@ let jobModel = require("../../model/jobmodel");
 const getSpecificJob = async (req, res) => {
   try {
     let id = req.params.id;
-    let result = await jobModel.findById({ _id: id });
+    let result = await jobModel.findById({ _id: id }).populate("userId", "postFeatures");
     if (!result) {
       res.json({ message: "No data found", status: 400, data: {}, success: false, error: true });
     }

@@ -13,7 +13,7 @@ const getAllApplyApplication = async (req, res) => {
       userId: userId,
       "applyMatrimony.0": { $exists: true }, // Has at least one application
     })
-      .populate("userId", "name email phone")
+      .populate("userId", "name email phone postFeatures")
       .populate("applyMatrimony.applyUserId", "name email phone profileImage");
 
     if (!myProfile || !myProfile.applyMatrimony || myProfile.applyMatrimony.length === 0) {

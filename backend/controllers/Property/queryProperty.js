@@ -36,7 +36,8 @@ const queryProperty = async (req, res) => {
     const result = await PropertyModel.find(searchQuery)
       .skip(skip)
       .limit(limit)
-      .populate("profileId", "profileType");
+      .populate("profileId", "profileType")
+      .populate("userId", "name email phone postFeatures");
     const total = await PropertyModel.countDocuments(searchQuery);
     const totalPages = Math.ceil(total / limit);
 

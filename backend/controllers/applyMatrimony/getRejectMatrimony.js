@@ -9,7 +9,7 @@ const getRejectMatrimony = async (req, res) => {
     const result = await MatrimonyModel.find({
       $and: [{ "applyMatrimony.applyUserId": userId }, { "applyMatrimony.reject": true }],
     })
-      .populate("userId", "name email phone")
+      .populate("userId", "name email phone postFeatures")
       .populate("applyMatrimony.applyUserId", "name email phone")
       .skip(skip)
       .limit(limit);

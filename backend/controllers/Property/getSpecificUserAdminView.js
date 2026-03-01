@@ -10,7 +10,7 @@ const specificPropertyAdminView = async (req, res) => {
     if (req.user.role !== "ADMIN") {
       return res.status(403).json({ message: "Unauthorized access" });
     }
-    let result = await PropertyModel.find({ userId: id });
+    let result = await PropertyModel.find({ userId: id }).populate("userId", "name email phone postFeatures");
     if (!result) {
       res.json({ message: "No data found", status: 400, data: {}, success: false, error: true });
     }

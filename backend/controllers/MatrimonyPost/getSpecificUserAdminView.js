@@ -10,7 +10,7 @@ const specificMatrimonyAdminView = async (req, res) => {
     if (req.user.role !== "ADMIN") {
       return res.status(403).json({ message: "Unauthorized access" });
     }
-    let result = await MatrimonyModel.find({ userId: id });
+    let result = await MatrimonyModel.find({ userId: id }).populate("userId", "_id name email phone postFeatures");
     if (!result) {
       res.json({ message: "No data found", status: 400, data: {}, success: false, error: true });
     }
