@@ -23,8 +23,8 @@ const enablePlanFeatures = async (userId, plan, expiryDate) => {
       if (plan.category === "post" && plan.planType) {
         const type = plan.planType; // job / property / offer / matrimony
 
-        user.postFeatures[type][viewContactNumbers].isActive = true;
-        user.postFeatures[type][viewContactNumbers].expiresAt = expiryDate;
+        user.postFeatures[type].viewContactNumbers.isActive = true;
+        user.postFeatures[type].viewContactNumbers.expiresAt = expiryDate;
       }
 
       continue;

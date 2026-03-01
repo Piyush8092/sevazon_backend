@@ -25,7 +25,6 @@
   "Add Service & Business Catalogue": "serviceCatalogue",
   "Link social media profiles": "socialMediaLinks",
   "Add your business website link": "websiteLink",
-  "View up to 50 Contact numbers": "viewContactNumbers",
   "Send Unlimited Messages": "unlimitedMessages",
 };
 
