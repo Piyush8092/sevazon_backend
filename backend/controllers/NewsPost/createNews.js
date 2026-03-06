@@ -39,6 +39,25 @@ const createNews = async (req, res) => {
       return res.status(403).json({ message: "Only editors and admins can create news" });
     }
 
+    // Additional check: Verify the user has an approved editor profile
+    // (Only applies to EDITOR role, ADMIN can always post)
+    if (req.user.role === "EDITOR") {
+      const editorModel = require("../../model/EditorModel");
+      const editorProfile = await editorModel.findOne({ userId: userId });
+      
+      if (!editorProfile) {
+        return res.status(403).json({ 
+          message: "Editor profile not found. Please contact admin." 
+        });
+      }
+      
+      if (!editorProfile.isVerified) {
+        return res.status(403).json({ 
+          message: "Your editor profile is pending approval. You cannot publish news until approved by admin." 
+        });
+      }
+    }
+
     // Set user ID and default values
     payload.userId = userId;
     payload.isActive = true;

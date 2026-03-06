@@ -29,18 +29,26 @@ const updateEditorVerifyStatus = async (req, res) => {
     editor.isVerified = isVerified === true;
     await editor.save();
 
-    // If verified true → change User role to EDITOR
+    // If verified true → change User role to EDITOR (GRANT PUBLISHING PERMISSION)
     if (isVerified === true) {
-      await userModel.findByIdAndUpdate(editor.userId, { role: "EDITOR" }, { new: true });
+      await userModel.findByIdAndUpdate(
+        editor.userId, 
+        { role: "EDITOR" }, 
+        { new: true }
+      );
     }
 
-    // Optional: If unverified → revert role to USER
+    // If verified false → revert role to USER (REVOKE PUBLISHING PERMISSION)
     if (isVerified === false) {
-      await userModel.findByIdAndUpdate(editor.userId, { role: "USER" }, { new: true });
+      await userModel.findByIdAndUpdate(
+        editor.userId, 
+        { role: "USER" }, 
+        { new: true }
+      );
     }
 
     return res.json({
-      message: "Editor verification status updated successfully",
+      message: `Editor ${isVerified ? 'approved' : 'rejected'} successfully`,
       status: 200,
       data: editor,
       success: true,
@@ -49,7 +57,7 @@ const updateEditorVerifyStatus = async (req, res) => {
   } catch (e) {
     return res.status(500).json({
       message: "Something went wrong",
-      data: e.message,
+      data: [],
       success: false,
       error: true,
     });

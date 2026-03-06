@@ -1,4 +1,5 @@
 let editorModel = require("../../model/EditorModel");
+let userModel = require("../../model/userModel");
 
 const deleteEditor = async (req, res) => {
   try {
@@ -13,6 +14,13 @@ const deleteEditor = async (req, res) => {
     if (ExistEditor.userId.toString() !== userId.toString() && req.user.role !== "ADMIN") {
       return res.status(403).json({ message: "Unauthorized access" });
     }
+
+    // IMPORTANT: Remove EDITOR role from user when editor profile is deleted
+    await userModel.findByIdAndUpdate(
+      ExistEditor.userId,
+      { role: "USER" },
+      { new: true }
+    );
 
     // Remove this editor from all other editors' followers and following lists
     await editorModel.updateMany(
