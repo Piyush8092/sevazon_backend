@@ -1,6 +1,7 @@
 const agoraService = require("../../services/agoraService");
 const { validationResult } = require("express-validator");
 const notificationService = require("../../services/notificationService");
+const CallHistory = require("../../model/CallHistoryModel");
 
 /**
  * Agora Controller
@@ -491,6 +492,7 @@ class AgoraController {
   async getCallHistory(req, res) {
     try {
       const { userId } = req.params;
+      const { limit = 20 } = req.query;
       const requestingUserId = req.user?.id || req.query.requestingUserId;
 
       // Basic authorization check
@@ -503,14 +505,22 @@ class AgoraController {
 
       console.log(`📋 Getting call history for user ${userId}`);
 
+      // Get active calls from memory
       const activeCalls = agoraService.getUserActiveCalls(userId);
+
+      // Get recent call history from database
+      const recentCalls = await CallHistory.find({ userId })
+        .sort({ startTime: -1 })
+        .limit(parseInt(limit));
 
       res.status(200).json({
         success: true,
         message: "Call history retrieved successfully",
         data: {
           activeCalls,
+          recentCalls,
           totalActiveCalls: activeCalls.length,
+          totalRecentCalls: recentCalls.length,
         },
       });
     } catch (error) {
@@ -607,6 +617,182 @@ class AgoraController {
       res.status(500).json({
         success: false,
         message: "Failed to switch certificate",
+        error: error.message,
+      });
+    }
+  }
+
+  /**
+   * Save call history to database
+   * POST /api/save-call-history
+   */
+  async saveCallHistory(req, res) {
+    try {
+      const {
+        id: callId,
+        channelName,
+        contactId,
+        contactName,
+        contactAvatar,
+        contactPhone,
+        type: callType,
+        direction,
+        status,
+        startTime,
+        endTime,
+        duration,
+        agoraToken,
+        agoraUid,
+      } = req.body;
+
+      // Get user ID from authenticated user
+      const userId = req.user?._id || req.user?.userId;
+
+      if (!userId) {
+        return res.status(401).json({
+          success: false,
+          message: "User not authenticated",
+        });
+      }
+
+      // Validate required fields
+      if (!callId || !channelName || !contactId || !contactName || !callType || !direction || !status || !startTime) {
+        return res.status(400).json({
+          success: false,
+          message: "Missing required fields",
+          required: ["id", "channelName", "contactId", "contactName", "type", "direction", "status", "startTime"],
+        });
+      }
+
+      console.log(`📝 Saving call history for user ${userId}, call ${callId}`);
+
+      // Check if call history already exists
+      let callHistory = await CallHistory.findOne({ callId });
+
+      if (callHistory) {
+        // Update existing call history
+        callHistory.contactName = contactName;
+        callHistory.contactAvatar = contactAvatar || callHistory.contactAvatar;
+        callHistory.contactPhone = contactPhone || callHistory.contactPhone;
+        callHistory.status = status;
+        callHistory.endTime = endTime || callHistory.endTime;
+        callHistory.duration = duration || callHistory.duration;
+        
+        // Calculate duration if not provided but we have start and end times
+        if (!callHistory.duration && callHistory.endTime) {
+          callHistory.duration = Math.floor((new Date(callHistory.endTime) - new Date(callHistory.startTime)) / 1000);
+        }
+
+        await callHistory.save();
+
+        console.log(`✅ Updated call history for call ${callId}`);
+
+        return res.status(200).json({
+          success: true,
+          message: "Call history updated successfully",
+          data: callHistory,
+        });
+      }
+
+      // Create new call history
+      callHistory = new CallHistory({
+        callId,
+        channelName,
+        userId,
+        contactId,
+        contactName,
+        contactAvatar,
+        contactPhone,
+        callType,
+        direction,
+        status,
+        startTime: new Date(startTime),
+        endTime: endTime ? new Date(endTime) : null,
+        duration,
+        agoraData: {
+          token: agoraToken,
+          uid: agoraUid,
+        },
+      });
+
+      // Calculate duration if not provided but we have start and end times
+      if (!callHistory.duration && callHistory.endTime) {
+        callHistory.duration = Math.floor((callHistory.endTime - callHistory.startTime) / 1000);
+      }
+
+      await callHistory.save();
+
+      console.log(`✅ Saved new call history for call ${callId}`);
+
+      res.status(201).json({
+        success: true,
+        message: "Call history saved successfully",
+        data: callHistory,
+      });
+    } catch (error) {
+      console.error("❌ Error in saveCallHistory:", error);
+      res.status(500).json({
+        success: false,
+        message: "Failed to save call history",
+        error: error.message,
+      });
+    }
+  }
+
+  /**
+   * Get user's call history from database
+   * GET /api/user-call-history/:userId?limit=20&offset=0
+   */
+  async getUserCallHistory(req, res) {
+    try {
+      const { userId } = req.params;
+      const { limit = 20, offset = 0, status, callType } = req.query;
+
+      // Get requesting user ID
+      const requestingUserId = req.user?._id?.toString() || req.user?.userId?.toString();
+
+      // Basic authorization check
+      if (requestingUserId !== userId && !req.user?.isAdmin) {
+        return res.status(403).json({
+          success: false,
+          message: "Unauthorized to access this user's call history",
+        });
+      }
+
+      console.log(`📋 Getting database call history for user ${userId}`);
+
+      // Build query
+      const query = { userId };
+      if (status) query.status = status;
+      if (callType) query.callType = callType;
+
+      // Get total count
+      const total = await CallHistory.countDocuments(query);
+
+      // Get paginated results
+      const callHistory = await CallHistory.find(query)
+        .sort({ startTime: -1 }) // Most recent first
+        .limit(parseInt(limit))
+        .skip(parseInt(offset));
+
+      res.status(200).json({
+        success: true,
+        message: "Call history retrieved successfully",
+        data: {
+          calls: callHistory,
+          pagination: {
+            total,
+            limit: parseInt(limit),
+            offset: parseInt(offset),
+            hasMore: total > parseInt(offset) + callHistory.length,
+          },
+        },
+      });
+    } catch (error) {
+      console.error("❌ Error in getUserCallHistory:", error);
+      res.status(500).json({
+        success: false,
+        message: "Failed to get call history",
         error: error.message,
       });
     }

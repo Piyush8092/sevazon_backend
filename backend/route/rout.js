@@ -1083,6 +1083,57 @@ router.get(
   agoraController.getCallHistory
 );
 
+router.post(
+  "/save-call-history",
+  [
+    authGuard,
+    callAgoraLimit,
+    body("id")
+      .notEmpty()
+      .withMessage("Call ID is required"),
+    body("channelName")
+      .notEmpty()
+      .withMessage("Channel name is required"),
+    body("contactId")
+      .notEmpty()
+      .withMessage("Contact ID is required"),
+    body("contactName")
+      .notEmpty()
+      .withMessage("Contact name is required"),
+    body("type")
+      .notEmpty()
+      .withMessage("Call type is required")
+      .isIn(["voice", "video"])
+      .withMessage("Call type must be voice or video"),
+    body("direction")
+      .notEmpty()
+      .withMessage("Call direction is required")
+      .isIn(["incoming", "outgoing"])
+      .withMessage("Call direction must be incoming or outgoing"),
+    body("status")
+      .notEmpty()
+      .withMessage("Call status is required"),
+    body("startTime")
+      .notEmpty()
+      .withMessage("Start time is required"),
+  ],
+  agoraController.saveCallHistory
+);
+
+router.get(
+  "/user-call-history/:userId",
+  [
+    authGuard,
+    generalAgoraLimit,
+    param("userId")
+      .notEmpty()
+      .withMessage("User ID is required")
+      .isLength({ min: 1, max: 255 })
+      .withMessage("User ID must be between 1 and 255 characters"),
+  ],
+  agoraController.getUserCallHistory
+);
+
 router.get("/agora/status", [generalAgoraLimit], agoraController.getStatus);
 
 // Certificate management routes (admin only)

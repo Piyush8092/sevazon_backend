@@ -29,4 +29,14 @@ router.get("/call-history/:userId", authGuard, (req, res) =>
   agoraController.getCallHistory(req, res)
 );
 
+// Save call history to database
+router.post("/save-call-history", authGuard, (req, res) =>
+  agoraController.saveCallHistory(req, res)
+);
+
+// Get user's call history from database (paginated)
+router.get("/user-call-history/:userId", authGuard, (req, res) =>
+  agoraController.getUserCallHistory(req, res)
+);
+
 module.exports = router;
