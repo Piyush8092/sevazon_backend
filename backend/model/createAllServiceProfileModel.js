@@ -260,6 +260,61 @@ const profileSchema = new mongoose.Schema(
       required: [true, "User is required"],
     },
 
+    featuredProfileBadge: {
+      isActive: { type: Boolean, default: false },
+      expiresAt: { type: Date, default: null },
+    },
+
+    premiumProfileBadge: {
+      isActive: { type: Boolean, default: false },
+      expiresAt: { type: Date, default: null },
+    },
+
+    topVisibilityInSearch: {
+      isActive: { type: Boolean, default: false },
+      expiresAt: { type: Date, default: null },
+    },
+
+    getMoreLeads: {
+      isActive: { type: Boolean, default: false },
+      expiresAt: { type: Date, default: null },
+    },
+
+    videoCallAccess: {
+      isActive: { type: Boolean, default: false },
+      expiresAt: { type: Date, default: null },
+    },
+
+    securePaymentSystem: {
+      isActive: { type: Boolean, default: false },
+      expiresAt: { type: Date, default: null },
+    },
+
+    profileTimeSlots: {
+      isActive: { type: Boolean, default: false },
+      expiresAt: { type: Date, default: null },
+    },
+
+    uploadMoreImages: {
+      isActive: { type: Boolean, default: false },
+      expiresAt: { type: Date, default: null },
+    },
+
+    serviceCatalogue: {
+      isActive: { type: Boolean, default: false },
+      expiresAt: { type: Date, default: null },
+    },
+
+    socialMediaLinks: {
+      isActive: { type: Boolean, default: false },
+      expiresAt: { type: Date, default: null },
+    },
+
+    websiteLink: {
+      isActive: { type: Boolean, default: false },
+      expiresAt: { type: Date, default: null },
+    },
+
     // Status
     isActive: {
       type: Boolean,

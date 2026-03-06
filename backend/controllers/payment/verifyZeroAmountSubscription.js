@@ -90,9 +90,40 @@ const updateUserServiceProfiles = async (userId, plan) => {
   );
 };
 
+/* =====================================================
+   Helper: Update one specific User Profile (Service + Business)
+===================================================== */
+const updateUserServiceProfile = async (userId, plan, serviceProfileId, expiryDate) => {
+  try {
+    const serviceProfile = await ServiceProfile.findOne({
+      _id: serviceProfileId,
+      userId: userId,
+      isActive: true,
+    });
+
+    for (const featureName of plan.features) {
+      const mappedKey = featureKeyMap[featureName];
+      if (!mappedKey) continue;
+
+      // SERVICE BUSINESS
+      if (serviceProfile[mappedKey]) {
+        serviceProfile[mappedKey].isActive = true;
+        serviceProfile[mappedKey].expiresAt = expiryDate;
+      }
+    }
+
+    await serviceProfile.save();
+
+    console.log(`✅ Updated user profile`);
+  } catch (error) {
+    console.error("❌ Profile update error:", error);
+    throw error;
+  }
+};
+
 const verifyZeroAmountSubscription = async (req, res) => {
   try {
-    const { paymentId } = req.body;
+    const { paymentId, serviceProfileId } = req.body;
     const userId = req.user._id;
 
     const payment = await Payment.findById(paymentId);
@@ -170,6 +201,7 @@ const verifyZeroAmountSubscription = async (req, res) => {
 
     if (plan.category === "service-business") {
       await updateUserServiceProfiles(userId, plan);
+      await updateUserServiceProfile(userId, plan, serviceProfileId, payment.endDate);
     }
 
     return res.status(200).json({
