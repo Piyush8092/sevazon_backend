@@ -47,11 +47,12 @@ const createPaymentOrder = async (req, res) => {
     // Duration comes as a string (e.g., "3 months", "10 days") from pricing plan
     let amount;
     let durationNumeric; // Extract numeric value for payment record
+    const normalize = (v) => v.toString().toLowerCase().trim();
 
-    if (duration === plan.duration1) {
+    if (normalize(duration) === normalize(plan.duration1)) {
       amount = plan.price1;
       durationNumeric = extractNumericDuration(plan.duration1);
-    } else if (duration === plan.duration2) {
+    } else if (normalize(duration) === normalize(plan.duration2)) {
       amount = plan.price2;
       durationNumeric = extractNumericDuration(plan.duration2);
     } else {
