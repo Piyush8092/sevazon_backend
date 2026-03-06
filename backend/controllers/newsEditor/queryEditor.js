@@ -83,7 +83,9 @@ const queryEditors = async (req, res) => {
     res.json({
       message: "Something went wrong",
       status: 500,
-      data: e.message,
+      data: [], // Return empty array instead of error message string
+      total: 0,
+      totalPages: 0,
       success: false,
       error: true,
     });
