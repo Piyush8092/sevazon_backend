@@ -120,9 +120,11 @@ const updateUserServiceProfile = async (userId, plan, serviceProfileId, expiryDa
       isActive: true,
     });
 
+    console.log("serviceProfile:=", serviceProfile);
     for (const featureName of plan.features) {
       const mappedKey = featureKeyMap[featureName];
       if (!mappedKey) continue;
+      console.log("serviceProfile:=", mappedKey);
 
       // SERVICE BUSINESS
       if (serviceProfile[mappedKey]) {
