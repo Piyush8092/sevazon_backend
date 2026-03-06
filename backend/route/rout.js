@@ -1087,7 +1087,7 @@ router.post(
   "/save-call-history",
   [
     authGuard,
-    callAgoraLimit,
+    agoraCallLimit,
     body("id")
       .notEmpty()
       .withMessage("Call ID is required"),

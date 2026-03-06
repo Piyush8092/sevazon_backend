@@ -7,7 +7,6 @@ const CallHistorySchema = new mongoose.Schema(
       type: String,
       required: [true, "Call ID is required"],
       unique: true,
-      index: true,
     },
     
     // Channel name used in Agora
@@ -21,7 +20,6 @@ const CallHistorySchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Users",
       required: [true, "User ID is required"],
-      index: true,
     },
     
     // Contact who was called or who called
@@ -103,7 +101,6 @@ const CallHistorySchema = new mongoose.Schema(
 
 // Index for efficient queries
 CallHistorySchema.index({ userId: 1, startTime: -1 });
-CallHistorySchema.index({ callId: 1 });
 
 // Virtual for calculating duration if not provided
 CallHistorySchema.virtual("calculatedDuration").get(function () {
