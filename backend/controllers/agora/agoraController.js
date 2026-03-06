@@ -508,10 +508,15 @@ class AgoraController {
       // Get active calls from memory
       const activeCalls = agoraService.getUserActiveCalls(userId);
 
-      // Get recent call history from database
-      const recentCalls = await CallHistory.find({ userId })
-        .sort({ startTime: -1 })
-        .limit(parseInt(limit));
+      // Get recent call history from database (with error handling)
+      let recentCalls = [];
+      try {
+        recentCalls = await CallHistory.find({ userId })
+          .sort({ startTime: -1 })
+          .limit(parseInt(limit));
+      } catch (dbError) {
+        console.error("⚠️ Error fetching from database, returning active calls only:", dbError.message);
+      }
 
       res.status(200).json({
         success: true,

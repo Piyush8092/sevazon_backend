@@ -116,4 +116,5 @@ CallHistorySchema.virtual("calculatedDuration").get(function () {
   return null;
 });
 
-module.exports = mongoose.model("CallHistory", CallHistorySchema);
+// Prevent model re-registration error
+module.exports = mongoose.models.CallHistory || mongoose.model("CallHistory", CallHistorySchema);
