@@ -148,6 +148,7 @@ const CreateAllServices = async (req, res) => {
   } catch (e) {
     // Handle validation errors
     if (e.name === "ValidationError") {
+      console.log(e);
       const errors = Object.values(e.errors).map((err) => err.message);
       return res.status(400).json({
         message: "Validation failed",
