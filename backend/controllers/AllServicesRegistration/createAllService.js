@@ -126,8 +126,6 @@ const CreateAllServices = async (req, res) => {
 
     // --- Attach user info from authGuard ---
     payload.userId = req.user._id;
-    payload.email = req.user.email;
-    payload.yourName = req.user.name;
     // Note: phoneNumberForCalls is already set from payload (user can use different verified number)
 
     // --- Save profile ---
