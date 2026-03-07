@@ -118,6 +118,7 @@ const profileSchema = new mongoose.Schema(
       type: String,
       validate: {
         validator: function (v) {
+          if (!v) return true; // allow empty
           return /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(v);
         },
         message: "Please enter a valid email",
