@@ -130,6 +130,26 @@ const jobSchema = new mongoose.Schema(
         },
       },
     ],
+    featuredProfileBadge: {
+      isActive: { type: Boolean, default: false },
+      expiresAt: { type: Date, default: null },
+    },
+    topVisibilityInSearch: {
+      isActive: { type: Boolean, default: false },
+      expiresAt: { type: Date, default: null },
+    },
+    premiumProfileBadge: {
+      isActive: { type: Boolean, default: false },
+      expiresAt: { type: Date, default: null },
+    },
+    viewContactNumbers: {
+      isActive: { type: Boolean, default: false },
+      expiresAt: { type: Date, default: null },
+    },
+    unlimitedMessages: {
+      isActive: { type: Boolean, default: false },
+      expiresAt: { type: Date, default: null },
+    },
     // Job type for premium/featured status
     jobType: {
       type: String,

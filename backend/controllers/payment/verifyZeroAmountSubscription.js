@@ -3,55 +3,48 @@ const ServiceProfile = require("../../model/createAllServiceProfileModel");
 const Payment = require("../../model/paymentModel");
 const PricingPlan = require("../../model/pricingPlanModel");
 const { extractContactLimit, featureKeyMap } = require("../../utils/planFeature");
+const jobModel = require("../../model/jobmodel");
+const MatrimonyModel = require("../../model/Matrimony");
+const PropertyModel = require("../../model/property");
+const offerModel = require("../../model/OfferModel");
+
+const postModelMap = {
+  job: jobModel,
+  property: PropertyModel,
+  offer: offerModel,
+  matrimony: MatrimonyModel,
+};
 
 /* =====================================================
-   Enable Plan Features In User
+   Enable Plan Features In post
 ===================================================== */
+const enablePostFeatures = async (postId, plan, expiryDate) => {
+  const Model = postModelMap[plan.planType];
+  if (!Model) return;
 
-const enablePlanFeatures = async (userId, plan, expiryDate) => {
-  const user = await User.findById(userId);
-  if (!user) return;
-
-  if (!plan.features || !Array.isArray(plan.features)) return;
+  const post = await Model.findById(postId);
+  if (!post) return;
 
   for (const featureName of plan.features) {
     // FIRST: Check dynamic contact feature
     const contactLimit = extractContactLimit(featureName);
 
     if (contactLimit !== null) {
-      if (plan.category === "post" && plan.planType) {
-        const type = plan.planType; // job / property / offer / matrimony
-
-        user.postFeatures[type].viewContactNumbers.isActive = true;
-        user.postFeatures[type].viewContactNumbers.expiresAt = expiryDate;
-      }
+      post.viewContactNumbers.isActive = true;
+      post.viewContactNumbers.expiresAt = expiryDate;
 
       continue;
     }
-
     const mappedKey = featureKeyMap[featureName];
     if (!mappedKey) continue;
 
-    // SERVICE BUSINESS
-    if (plan.category === "service-business") {
-      if (user.serviceBusinessFeatures[mappedKey]) {
-        user.serviceBusinessFeatures[mappedKey].isActive = true;
-        user.serviceBusinessFeatures[mappedKey].expiresAt = expiryDate;
-      }
-    }
-
-    // POST CATEGORY (job / property / offer / matrimony)
-    if (plan.category === "post" && plan.planType) {
-      const type = plan.planType; // job / property / offer / matrimony
-
-      if (user.postFeatures[type] && user.postFeatures[type][mappedKey]) {
-        user.postFeatures[type][mappedKey].isActive = true;
-        user.postFeatures[type][mappedKey].expiresAt = expiryDate;
-      }
+    if (post[mappedKey]) {
+      post[mappedKey].isActive = true;
+      post[mappedKey].expiresAt = expiryDate;
     }
   }
 
-  await user.save();
+  await post.save();
 };
 
 /* Expiry Calculator */
@@ -123,7 +116,7 @@ const updateUserServiceProfile = async (userId, plan, serviceProfileId, expiryDa
 
 const verifyZeroAmountSubscription = async (req, res) => {
   try {
-    const { paymentId, serviceProfileId } = req.body;
+    const { paymentId, serviceProfileId, postId } = req.body;
     const userId = req.user._id;
 
     const payment = await Payment.findById(paymentId);
@@ -196,8 +189,8 @@ const verifyZeroAmountSubscription = async (req, res) => {
       $inc: incrementField,
     });
 
-    // Enable features in user model
-    await enablePlanFeatures(userId, plan, payment.endDate);
+    // Enable features in post model
+    await enablePostFeatures(postId, plan, payment.endDate);
 
     if (plan.category === "service-business") {
       await updateUserServiceProfiles(userId, plan);

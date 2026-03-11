@@ -84,6 +84,26 @@ const offerSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    featuredProfileBadge: {
+      isActive: { type: Boolean, default: false },
+      expiresAt: { type: Date, default: null },
+    },
+    topVisibilityInSearch: {
+      isActive: { type: Boolean, default: false },
+      expiresAt: { type: Date, default: null },
+    },
+    premiumProfileBadge: {
+      isActive: { type: Boolean, default: false },
+      expiresAt: { type: Date, default: null },
+    },
+    viewContactNumbers: {
+      isActive: { type: Boolean, default: false },
+      expiresAt: { type: Date, default: null },
+    },
+    unlimitedMessages: {
+      isActive: { type: Boolean, default: false },
+      expiresAt: { type: Date, default: null },
+    },
     reportAndBlock: [
       {
         report: {

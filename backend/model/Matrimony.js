@@ -259,6 +259,26 @@ const MatrimonySchema = new mongoose.Schema(
       default: "Hindi",
       // required: [true, 'Partner mother tongue is required'],
     },
+    featuredProfileBadge: {
+      isActive: { type: Boolean, default: false },
+      expiresAt: { type: Date, default: null },
+    },
+    topVisibilityInSearch: {
+      isActive: { type: Boolean, default: false },
+      expiresAt: { type: Date, default: null },
+    },
+    premiumProfileBadge: {
+      isActive: { type: Boolean, default: false },
+      expiresAt: { type: Date, default: null },
+    },
+    viewContactNumbers: {
+      isActive: { type: Boolean, default: false },
+      expiresAt: { type: Date, default: null },
+    },
+    unlimitedMessages: {
+      isActive: { type: Boolean, default: false },
+      expiresAt: { type: Date, default: null },
+    },
 
     // System fields
     isActive: {
