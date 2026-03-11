@@ -454,6 +454,7 @@ const {
 } = require("../controllers/pricingSettingsController");
 const { getUserPlansAdminView } = require("../controllers/user/getUserPlansAdminView");
 const { getLoginUserPlans } = require("../controllers/user/getLoginUserPlans");
+const { getUserAllPostNames } = require("../controllers/JobPost/getUserAllPostNames");
 
 cookie();
 router.get("/", (req, res) => {
@@ -631,6 +632,7 @@ router.get("/get-specific-job/:id", optionalAuth, getSpecificJob);
 router.put("/update-specific-job/:id", authGuard, updateJob);
 router.delete("/delete-specific-job/:id", authGuard, deleteJob);
 router.get("/get-all-user-job", ALLuserJob);
+router.get("/get-user-all-post-names", authGuard, getUserAllPostNames);
 router.get("/get-query-job", optionalAuth, queryJobs);
 router.get("/get-total-job-count", authGuard, getTotalJobCount);
 // Flexible job filtering API - supports multiple optional parameters
