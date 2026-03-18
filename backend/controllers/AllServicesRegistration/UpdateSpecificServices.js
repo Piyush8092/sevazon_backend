@@ -1,6 +1,11 @@
 const createServiceModel = require("../../model/createAllServiceProfileModel");
 const userModel = require("../../model/userModel");
 const VerifiedPhone = require("../../model/verifiedPhoneModel");
+const {
+  isOtherSubcategory,
+  linkRequestToProfile,
+  resolveCustomSubcategoryRequest,
+} = require("../../utils/customSubcategoryApproval");
 
 // put req for update account
 const UpdateSpecificServices = async (req, res) => {
@@ -18,6 +23,7 @@ const UpdateSpecificServices = async (req, res) => {
     let id = req.params.id;
     let userId = req.user._id;
     let payload = req.body;
+    let customRequestResult = null;
 
     // Find existing service
     let ExistUser = await createServiceModel.findById(id);
@@ -93,10 +99,54 @@ const UpdateSpecificServices = async (req, res) => {
     }
 
     // Validate sub-category other field if being updated
-    if (payload.selectSubCategory === "Other" && !payload.subCategoryOther) {
-      return res
-        .status(400)
-        .json({ message: "Sub-category other field is required when Other is selected" });
+    const selectedCategory = payload.selectCategory || ExistUser.selectCategory;
+    const selectedSubCategory =
+      payload.selectSubCategory !== undefined
+        ? payload.selectSubCategory
+        : ExistUser.selectSubCategory;
+    const otherSubCategory =
+      payload.subCategoryOther !== undefined
+        ? payload.subCategoryOther
+        : ExistUser.subCategoryOther;
+
+    if (isOtherSubcategory(selectedSubCategory) && !otherSubCategory) {
+      return res.status(400).json({
+        message: "Sub-category other field is required when Other is selected",
+      });
+    }
+
+    if (isOtherSubcategory(selectedSubCategory)) {
+      customRequestResult = await resolveCustomSubcategoryRequest({
+        categoryName: selectedCategory,
+        requestedName: otherSubCategory,
+        requesterUserId: userId,
+        profileId: ExistUser._id,
+        profileType,
+      });
+
+      if (customRequestResult.error) {
+        return res.status(400).json({ message: customRequestResult.error });
+      }
+
+      if (customRequestResult.status === "approved") {
+        payload.selectSubCategory = customRequestResult.approvedName;
+        payload.subCategoryOther = null;
+        payload.customSubCategoryApprovalStatus = "Approved";
+        payload.customSubCategoryRequestId = null;
+      } else {
+        payload.selectSubCategory = "Other";
+        payload.subCategoryOther = customRequestResult.requestedName;
+        payload.customSubCategoryApprovalStatus = "Pending";
+        payload.customSubCategoryRequestId = customRequestResult.request._id;
+      }
+    } else if (
+      payload.selectSubCategory !== undefined ||
+      payload.subCategoryOther !== undefined ||
+      payload.selectCategory !== undefined
+    ) {
+      payload.subCategoryOther = null;
+      payload.customSubCategoryApprovalStatus = "None";
+      payload.customSubCategoryRequestId = null;
     }
 
     // Validate phone number when call via phone is enabled
@@ -191,6 +241,18 @@ const UpdateSpecificServices = async (req, res) => {
       new: true,
       runValidators: true,
     });
+
+    if (
+      customRequestResult?.status === "pending" &&
+      payload.customSubCategoryRequestId
+    ) {
+      await linkRequestToProfile({
+        requestId: payload.customSubCategoryRequestId,
+        profileId: result._id,
+        requesterUserId: userId,
+        profileType,
+      });
+    }
 
     res.json({
       message: "Service updated successfully",

@@ -163,6 +163,15 @@ const { updateLocalService } = require("../controllers/localServices/updateLocal
 const { getAuthUserDetail } = require("../controllers/user/getAuthUserDetail");
 const { fixMatrimonyProfileFlag } = require("../controllers/user/fixMatrimonyProfileFlag");
 const { GetSubServiceList } = require("../controllers/CreateAllServices/GetSubServiceList");
+const {
+  getPendingCustomSubCategoryRequests,
+} = require("../controllers/CreateAllServices/getPendingCustomSubCategoryRequests");
+const {
+  approveCustomSubCategoryRequest,
+} = require("../controllers/CreateAllServices/approveCustomSubCategoryRequest");
+const {
+  rejectCustomSubCategoryRequest,
+} = require("../controllers/CreateAllServices/rejectCustomSubCategoryRequest");
 const { sendOTP } = require("../controllers/otp/sendOTP");
 const { verifyOTP } = require("../controllers/otp/verifyOTP");
 const { getOtp } = require("../controllers/otp/getOtp");
@@ -550,6 +559,21 @@ router.put("/update-specific-service-list/:id", authGuard, updateServiceListDeta
 router.delete("/delete-specific-service-list/:id", authGuard, deleteServiceListDetail);
 router.get("/get-specific-service-list/:id", GetSpecificServiceList);
 router.get("/get-sub-service-list/:id", GetSubServiceList);
+router.get(
+  "/get-pending-custom-subcategory-requests",
+  authGuard,
+  getPendingCustomSubCategoryRequests
+);
+router.put(
+  "/approve-custom-subcategory-request/:id",
+  authGuard,
+  approveCustomSubCategoryRequest
+);
+router.put(
+  "/reject-custom-subcategory-request/:id",
+  authGuard,
+  rejectCustomSubCategoryRequest
+);
 
 //get all service list catagory name  unique only and catagory wise subcatagory name
 //api is => http://localhost:3000/api/get-all-service-list-name

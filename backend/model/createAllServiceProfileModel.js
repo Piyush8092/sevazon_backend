@@ -86,6 +86,16 @@ const profileSchema = new mongoose.Schema(
         return this.selectSubCategory === "Other";
       },
     },
+    customSubCategoryRequestId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "customSubCategoryRequest",
+      default: null,
+    },
+    customSubCategoryApprovalStatus: {
+      type: String,
+      enum: ["None", "Pending", "Approved", "Rejected"],
+      default: "None",
+    },
 
     // Business/Service Details
     description: {

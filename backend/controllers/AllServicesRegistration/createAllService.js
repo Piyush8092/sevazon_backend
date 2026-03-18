@@ -1,10 +1,16 @@
 const createServiceModel = require("../../model/createAllServiceProfileModel");
 const userModel = require("../../model/userModel");
 const VerifiedPhone = require("../../model/verifiedPhoneModel");
+const {
+  isOtherSubcategory,
+  linkRequestToProfile,
+  resolveCustomSubcategoryRequest,
+} = require("../../utils/customSubcategoryApproval");
 // POST request to create account/profile
 const CreateAllServices = async (req, res) => {
   try {
     let payload = req.body;
+    let customRequestResult = null;
 
     // --- Basic required fields (common for both profiles) ---
     if (
@@ -76,10 +82,43 @@ const CreateAllServices = async (req, res) => {
     }
 
     // --- Validate "Other" sub-category ---
-    if (payload.selectSubCategory === "Other" && !payload.subCategoryOther) {
+    if (isOtherSubcategory(payload.selectSubCategory) && !payload.subCategoryOther) {
       return res.status(400).json({
         message: "Sub-category other field is required when 'Other' is selected",
       });
+    }
+
+    if (isOtherSubcategory(payload.selectSubCategory)) {
+      customRequestResult = await resolveCustomSubcategoryRequest({
+        categoryName: payload.selectCategory,
+        requestedName: payload.subCategoryOther,
+        requesterUserId: req.user._id,
+        profileType: payload.profileType,
+      });
+
+      if (customRequestResult.error) {
+        return res.status(400).json({
+          message: customRequestResult.error,
+          status: 400,
+          success: false,
+          error: true,
+        });
+      }
+
+      if (customRequestResult.status === "approved") {
+        payload.selectSubCategory = customRequestResult.approvedName;
+        payload.subCategoryOther = null;
+        payload.customSubCategoryApprovalStatus = "Approved";
+        payload.customSubCategoryRequestId = null;
+      } else {
+        payload.subCategoryOther = customRequestResult.requestedName;
+        payload.customSubCategoryApprovalStatus = "Pending";
+        payload.customSubCategoryRequestId = customRequestResult.request._id;
+      }
+    } else {
+      payload.subCategoryOther = null;
+      payload.customSubCategoryApprovalStatus = "None";
+      payload.customSubCategoryRequestId = null;
     }
 
     // --- Validate phone number when call via phone is enabled ---
@@ -131,6 +170,19 @@ const CreateAllServices = async (req, res) => {
     // --- Save profile ---
     const newService = new createServiceModel(payload);
     const result = await newService.save();
+
+    if (
+      customRequestResult?.status === "pending" &&
+      payload.customSubCategoryRequestId
+    ) {
+      await linkRequestToProfile({
+        requestId: payload.customSubCategoryRequestId,
+        profileId: result._id,
+        requesterUserId: req.user._id,
+        profileType: payload.profileType,
+      });
+    }
+
     let user = await userModel.findById(req.user._id);
     if (user.AnyServiceCreate === false) {
       user.AnyServiceCreate = true;
