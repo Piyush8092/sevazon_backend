@@ -90,10 +90,16 @@ const GetAllServices = async (req, res) => {
     const totalPages = Math.ceil(total / limit);
     result = result.slice(skip, skip + parseInt(limit));
 
+    const resultWithIsBusiness = result.map((item) => {
+      const obj = item.toObject ? item.toObject() : item;
+      obj.isBusiness = obj.profileType === "Business Profile";
+      return obj;
+    });
+
     res.json({
       message: "Services retrieved successfully",
       status: 200,
-      data: result,
+      data: resultWithIsBusiness,
       success: true,
       error: false,
       total,

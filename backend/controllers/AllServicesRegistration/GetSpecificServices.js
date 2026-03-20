@@ -17,10 +17,12 @@ const GetSpecificServices = async (req, res) => {
     if (result.profileType === "Business Profile") {
       GetID = "B" + result._id;
     }
+    const resultObj = result.toObject();
+    resultObj.isBusiness = result.profileType === "Business Profile";
     res.json({
       message: "Job created successfully",
       status: 200,
-      data: { GetID, result },
+      data: { GetID, result: resultObj },
       success: true,
       error: false,
     });

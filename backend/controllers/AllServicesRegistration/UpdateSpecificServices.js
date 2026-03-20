@@ -209,6 +209,14 @@ const UpdateSpecificServices = async (req, res) => {
       }
     }
 
+    // Validate GSTIN format if being updated (only for Business Profiles)
+    if (payload.gstin !== undefined && payload.gstin !== null && payload.gstin !== '') {
+      const gstinRegex = /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/;
+      if (!gstinRegex.test(payload.gstin)) {
+        return res.status(400).json({ message: "Please enter a valid 15-character GSTIN" });
+      }
+    }
+
     // Validate image arrays based on profile type
     if (profileType === "Service Profile") {
       if (
