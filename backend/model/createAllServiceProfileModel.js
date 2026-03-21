@@ -86,6 +86,16 @@ const profileSchema = new mongoose.Schema(
         return this.selectSubCategory === "Other";
       },
     },
+    customSubCategoryRequestId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "customSubCategoryRequest",
+      default: null,
+    },
+    customSubCategoryApprovalStatus: {
+      type: String,
+      enum: ["None", "Pending", "Approved", "Rejected"],
+      default: "None",
+    },
 
     // Business/Service Details
     description: {
@@ -252,6 +262,19 @@ const profileSchema = new mongoose.Schema(
       upiId: {
         type: String,
         default: null,
+      },
+    },
+    // User Reference
+    // GSTIN for Business profiles
+    gstin: {
+      type: String,
+      default: null,
+      validate: {
+        validator: function (v) {
+          if (!v) return true; // allow empty/null
+          return /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/.test(v);
+        },
+        message: "Please enter a valid 15-character GSTIN",
       },
     },
     // User Reference

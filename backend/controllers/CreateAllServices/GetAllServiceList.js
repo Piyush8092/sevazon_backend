@@ -2,12 +2,21 @@ const serviceListModel = require("../../model/ServiceListModel");
 
 const GetAllServiceList = async (req, res) => {
   try {
-    let page = req.query.page || 1;
-    let limit = req.query.limit || 10;
-    const skip = (page - 1) * limit;
-    const result = await serviceListModel.find().skip(skip).limit(limit).sort({ createdAt: 1 });
+    const page = Math.max(parseInt(req.query.page, 10) || 1, 1);
+    const hasLimit = req.query.limit !== undefined;
+    const limit = hasLimit ? Math.max(parseInt(req.query.limit, 10) || 10, 1) : null;
+    const skip = limit ? (page - 1) * limit : 0;
+
+    let query = serviceListModel.find().sort({ createdAt: 1 });
+
+    if (limit) {
+      query = query.skip(skip).limit(limit);
+    }
+
+    const result = await query;
     const total = await serviceListModel.countDocuments();
-    const totalPages = Math.ceil(total / limit);
+    const totalPages = limit ? Math.ceil(total / limit) : total > 0 ? 1 : 0;
+
     res.json({
       message: "Service List created successfully",
       status: 200,
@@ -15,6 +24,7 @@ const GetAllServiceList = async (req, res) => {
       success: true,
       error: false,
       total,
+      totalItems: total,
       totalPages,
     });
   } catch (e) {
