@@ -8,7 +8,8 @@ const getAllNewsUser = async (req, res) => {
     const result = await NewsPostModel.find()
       .skip(skip)
       .limit(limit)
-      .populate("userId", "name email profileImage");
+      .populate("userId", "name email profileImage")
+      .populate("NewsReport.reportAndBlockID", "name email profileImage");
     const total = await NewsPostModel.countDocuments();
     const totalPages = Math.ceil(total / limit);
 

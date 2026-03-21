@@ -48,7 +48,8 @@ const queryNews = async (req, res) => {
     const result = await NewsPostModel.find(searchQuery)
       .skip(skip)
       .limit(limit)
-      .populate("userId", "name email ");
+      .populate("userId", "name email ")
+      .populate("NewsReport.reportAndBlockID", "name email profileImage");
     const total = await NewsPostModel.countDocuments(searchQuery);
     const totalPages = Math.ceil(total / limit);
 
