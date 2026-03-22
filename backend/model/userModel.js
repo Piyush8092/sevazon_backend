@@ -376,6 +376,9 @@ const userSchema = new mongoose.Schema(
         editorId: {
           type: String,
         },
+        editorUserId: {
+          type: String,
+        },
       },
     ],
     editorFollowers: [

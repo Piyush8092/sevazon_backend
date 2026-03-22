@@ -1,5 +1,63 @@
 const FCMToken = require("../../model/fcmTokenModel");
+const User = require("../../model/userModel");
 const { isValidFCMToken } = require("../../config/firebase");
+
+/**
+ * Sync a token into the user's embedded fcmTokens array so that
+ * notificationService.sendToUser (which reads from user.fcmTokens) can always
+ * find it regardless of which registration path was used.
+ */
+async function syncToUserEmbeddedTokens(userId, token, deviceInfo) {
+  const timestamp = new Date();
+  const deviceId = deviceInfo?.deviceId;
+  const deviceType = deviceInfo?.deviceType || "android";
+
+  const user = await User.findById(userId).select("fcmTokens");
+  if (!user) return;
+
+  if (!user.fcmTokens) user.fcmTokens = [];
+
+  // Remove null / empty entries
+  user.fcmTokens = user.fcmTokens.filter((t) => t && t.token && t.token.trim() !== "");
+
+  const existingByToken = user.fcmTokens.findIndex((t) => t.token === token);
+  if (existingByToken !== -1) {
+    // Token already present – refresh timestamps
+    user.fcmTokens[existingByToken].lastUsed = timestamp;
+    user.fcmTokens[existingByToken].updatedAt = timestamp;
+    if (deviceId) user.fcmTokens[existingByToken].deviceId = deviceId;
+    user.fcmTokens[existingByToken].deviceType = deviceType;
+  } else {
+    const existingByDevice =
+      deviceId !== undefined
+        ? user.fcmTokens.findIndex((t) => t.deviceId === deviceId)
+        : -1;
+
+    if (existingByDevice !== -1) {
+      // Same device, new token – replace
+      user.fcmTokens[existingByDevice] = {
+        token,
+        deviceId,
+        deviceType,
+        addedAt: timestamp,
+        lastUsed: timestamp,
+        updatedAt: timestamp,
+      };
+    } else {
+      // Brand-new token / device
+      user.fcmTokens.push({
+        token,
+        deviceId,
+        deviceType,
+        addedAt: timestamp,
+        lastUsed: timestamp,
+        updatedAt: timestamp,
+      });
+    }
+  }
+
+  await user.save();
+}
 
 // Register or update FCM token
 const registerToken = async (req, res) => {
@@ -72,6 +130,7 @@ const registerToken = async (req, res) => {
         existingToken.isActive = true;
         existingToken.lastUsed = new Date();
         await existingToken.save();
+        await syncToUserEmbeddedTokens(userId, token, deviceInfo);
 
         // Get total active tokens for this user
         const totalTokens = await FCMToken.countDocuments({ userId, isActive: true });
@@ -107,6 +166,7 @@ const registerToken = async (req, res) => {
       existingDeviceToken.deviceInfo = deviceInfo;
       existingDeviceToken.lastUsed = new Date();
       await existingDeviceToken.save();
+      await syncToUserEmbeddedTokens(userId, token, deviceInfo);
 
       // Get total active tokens for this user
       const totalTokens = await FCMToken.countDocuments({ userId, isActive: true });
@@ -131,6 +191,7 @@ const registerToken = async (req, res) => {
     });
 
     await newToken.save();
+    await syncToUserEmbeddedTokens(userId, token, deviceInfo);
 
     // Get total active tokens for this user
     const totalTokens = await FCMToken.countDocuments({ userId, isActive: true });

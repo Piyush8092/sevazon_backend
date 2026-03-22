@@ -125,19 +125,50 @@ class NotificationService {
 
       console.log(`✅ User found: ${user.name || "N/A"} (${user.email || user.phone || "N/A"})`);
 
-      // Get valid tokens from user's fcmTokens array
+      // Get valid tokens – merge from embedded user.fcmTokens AND FCMToken collection
       let tokens = [];
       let tokenDetails = [];
+      const seenTokens = new Set();
+
+      // 1. Embedded tokens stored directly on the user document (added during login)
       if (user.fcmTokens && Array.isArray(user.fcmTokens)) {
-        // Filter out null, undefined, or empty tokens
-        const validTokens = user.fcmTokens.filter((t) => t && t.token && t.token.trim() !== "");
-        tokens = validTokens.map((t) => t.token);
-        tokenDetails = validTokens.map((t) => ({
-          token: t.token,
-          deviceId: t.deviceId,
-          deviceType: t.deviceType,
-          lastUsed: t.lastUsed,
-        }));
+        const validEmbedded = user.fcmTokens.filter((t) => t && t.token && t.token.trim() !== "");
+        for (const t of validEmbedded) {
+          if (!seenTokens.has(t.token)) {
+            seenTokens.add(t.token);
+            tokens.push(t.token);
+            tokenDetails.push({
+              token: t.token,
+              deviceId: t.deviceId,
+              deviceType: t.deviceType,
+              lastUsed: t.lastUsed,
+              fcmTokenId: null,
+            });
+          }
+        }
+      }
+
+      // 2. Tokens registered via /fcm/register endpoint (stored in FCMToken collection)
+      try {
+        const collectionTokens = await FCMToken.findActiveTokensForUser(userId);
+        for (const ct of collectionTokens) {
+          if (!seenTokens.has(ct.token)) {
+            seenTokens.add(ct.token);
+            tokens.push(ct.token);
+            tokenDetails.push({
+              token: ct.token,
+              deviceId: ct.deviceInfo?.deviceId,
+              deviceType: ct.deviceInfo?.deviceType,
+              lastUsed: ct.lastUsed,
+              fcmTokenId: ct._id,
+            });
+          }
+        }
+      } catch (mergeErr) {
+        console.warn(
+          `⚠️ Could not merge FCMToken collection for user ${userId}:`,
+          mergeErr.message
+        );
       }
 
       console.log(`📊 Tokens available: ${tokens.length}`);
@@ -165,6 +196,7 @@ class NotificationService {
       const results = [];
       const batchId = uuidv4();
       const invalidTokens = [];
+      let failureCount = 0;
 
       for (let i = 0; i < tokens.length; i++) {
         const token = tokens[i];
@@ -175,7 +207,7 @@ class NotificationService {
         const result = await this.sendToToken(token, title, body, data, {
           ...options,
           userId,
-          fcmTokenId: null, // No separate token document ID
+          fcmTokenId: tokenDetail.fcmTokenId || null,
           batchId,
           deviceId: tokenDetail.deviceId,
           deviceType: tokenDetail.deviceType,
@@ -186,42 +218,53 @@ class NotificationService {
         if (result.success) {
           console.log(`   ✅ Sent successfully to ${tokenDetail.deviceType || "unknown"} device`);
         } else {
+          failureCount += 1;
           console.error(`   ❌ Failed to send to ${tokenDetail.deviceType || "unknown"} device`);
           console.error(`      Error: ${result.error}`);
+          if (result.code) {
+            console.error(`      Code: ${result.code}`);
+          }
 
           // Check if token is invalid
-          if (
-            result.error &&
-            (result.error.includes("invalid-registration-token") ||
-              result.error.includes("registration-token-not-registered"))
-          ) {
+          if (this.isInvalidTokenError({ code: result.code, message: result.error })) {
             console.error(`   🗑️ Token invalid → marking for removal`);
             invalidTokens.push(token);
           }
         }
       }
 
-      // Remove invalid tokens from user document
+      // Remove invalid tokens from both the embedded user array and the FCMToken collection
       if (invalidTokens.length > 0) {
         console.log(`🗑️ Removing ${invalidTokens.length} invalid token(s) from user ${userId}`);
         try {
+          // 1. Remove from user.fcmTokens embedded array
           await User.findByIdAndUpdate(userId, {
             $pull: { fcmTokens: { token: { $in: invalidTokens } } },
           });
-          console.log(`   ✅ Invalid tokens removed successfully`);
-        } catch (error) {
-          console.error(`   ❌ Failed to remove invalid tokens:`, error.message);
+          // 2. Deactivate in FCMToken collection (registered via /fcm/register)
+          await FCMToken.updateMany(
+            { token: { $in: invalidTokens } },
+            { $set: { isActive: false } }
+          );
+          console.log(
+            `   ✅ Invalid tokens removed from embedded array and FCMToken collection`
+          );
+        } catch (removeErr) {
+          console.error(`   ❌ Failed to remove invalid tokens:`, removeErr.message);
         }
       }
 
       const successCount = results.filter((r) => r.success).length;
-      console.log(`📊 Notification batch complete: ${successCount}/${tokens.length} successful`);
+      console.log(
+        `📊 Notification batch complete: ${successCount} success, ${failureCount} failed, ${invalidTokens.length} invalid removed (total ${tokens.length})`
+      );
 
       return {
         success: successCount > 0,
         results,
         totalTokens: tokens.length,
         successCount: successCount,
+        failureCount,
         invalidTokensRemoved: invalidTokens.length,
       };
     } catch (error) {
@@ -301,10 +344,10 @@ class NotificationService {
             await tokenDoc.updateDeliveryStats(false);
           }
 
-          // Handle invalid token errors
-          if (this.isInvalidTokenError(error)) {
+          // Handle invalid token errors (guard against null tokenDoc)
+          if (this.isInvalidTokenError(error) && tokenDoc) {
             await tokenDoc.deactivate();
-            console.log(`Deactivated invalid FCM token: ${token}`);
+            console.log(`🗑️ Deactivated invalid FCM token in collection: ${token.substring(0, 30)}...`);
           }
         } catch (updateError) {
           console.error("Error updating failure record:", updateError);
@@ -361,11 +404,23 @@ class NotificationService {
 
   // Check if error indicates invalid token
   isInvalidTokenError(error) {
+    const errorCode = error?.code || "";
+    const errorMessage = (error?.message || error?.error || "").toString().toLowerCase();
+
     const invalidTokenCodes = [
       "messaging/invalid-registration-token",
       "messaging/registration-token-not-registered",
     ];
-    return invalidTokenCodes.includes(error.code);
+
+    if (invalidTokenCodes.includes(errorCode)) {
+      return true;
+    }
+
+    return (
+      errorMessage.includes("registration-token-not-registered") ||
+      errorMessage.includes("invalid-registration-token") ||
+      errorMessage.includes("requested entity was not found")
+    );
   }
 
   // Schedule notification for later delivery

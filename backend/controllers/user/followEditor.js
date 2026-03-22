@@ -10,7 +10,10 @@ const followEditor = async (req, res) => {
     let userId = req.user._id; // Current logged-in user
     let { editorId, action } = req.body; // editorId to follow/unfollow, action: 'follow' or 'unfollow'
 
-    if (!editorId) {
+    const userIdString = userId?.toString();
+    const editorIdString = editorId?.toString();
+
+    if (!editorIdString) {
       return res.status(400).json({
         message: "Editor ID is required",
         status: 400,
@@ -29,7 +32,7 @@ const followEditor = async (req, res) => {
     }
 
     // Check if editor exists
-    let editor = await editorModel.findById(editorId);
+    let editor = await editorModel.findById(editorIdString);
     if (!editor) {
       return res.status(404).json({
         message: "Editor not found",
@@ -52,7 +55,9 @@ const followEditor = async (req, res) => {
 
     if (action === "follow") {
       // Check if already following
-      const isAlreadyFollowing = user.followingEditors.some((f) => f.editorId === editorId);
+      const isAlreadyFollowing = user.followingEditors.some(
+        (f) => f.editorId?.toString() === editorIdString
+      );
 
       if (isAlreadyFollowing) {
         return res.json({
@@ -68,15 +73,22 @@ const followEditor = async (req, res) => {
       }
 
       // Add editor to user's following list
-      user.followingEditors.push({ editorId: editorId });
-      await user.save();
+      if (!isAlreadyFollowing) {
+        user.followingEditors.push({
+          editorId: editorIdString,
+          editorUserId: editor.userId?.toString(),
+        });
+      }
 
       // Add user to editor's followers list
-      const isAlreadyInFollowers = editor.followers.some((f) => f.editor_Id === userId.toString());
+      const isAlreadyInFollowers = editor.followers.some(
+        (f) => f.editor_Id?.toString() === userIdString
+      );
       if (!isAlreadyInFollowers) {
-        editor.followers.push({ editor_Id: userId.toString() });
-        await editor.save();
+        editor.followers.push({ editor_Id: userIdString });
       }
+
+      await Promise.all([user.save(), editor.save()]);
 
       return res.json({
         message: "Successfully followed editor",
@@ -91,12 +103,16 @@ const followEditor = async (req, res) => {
       });
     } else if (action === "unfollow") {
       // Remove editor from user's following list
-      user.followingEditors = user.followingEditors.filter((f) => f.editorId !== editorId);
-      await user.save();
+      user.followingEditors = user.followingEditors.filter(
+        (f) => f.editorId?.toString() !== editorIdString
+      );
 
       // Remove user from editor's followers list
-      editor.followers = editor.followers.filter((f) => f.editor_Id !== userId.toString());
-      await editor.save();
+      editor.followers = editor.followers.filter(
+        (f) => f.editor_Id?.toString() !== userIdString
+      );
+
+      await Promise.all([user.save(), editor.save()]);
 
       return res.json({
         message: "Successfully unfollowed editor",

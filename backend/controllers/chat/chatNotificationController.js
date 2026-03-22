@@ -23,10 +23,10 @@ const sendMessageNotification = async (req, res) => {
     console.log("   Message ID:", messageId);
 
     // Validate required fields
-    if (!recipientId || !senderName || !messageText || !conversationId) {
+    if (!recipientId || !messageText || !conversationId) {
       console.error("❌ Missing required fields for chat notification");
       return res.status(400).json({
-        message: "recipientId, senderName, messageText, and conversationId are required",
+        message: "recipientId, messageText, and conversationId are required",
         status: 400,
         success: false,
         error: true,
@@ -47,6 +47,11 @@ const sendMessageNotification = async (req, res) => {
     // Get sender ID from authenticated user
     const senderId = req.user._id;
     console.log("   Sender ID:", senderId);
+
+    const sender = await User.findById(senderId).select("name").lean();
+    const resolvedSenderName =
+      sender?.name || req.user?.name || senderName || "Unknown User";
+    console.log("   Resolved Sender Name:", resolvedSenderName);
 
     // Don't send notification to self
     if (recipientId.toString() === senderId.toString()) {
@@ -90,14 +95,14 @@ const sendMessageNotification = async (req, res) => {
     }
 
     // Prepare notification data
-    const title = senderName;
+    const title = resolvedSenderName;
     const body = messageText.length > 100 ? messageText.substring(0, 100) + "..." : messageText;
 
     const data = {
       type: "message",
       conversationId,
       senderId: senderId.toString(),
-      senderName,
+      senderName: resolvedSenderName,
       messageId: messageId || "",
       timestamp: new Date().toISOString(),
     };
