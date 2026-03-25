@@ -1,6 +1,9 @@
 let MatrimonyModel = require("../../model/Matrimony");
 let userModel = require("../../model/userModel");
 const VerifiedPhone = require("../../model/verifiedPhoneModel");
+
+const DEFAULT_MATRIMONY_IMAGE = "https://i0.wp.com/bozemanhealth.org/wp-content/uploads/2025/01/user-2-blank-4.jpg?resize=300%2C397&ssl=1";
+
 const createMatrimony = async (req, res) => {
   try {
     let payload = req.body;
@@ -173,6 +176,19 @@ const createMatrimony = async (req, res) => {
           `✅ Using registered phone ${registeredPhone} as contact number - no verification needed`
         );
       }
+    }
+
+    // Normalize to array
+    if (!Array.isArray(payload.images)) {
+      payload.images = payload.images ? [payload.images] : [];
+    }
+
+    // Remove invalid values
+    payload.images = payload.images.filter(Boolean);
+
+    // Add default image if empty
+    if (payload.images.length === 0) {
+      payload.images = [DEFAULT_MATRIMONY_IMAGE];
     }
 
     const newMatrimony = new MatrimonyModel(payload);

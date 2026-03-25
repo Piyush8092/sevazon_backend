@@ -2,6 +2,8 @@ const offer = require("../model/OfferModel");
 const userModel = require("../model/userModel");
 const VerifiedPhone = require("../model/verifiedPhoneModel");
 
+const DEFAULT_OFFER_IMAGE = "https://banner2.cleanpng.com/20231114/hjr/transparent-white-background-five-red-offer-tags-floating-in-mid-1711019545062.webp";
+
 // create offer
 const createOffer = async (req, res) => {
   try {
@@ -70,13 +72,26 @@ const createOffer = async (req, res) => {
       payload.phoneNumberForCalls = null;
     }
 
-    // Validate images array
-    // Note: offerDiscountImages can be either base64 encoded strings or Firebase Storage URLs
-    if (
-      payload.offerDiscountImages &&
-      (!Array.isArray(payload.offerDiscountImages) || payload.offerDiscountImages.length > 2)
-    ) {
-      return res.status(400).json({ message: "Maximum 2 offer discount images are allowed" });
+    // Normalize to array
+    if (!Array.isArray(payload.offerDiscountImages)) {
+      payload.offerDiscountImages = payload.offerDiscountImages
+        ? [payload.offerDiscountImages]
+        : [];
+    }
+
+    // Remove invalid values (null, undefined, "")
+    payload.offerDiscountImages = payload.offerDiscountImages.filter(Boolean);
+
+    // Add default image if empty
+    if (payload.offerDiscountImages.length === 0) {
+      payload.offerDiscountImages = [DEFAULT_OFFER_IMAGE];
+    }
+
+    // Limit max images
+    if (payload.offerDiscountImages.length > 2) {
+      return res.status(400).json({
+        message: "Maximum 2 offer discount images are allowed",
+      });
     }
 
     payload.userId = req.user._id;
@@ -146,7 +161,12 @@ let getAllOfferUser = async (req, res) => {
     let page = req.query.page || 1;
     let limit = req.query.limit || 10;
     const skip = (page - 1) * limit;
-    const result = await offer.find().skip(skip).limit(limit).populate("profileId", "profileType").populate("userId", "postFeatures");;
+    const result = await offer
+      .find()
+      .skip(skip)
+      .limit(limit)
+      .populate("profileId", "profileType")
+      .populate("userId", "postFeatures");
     const total = await offer.countDocuments();
     const totalPages = Math.ceil(total / limit);
 
@@ -184,7 +204,11 @@ const GetAllOffer = async (req, res) => {
       queryFilter = { userId: { $nin: [req.user._id] } };
     }
 
-    const result = await offer.find(queryFilter).skip(skip).limit(limit).populate("userId", "name email phone postFeatures");
+    const result = await offer
+      .find(queryFilter)
+      .skip(skip)
+      .limit(limit)
+      .populate("userId", "name email phone postFeatures");
     const total = await offer.countDocuments();
     const totalPages = Math.ceil(total / limit);
 
@@ -454,7 +478,7 @@ const queryOffer = async (req, res) => {
       .skip(skip)
       .limit(limit)
       .populate("profileId", "profileType")
-      .populate("userId", "postFeatures");;
+      .populate("userId", "postFeatures");
     const total = await offer.countDocuments(searchQuery);
     const totalPages = Math.ceil(total / limit);
 
@@ -592,7 +616,11 @@ const showCreateOfferView = async (req, res) => {
     let limit = parseInt(req.query.limit) || 10;
     const skip = (page - 1) * limit;
 
-    const result = await offer.find({ userId: userId }).skip(skip).limit(limit).populate("userId", "postFeatures");
+    const result = await offer
+      .find({ userId: userId })
+      .skip(skip)
+      .limit(limit)
+      .populate("userId", "postFeatures");
     const total = await offer.countDocuments({ userId: userId });
     const totalPages = Math.ceil(total / limit);
 

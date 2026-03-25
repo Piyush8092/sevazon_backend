@@ -1,6 +1,8 @@
 let PropertyModel = require("../../model/property");
 let userModel = require("../../model/userModel");
 
+const DEFAULT_PROPERTY_IMAGE = "https://psdrealtors.com/assets/site/images/no-images.png";
+
 const createProperty = async (req, res) => {
   try {
     let payload = req.body;
@@ -36,11 +38,16 @@ const createProperty = async (req, res) => {
         .json({ message: "BHK is required for residential properties (Flat, House, Apartment)" });
     }
 
-    // Validate array fields
-    // Note: propertyImages can be either base64 encoded strings or Firebase Storage URLs
-    if (!Array.isArray(payload.propertyImages) || payload.propertyImages.length === 0) {
-      return res.status(400).json({ message: "At least one property image is required" });
+    // Ensure propertyImages is an array
+    if (!Array.isArray(payload.propertyImages)) {
+      payload.propertyImages = payload.propertyImages ? [payload.propertyImages] : [];
     }
+    // If empty → add default image
+    if (payload.propertyImages.length === 0) {
+      payload.propertyImages = [DEFAULT_PROPERTY_IMAGE];
+    }
+
+    // Limit max images
     if (payload.propertyImages.length > 6) {
       return res.status(400).json({ message: "Maximum 6 images are allowed" });
     }
