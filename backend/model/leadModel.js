@@ -18,6 +18,19 @@ const leadSchema = new mongoose.Schema({
     type: String,
     default: "",
   },
+  latitude: {
+    type: Number,
+    default: null,
+  },
+
+  longitude: {
+    type: Number,
+    default: null,
+  },
+  location: {
+    type: String,
+    default: "",
+  },
 });
 
 const leadModel = mongoose.model("leadModel", leadSchema);

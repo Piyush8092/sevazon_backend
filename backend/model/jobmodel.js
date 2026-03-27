@@ -53,6 +53,15 @@ const jobSchema = new mongoose.Schema(
       type: String,
       default: null,
     },
+    latitude: {
+      type: Number,
+      default: null,
+    },
+
+    longitude: {
+      type: Number,
+      default: null,
+    },
     description: {
       type: String,
       required: [true, "Description is required"],

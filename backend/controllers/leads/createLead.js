@@ -17,6 +17,9 @@ const createLead = async (req, res) => {
       serviceRequire: payload.serviceRequire,
       serviceid: payload.serviceid || "",
       businessid: payload.businessid || "",
+      location: payload.location,
+      latitude: payload.latitude || null,
+      longitude: payload.longitude || null,
     };
 
     console.log("DEBUG: Creating lead with:", leadData);
