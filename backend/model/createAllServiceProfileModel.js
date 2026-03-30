@@ -70,6 +70,15 @@ const profileSchema = new mongoose.Schema(
       type: String,
       required: false, // Optional field
     },
+    latitude: {
+      type: Number,
+      default: null,
+    },
+
+    longitude: {
+      type: Number,
+      default: null,
+    },
 
     // Category Information
     selectCategory: {
