@@ -170,15 +170,6 @@ const profileSchema = new mongoose.Schema(
     // Media
     workServiceImages: {
       type: [String],
-      required: function () {
-        return this.profileType === "Service Profile";
-      },
-      validate: {
-        validator: function (v) {
-          return this.profileType !== "Service Profile" || v.length > 0;
-        },
-        message: "Work/Service images are required for Service Profile",
-      },
     },
     timeSlot: {
       type: [String],
@@ -199,15 +190,6 @@ const profileSchema = new mongoose.Schema(
           },
         },
       ],
-      required: function () {
-        return this.profileType === "Business Profile";
-      },
-      validate: {
-        validator: function (v) {
-          return this.profileType !== "Business Profile" || (v && v.length > 0);
-        },
-        message: "Work/Business images are required for Business Profile",
-      },
     },
 
     likes: [

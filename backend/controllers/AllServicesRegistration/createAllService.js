@@ -54,13 +54,7 @@ const CreateAllServices = async (req, res) => {
       // Experience is optional - convert empty to null
       if (!payload.experience || payload.experience.trim() === "") {
         payload.experience = null;
-      }
-      // Note: workServiceImages can be either base64 encoded strings or Firebase Storage URLs
-      if (!payload.workServiceImages || payload.workServiceImages.length === 0) {
-        return res
-          .status(400)
-          .json({ message: "Work/Service images are required for Service Profile" });
-      }
+      }      
     }
 
     if (payload.profileType === "Business Profile") {
@@ -72,14 +66,6 @@ const CreateAllServices = async (req, res) => {
           .status(400)
           .json({ message: "Business summary is required for Business Profile" });
       }
-
-      // Note: catalogImages can be either base64 encoded strings or Firebase Storage URLs
-      if (!payload.catalogImages || payload.catalogImages.length === 0) {
-        return res
-          .status(400)
-          .json({ message: "Catalog images are required for Business Profile" });
-      }
-    }
 
     // --- Validate "Other" sub-category ---
     if (isOtherSubcategory(payload.selectSubCategory) && !payload.subCategoryOther) {

@@ -70,9 +70,7 @@ const UpdateSpecificServices = async (req, res) => {
           !payload.businessName ||
           !payload.businessSummary ||
           !payload.establishedInYear ||
-          !payload.timing ||
-          !payload.catalogImages ||
-          payload.catalogImages.length === 0
+          !payload.timing
         ) {
           return res
             .status(400)
@@ -83,11 +81,7 @@ const UpdateSpecificServices = async (req, res) => {
       } else if (profileType === "Service Profile") {
         if (
           !payload.description ||
-          !payload.experience ||
-          !payload.workServiceImages ||
-          payload.workServiceImages.length === 0 ||
-          !payload.serviceImages ||
-          payload.serviceImages.length === 0
+          !payload.experience
         ) {
           return res
             .status(400)
@@ -214,33 +208,6 @@ const UpdateSpecificServices = async (req, res) => {
       const gstinRegex = /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/;
       if (!gstinRegex.test(payload.gstin)) {
         return res.status(400).json({ message: "Please enter a valid 15-character GSTIN" });
-      }
-    }
-
-    // Validate image arrays based on profile type
-    if (profileType === "Service Profile") {
-      if (
-        payload.workServiceImages &&
-        (!Array.isArray(payload.workServiceImages) || payload.workServiceImages.length === 0)
-      ) {
-        return res
-          .status(400)
-          .json({ message: "Work service images are required for Service Profile" });
-      }
-      if (
-        payload.serviceImages &&
-        (!Array.isArray(payload.serviceImages) || payload.serviceImages.length === 0)
-      ) {
-        return res.status(400).json({ message: "Service images are required for Service Profile" });
-      }
-    } else if (profileType === "Business Profile") {
-      if (
-        payload.catalogImages &&
-        (!Array.isArray(payload.catalogImages) || payload.catalogImages.length === 0)
-      ) {
-        return res
-          .status(400)
-          .json({ message: "Catalog images are required for Business Profile" });
       }
     }
 
