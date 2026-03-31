@@ -54,7 +54,7 @@ const CreateAllServices = async (req, res) => {
       // Experience is optional - convert empty to null
       if (!payload.experience || payload.experience.trim() === "") {
         payload.experience = null;
-      }      
+      }
     }
 
     if (payload.profileType === "Business Profile") {
@@ -66,6 +66,7 @@ const CreateAllServices = async (req, res) => {
           .status(400)
           .json({ message: "Business summary is required for Business Profile" });
       }
+    }
 
     // --- Validate "Other" sub-category ---
     if (isOtherSubcategory(payload.selectSubCategory) && !payload.subCategoryOther) {
@@ -157,10 +158,7 @@ const CreateAllServices = async (req, res) => {
     const newService = new createServiceModel(payload);
     const result = await newService.save();
 
-    if (
-      customRequestResult?.status === "pending" &&
-      payload.customSubCategoryRequestId
-    ) {
+    if (customRequestResult?.status === "pending" && payload.customSubCategoryRequestId) {
       await linkRequestToProfile({
         requestId: payload.customSubCategoryRequestId,
         profileId: result._id,
