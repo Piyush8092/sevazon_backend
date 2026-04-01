@@ -12,7 +12,7 @@ const profileSchema = new mongoose.Schema(
     // Basic Profile Info
     profileImage: {
       type: String,
-      required: [true, "Profile image is required"],
+      default: "https://i0.wp.com/bozemanhealth.org/wp-content/uploads/2025/01/user-2-blank-4.jpg?resize=300%2C397&ssl=1",
     },
     yourName: {
       type: String,

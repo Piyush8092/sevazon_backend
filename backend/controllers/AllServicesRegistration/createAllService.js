@@ -15,7 +15,6 @@ const CreateAllServices = async (req, res) => {
     // --- Basic required fields (common for both profiles) ---
     if (
       !payload.profileType ||
-      !payload.profileImage ||
       !payload.gender ||
       !payload.pincode ||
       !payload.city ||
