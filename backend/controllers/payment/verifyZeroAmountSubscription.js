@@ -18,7 +18,7 @@ const postModelMap = {
 /* =====================================================
    Enable Plan Features In post
 ===================================================== */
-const enablePostFeatures = async (postId, plan, expiryDate) => {
+const enablePostFeatures = async (postId, plan, userId, expiryDate) => {
   const Model = postModelMap[plan.planType];
   if (!Model) return;
 
@@ -32,6 +32,13 @@ const enablePostFeatures = async (postId, plan, expiryDate) => {
     if (contactLimit !== null) {
       post.viewContactNumbers.isActive = true;
       post.viewContactNumbers.expiresAt = expiryDate;
+
+      //Increment user contact limit dynamically
+      const field = `viewContactNumbers.${plan.planType}`;
+
+      await User.findByIdAndUpdate(userId, {
+        $inc: { [field]: contactLimit },
+      });
 
       continue;
     }
@@ -190,7 +197,7 @@ const verifyZeroAmountSubscription = async (req, res) => {
     });
 
     // Enable features in post model
-    await enablePostFeatures(postId, plan, payment.endDate);
+    await enablePostFeatures(postId, plan, userId, payment.endDate);
 
     if (plan.category === "service-business") {
       await updateUserServiceProfiles(userId, plan);

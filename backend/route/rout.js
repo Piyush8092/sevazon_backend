@@ -466,6 +466,7 @@ const {
 const { getUserPlansAdminView } = require("../controllers/user/getUserPlansAdminView");
 const { getLoginUserPlans } = require("../controllers/user/getLoginUserPlans");
 const { getUserAllPostNames } = require("../controllers/JobPost/getUserAllPostNames");
+const { decreaseUserViewContactNumbers } = require("../controllers/user/decreaseUserViewContactNumbers");
 
 cookie();
 router.get("/", (req, res) => {
@@ -526,6 +527,7 @@ router.post("/user/update-fcm-token", authGuard, updateFcmToken);
 router.delete("/user/remove-fcm-token", authGuard, removeFcmToken);
 router.get("/user/fcm-status/:userId", authGuard, getFcmStatus);
 router.post("/user/report-device", reportDevice);
+router.post("/user/decreaseUserViewContactNumbers/:type", authGuard, decreaseUserViewContactNumbers);
 
 // User Report and Block Management
 router.post("/report-user", authGuard, reportUser);
