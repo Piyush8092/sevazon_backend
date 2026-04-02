@@ -467,6 +467,7 @@ const { getUserPlansAdminView } = require("../controllers/user/getUserPlansAdmin
 const { getLoginUserPlans } = require("../controllers/user/getLoginUserPlans");
 const { getUserAllPostNames } = require("../controllers/JobPost/getUserAllPostNames");
 const { decreaseUserViewContactNumbers } = require("../controllers/user/decreaseUserViewContactNumbers");
+const { updateMatrimonyInParts } = require("../controllers/MatrimonyPost/updateMatrimonyInParts");
 
 cookie();
 router.get("/", (req, res) => {
@@ -719,6 +720,7 @@ router.post("/create-matrimony", authGuard, createMatrimony);
 router.get("/get-all-matrimony", optionalAuth, getAllMatrimony);
 router.get("/get-specific-matrimony/:id", optionalAuth, getSpecificMatrimony);
 router.put("/update-specific-matrimony/:id", authGuard, updateMatrimony);
+router.put("/update-matrimony-in-parts/:id", authGuard, updateMatrimonyInParts);
 router.delete("/delete-specific-matrimony/:id", authGuard, deleteMatrimony);
 router.get("/get-matrimony-creator-view", authGuard, MatrimonyCreatorView);
 router.get("/get-specific-matrimony-admin-view/:id", authGuard, specificMatrimonyAdminView);
