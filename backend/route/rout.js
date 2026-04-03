@@ -468,6 +468,7 @@ const { getLoginUserPlans } = require("../controllers/user/getLoginUserPlans");
 const { getUserAllPostNames } = require("../controllers/JobPost/getUserAllPostNames");
 const { decreaseUserViewContactNumbers } = require("../controllers/user/decreaseUserViewContactNumbers");
 const { updateMatrimonyInParts } = require("../controllers/MatrimonyPost/updateMatrimonyInParts");
+const { updateReportStatus } = require("../controllers/user/updateReportStatus");
 
 cookie();
 router.get("/", (req, res) => {
@@ -533,6 +534,7 @@ router.post("/user/decreaseUserViewContactNumbers/:type", authGuard, decreaseUse
 // User Report and Block Management
 router.post("/report-user", authGuard, reportUser);
 router.get("/admin/reports", authGuard, getAllReports);
+router.put("/admin/update-report-status/:id", authGuard, updateReportStatus);
 router.put("/admin/block-user/:id", authGuard, blockUser);
 router.put("/admin/unblock-user/:id", authGuard, unblockUser);
 
