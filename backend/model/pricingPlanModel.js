@@ -85,6 +85,10 @@ const pricingPlanSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
+  duration2Discount: {
+     type: Number,
+    default: 0,
+  },
 
   titleColor: {
     type: String,
