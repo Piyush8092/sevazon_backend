@@ -139,6 +139,7 @@ const createOffer = async (req, res) => {
   } catch (e) {
     if (e.name === "ValidationError") {
       const errors = Object.values(e.errors).map((err) => err.message);
+      console.log("create offer error", e);
       return res.status(400).json({
         message: "Validation failed",
         status: 400,
