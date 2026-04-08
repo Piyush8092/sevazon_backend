@@ -9,6 +9,7 @@ const offerSchema = new mongoose.Schema(
     profileId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "ProfileModel",
+      set: (v) => (v === "" ? undefined : v),
     },
     yourNameBusinessInstituteFirmOrganisation: {
       type: String,
