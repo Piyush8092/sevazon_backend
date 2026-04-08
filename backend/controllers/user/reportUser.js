@@ -11,6 +11,8 @@ const reportUser = async (req, res) => {
     const reporterId = req.user._id;
     const { reportedUserId, reason, description, contextType, contextId } = req.body;
 
+    console.log("user report req", req.body);
+
     // Validation
     if (!reportedUserId || !reason) {
       return res.status(400).json({
@@ -71,7 +73,7 @@ const reportUser = async (req, res) => {
 
     const savedReport = await newReport.save();
 
-    res.json({
+    res.status(200).json({
       message: "User reported successfully. Our team will review this report.",
       status: 200,
       data: savedReport,

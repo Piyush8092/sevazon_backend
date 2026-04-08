@@ -40,6 +40,7 @@ const getAllNews = async (req, res) => {
     }
 
     const result = await NewsPostModel.find(queryFilter)
+      .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit)
       .populate("userId", "name email profileImage");

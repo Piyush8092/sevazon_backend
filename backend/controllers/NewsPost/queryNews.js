@@ -46,6 +46,7 @@ const queryNews = async (req, res) => {
     }
 
     const result = await NewsPostModel.find(searchQuery)
+      .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit)
       .populate("userId", "name email ")

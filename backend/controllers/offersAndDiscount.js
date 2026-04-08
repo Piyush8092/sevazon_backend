@@ -9,6 +9,8 @@ const createOffer = async (req, res) => {
   try {
     let payload = req.body;
 
+    console.log("create offer req", req.body);
+
     // Validate required fields according to new model
     if (
       !payload.title ||

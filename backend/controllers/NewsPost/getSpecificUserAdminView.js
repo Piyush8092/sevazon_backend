@@ -11,7 +11,7 @@ const specificNewsAdminView = async (req, res) => {
     if (req.user.role !== "ADMIN") {
       return res.status(403).json({ message: "Unauthorized access" });
     }
-    let result = await NewsPostModel.find({ userId: id });
+    let result = await NewsPostModel.find({ userId: id }).sort({ createdAt: -1 }) ;
     if (!result) {
       res.json({ message: "No data found", status: 400, data: {}, success: false, error: true });
     }
