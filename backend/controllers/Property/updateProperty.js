@@ -15,15 +15,6 @@ const updateProperty = async (req, res) => {
       return res.status(403).json({ message: "Unauthorized access" });
     }
 
-    // Validate array fields if being updated
-    // Note: propertyImages can be either base64 encoded strings or Firebase Storage URLs
-    if (
-      payload.propertyImages &&
-      (!Array.isArray(payload.propertyImages) || payload.propertyImages.length === 0)
-    ) {
-      return res.status(400).json({ message: "Property images must be a non-empty array" });
-    }
-
     if (payload.propertyImages && payload.propertyImages.length > 6) {
       return res.status(400).json({ message: "Maximum 6 images are allowed" });
     }

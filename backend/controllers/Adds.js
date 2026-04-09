@@ -168,7 +168,7 @@ const GetAllAdds = async (req, res) => {
     if (req.query.pincode) {
       queryFilter.pincode = req.query.pincode;
     }
-    const result = await adModel.find(queryFilter).skip(skip).limit(limit);
+    const result = await adModel.find(queryFilter).sort({ createdAt: -1 }).skip(skip).limit(limit);
     const total = await adModel.countDocuments(queryFilter);
     const totalPages = Math.ceil(total / limit);
 
@@ -247,7 +247,7 @@ const getAllAdUser = async (req, res) => {
     }
 
     // Fetch all results without pincode filtering (we'll sort by distance instead)
-    let result = await adModel.find(queryFilter);
+    let result = await adModel.find(queryFilter).sort({ createdAt: -1 });
 
     // Sort by distance from user's pincode if provided (nearest first)
     if (pincode) {
@@ -614,7 +614,7 @@ const queryAdds = async (req, res) => {
       ],
     };
 
-    const result = await adModel.find(searchQuery).skip(skip).limit(limit);
+    const result = await adModel.find(searchQuery).sort({ createdAt: -1 }).skip(skip).limit(limit);
     const total = await adModel.countDocuments(searchQuery);
     const totalPages = Math.ceil(total / limit);
 
@@ -646,7 +646,7 @@ const AddCreaterView = async (req, res) => {
     let page = req.query.page || 1;
     let limit = req.query.limit || 10;
     const skip = (page - 1) * limit;
-    const result = await adModel.find({ userId: userId }).skip(skip).limit(limit);
+    const result = await adModel.find({ userId: userId }).sort({ createdAt: -1 }).skip(skip).limit(limit);
     const total = await adModel.countDocuments();
     const totalPages = Math.ceil(total / limit);
 
