@@ -8,10 +8,10 @@ const getUserAllPostNames = async (req, res) => {
 
   try {
     const [jobs, matrimony, properties, offers] = await Promise.all([
-      jobModel.find({ userId: userId }).select("_id title").lean(),
-      MatrimonyModel.find({ userId: userId }).select("_id fullName").lean(),
-      PropertyModel.find({ userId: userId }).select("_id fullName").lean(),
-      offerModel.find({ userId: userId }).select("_id title").lean(),
+      jobModel.find({ userId: userId }).select("_id title").sort({ createdAt: -1 }).lean(),
+      MatrimonyModel.find({ userId: userId }).select("_id fullName").sort({ createdAt: -1 }).lean(),
+      PropertyModel.find({ userId: userId }).select("_id fullName").sort({ createdAt: -1 }).lean(),
+      offerModel.find({ userId: userId }).select("_id title").sort({ createdAt: -1 }).lean(),
     ]);
 
     res.json({

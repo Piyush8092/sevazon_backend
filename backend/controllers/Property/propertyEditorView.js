@@ -6,7 +6,7 @@ const PropertyEditorView = async (req, res) => {
     let limit = req.query.limit || 10;
     const skip = (page - 1) * limit;
     let userId = req.user._id;
-    const result = await PropertyModel.find({ userId: userId }).skip(skip).limit(limit).populate("userId", "name email phone postFeatures");
+    const result = await PropertyModel.sort({ createdAt: -1 }).find({ userId: userId }).skip(skip).limit(limit).populate("userId", "name email phone postFeatures");
     const total = await PropertyModel.countDocuments();
     const totalPages = Math.ceil(total / limit);
 

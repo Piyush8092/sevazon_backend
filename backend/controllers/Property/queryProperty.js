@@ -34,6 +34,7 @@ const queryProperty = async (req, res) => {
     };
 
     const result = await PropertyModel.find(searchQuery)
+      .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit)
       .populate("profileId", "profileType")

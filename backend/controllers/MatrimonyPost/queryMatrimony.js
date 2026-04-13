@@ -58,11 +58,11 @@ const queryMatrimony = async (req, res) => {
     };
 
     const result = await MatrimonyModel.find(searchQuery)
-      .populate("userId", "_id name email phone postFeatures")
-      .populate("applyMatrimony.applyUserId", "_id name email phone")
+      .sort({ createdAt: -1 })
       .skip(skip)
-      .limit(limit);
-    console.log("ankur", result);
+      .limit(limit)
+      .populate("userId", "_id name email phone postFeatures")
+      .populate("applyMatrimony.applyUserId", "_id name email phone");
     const total = await MatrimonyModel.countDocuments(searchQuery);
     const totalPages = Math.ceil(total / limit);
 

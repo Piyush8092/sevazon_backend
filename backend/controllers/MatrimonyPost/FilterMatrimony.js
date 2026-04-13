@@ -210,11 +210,11 @@ const FilterMatrimony = async (req, res) => {
 
     // Execute query with filters, pagination, and sorting
     const result = await MatrimonyModel.find(filter)
-      .populate("userId", "name email phone profileImage postFeatures")
-      .populate("applyMatrimony.applyUserId", "_id name email phone")
       .sort(sortObj)
       .skip(skip)
-      .limit(limitNum);
+      .limit(limitNum)
+      .populate("applyMatrimony.applyUserId", "_id name email phone")
+      .populate("userId", "name email phone profileImage postFeatures");
 
     // Get total count for pagination
     const total = await MatrimonyModel.countDocuments(filter);

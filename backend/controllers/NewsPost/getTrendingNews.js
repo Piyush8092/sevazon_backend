@@ -6,16 +6,10 @@ const getTrendingNews = async (req, res) => {
     let page = req.query.page || 1;
     let limit = req.query.limit || 10;
     let location = req.query.location; // Optional location filter
-    let excludeOwn = req.query.excludeOwn === "true"; // Optional flag to exclude own news
     const skip = (page - 1) * limit;
 
     // Build query filter
     let queryFilter = {};
-
-    // Only exclude own news if explicitly requested
-    if (excludeOwn && req.user && req.user._id) {
-      queryFilter.userId = { $nin: [req.user._id] };
-    }
 
     // Add location filter if provided
     if (location) {

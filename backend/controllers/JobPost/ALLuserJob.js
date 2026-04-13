@@ -7,6 +7,7 @@ const ALLuserJob = async (req, res) => {
     const skip = (page - 1) * limit;
     const result = await jobModel
       .find()
+      .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit)
       .populate("profileId", "profileType")

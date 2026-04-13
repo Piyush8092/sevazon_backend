@@ -2,7 +2,8 @@ const offer = require("../model/OfferModel");
 const userModel = require("../model/userModel");
 const VerifiedPhone = require("../model/verifiedPhoneModel");
 
-const DEFAULT_OFFER_IMAGE = "https://banner2.cleanpng.com/20231114/hjr/transparent-white-background-five-red-offer-tags-floating-in-mid-1711019545062.webp";
+const DEFAULT_OFFER_IMAGE =
+  "https://banner2.cleanpng.com/20231114/hjr/transparent-white-background-five-red-offer-tags-floating-in-mid-1711019545062.webp";
 
 // create offer
 const createOffer = async (req, res) => {
@@ -163,6 +164,7 @@ let getAllOfferUser = async (req, res) => {
     const skip = (page - 1) * limit;
     const result = await offer
       .find()
+      .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit)
       .populate("profileId", "profileType")
@@ -200,12 +202,10 @@ const GetAllOffer = async (req, res) => {
 
     // Build query filter - exclude current user's offers if user is logged in
     let queryFilter = {};
-    if (req.user && req.user._id) {
-      queryFilter = { userId: { $nin: [req.user._id] } };
-    }
 
     const result = await offer
       .find(queryFilter)
+      .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit)
       .populate("userId", "name email phone postFeatures");
@@ -475,6 +475,7 @@ const queryOffer = async (req, res) => {
 
     const result = await offer
       .find(searchQuery)
+      .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit)
       .populate("profileId", "profileType")
@@ -618,6 +619,7 @@ const showCreateOfferView = async (req, res) => {
 
     const result = await offer
       .find({ userId: userId })
+      .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit)
       .populate("userId", "postFeatures");
@@ -659,7 +661,7 @@ const specificOfferAdminView = async (req, res) => {
     if (req.user.role !== "ADMIN") {
       return res.status(403).json({ message: "Unauthorized access" });
     }
-    let result = await offer.find({ userId: id }).populate("userId", "postFeatures");
+    let result = await offer.find({ userId: id }).sort({ createdAt: -1 }).populate("userId", "postFeatures");
     if (!result) {
       res.json({ message: "No data found", status: 400, data: {}, success: false, error: true });
     }

@@ -8,11 +8,8 @@ const getAllProperty = async (req, res) => {
 
     // Build query filter - exclude current user's properties if user is logged in
     let queryFilter = {};
-    if (req.user && req.user._id) {
-      queryFilter = { userId: { $nin: [req.user._id] } };
-    }
 
-    const result = await PropertyModel.find(queryFilter).skip(skip).limit(limit).populate("userId", "name email phone postFeatures");
+    const result = await PropertyModel.find(queryFilter).sort({ createdAt: -1 }).skip(skip).limit(limit).populate("userId", "name email phone postFeatures");
     const total = await PropertyModel.countDocuments();
     const totalPages = Math.ceil(total / limit);
 

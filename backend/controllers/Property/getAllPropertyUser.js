@@ -6,6 +6,7 @@ const getAllPropertyUser = async (req, res) => {
     let limit = req.query.limit || 10;
     const skip = (page - 1) * limit;
     const result = await PropertyModel.find()
+      .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit)
       .populate("profileId", "profileType")

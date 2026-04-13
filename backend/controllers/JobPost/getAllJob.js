@@ -69,12 +69,9 @@ const getAllJob = async (req, res) => {
 
     // Build query filter - exclude current user's jobs if user is logged in
     let queryFilter = {};
-    if (req.user && req.user._id) {
-      queryFilter = { userId: { $nin: [req.user._id] } };
-    }
 
     // Fetch all results without filtering (we'll sort by district/distance instead)
-    let result = await jobModel.find(queryFilter).populate("userId", "postFeatures");
+    let result = await jobModel.find(queryFilter).sort({ createdAt: -1 }).populate("userId", "postFeatures");
 
     // Sort by district-based 4-tier priority if district is provided
     if (district) {
