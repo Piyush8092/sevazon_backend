@@ -389,11 +389,39 @@ class NotificationService {
   // Send notification to all users with specific criteria
   async sendBroadcast(title, body, data = {}, options = {}) {
     try {
-      // This is a simplified version - in production, you'd want to implement
-      // this with a queue system for better performance
-      const activeTokens = await FCMToken.find({ isActive: true }).populate("userId");
+      // BUG FIX: Previously this only fetched users who had tokens in the
+      // FCMToken collection (registered via /fcm/register). But users store
+      // their FCM tokens in TWO places:
+      //   1. user.fcmTokens  (embedded in User doc, registered on login)
+      //   2. FCMToken collection (registered via /fcm/register endpoint)
+      // Users in group 1 were completely missed by the broadcast.
+      //
+      // Fix: query ALL users from the User collection so sendToUser() can
+      // merge tokens from both sources for each person.
 
-      const userIds = [...new Set(activeTokens.map((token) => token.userId._id.toString()))];
+      // Also collect any user IDs from the FCMToken collection that may not
+      // have an embedded token on their User doc.
+      const userIdsFromFCMCollection = await FCMToken.distinct("userId", { isActive: true });
+
+      // Fetch all users who have at least one embedded FCM token
+      const usersWithEmbeddedTokens = await User.find(
+        { "fcmTokens.0": { $exists: true } },
+        { _id: 1 }
+      ).lean();
+
+      // Merge both sets, removing duplicates
+      const allUserIdStrings = new Set([
+        ...usersWithEmbeddedTokens.map((u) => u._id.toString()),
+        ...userIdsFromFCMCollection
+          .filter((id) => id != null) // guard against orphaned tokens
+          .map((id) => id.toString()),
+      ]);
+
+      const userIds = [...allUserIdStrings];
+
+      console.log(
+        `📢 Broadcast: sending to ${userIds.length} users (${usersWithEmbeddedTokens.length} with embedded tokens, ${userIdsFromFCMCollection.length} in FCMToken collection)`
+      );
 
       return await this.sendToMultipleUsers(userIds, title, body, data, options);
     } catch (error) {

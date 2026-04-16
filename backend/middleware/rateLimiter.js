@@ -206,17 +206,23 @@ const notificationSpamDetection = (req, res, next) => {
 // Duplicate notification prevention
 const duplicateNotificationPrevention = async (req, res, next) => {
   try {
-    const userId = req.user?._id;
-    const { title, body } = req.body;
+    const adminId = req.user?._id;
+    const { title, body, userId: targetUserId } = req.body;
 
-    if (!userId || !title || !body) {
+    if (!adminId || !title || !body) {
       return next();
     }
 
-    // Create a hash of the notification content
+    // Create a hash of the notification content.
+    // For broadcasts (no targetUserId), scope only to title+body so the
+    // same broadcast cannot be accidentally double-fired within 5 min.
+    // For single-user sends, also include the target userId.
     const crypto = require("crypto");
-    const contentHash = crypto.createHash("md5").update(`${userId}_${title}_${body}`).digest("hex");
+    const hashInput = targetUserId
+      ? `${adminId}_${targetUserId}_${title}_${body}`
+      : `broadcast_${adminId}_${title}_${body}`;
 
+    const contentHash = crypto.createHash("md5").update(hashInput).digest("hex");
     const cacheKey = `duplicate_check_${contentHash}`;
     const now = Date.now();
 
