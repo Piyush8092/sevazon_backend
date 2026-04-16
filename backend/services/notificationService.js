@@ -246,9 +246,7 @@ class NotificationService {
             { token: { $in: invalidTokens } },
             { $set: { isActive: false } }
           );
-          console.log(
-            `   ✅ Invalid tokens removed from embedded array and FCMToken collection`
-          );
+          console.log(`   ✅ Invalid tokens removed from embedded array and FCMToken collection`);
         } catch (removeErr) {
           console.error(`   ❌ Failed to remove invalid tokens:`, removeErr.message);
         }
@@ -347,7 +345,9 @@ class NotificationService {
           // Handle invalid token errors (guard against null tokenDoc)
           if (this.isInvalidTokenError(error) && tokenDoc) {
             await tokenDoc.deactivate();
-            console.log(`🗑️ Deactivated invalid FCM token in collection: ${token.substring(0, 30)}...`);
+            console.log(
+              `🗑️ Deactivated invalid FCM token in collection: ${token.substring(0, 30)}...`
+            );
           }
         } catch (updateError) {
           console.error("Error updating failure record:", updateError);
@@ -446,8 +446,7 @@ class NotificationService {
 
     return (
       errorMessage.includes("registration-token-not-registered") ||
-      errorMessage.includes("invalid-registration-token") ||
-      errorMessage.includes("requested entity was not found")
+      errorMessage.includes("invalid-registration-token")
     );
   }
 

@@ -10,7 +10,7 @@ const getNonProfileUser = async (req, res) => {
         error: true,
       });
     }
-    let result = await userModel.find({ AnyServiceCreate: false });
+    let result = await userModel.find({ AnyServiceCreate: false }).select("name email phone");
     if (!result || result.length === 0) {
       return res.json({
         message: "No non-profile users found",
@@ -20,13 +20,6 @@ const getNonProfileUser = async (req, res) => {
         error: true,
       });
     }
-    //i need only name and email and phone number
-    result = result.map((item) => ({
-      name: item.name,
-      email: item.email,
-      phone: item.phone,
-      userId: item._id,
-    }));
     res.json({
       message: "Non-profile users retrieved successfully",
       status: 200,
