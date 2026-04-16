@@ -394,21 +394,13 @@ const userSchema = new mongoose.Schema(
     },
 
     viewContactNumbers: {
-      job: {
-        type: Number,
-        default: 0,
-      },
-      property: {
-        type: Number,
-        default: 0,
-      },
-      offer: {
-        type: Number,
-        default: 0,
-      },
       matrimony: {
         type: Number,
         default: 0,
+      },
+      expricedAt: {
+        type: Date,
+        default: null,
       },
     },
 
