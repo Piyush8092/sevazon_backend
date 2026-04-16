@@ -7,7 +7,13 @@ const GetSpecificServices = async (req, res) => {
 
     const result = await createServiceModel.findById(id);
     if (!result) {
-      res.json({ message: "No data found", status: 400, data: {}, success: false, error: true });
+      return res.json({
+        message: "No data found",
+        status: 400,
+        data: {},
+        success: false,
+        error: true,
+      });
     }
 
     let GetID;
@@ -20,7 +26,7 @@ const GetSpecificServices = async (req, res) => {
     const resultObj = result.toObject();
     resultObj.isBusiness = result.profileType === "Business Profile";
     res.json({
-      message: "Job created successfully",
+      message: "Service fetched successfully",
       status: 200,
       data: { GetID, result: resultObj },
       success: true,
