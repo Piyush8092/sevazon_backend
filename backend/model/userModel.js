@@ -398,7 +398,7 @@ const userSchema = new mongoose.Schema(
         type: Number,
         default: 0,
       },
-      expricedAt: {
+      expiredAt: {
         type: Date,
         default: null,
       },

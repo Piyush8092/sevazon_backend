@@ -37,9 +37,9 @@ const enablePostFeatures = async (postId, plan, userId, expiryDate) => {
       const field = `viewContactNumbers.${plan.planType}`;
 
       await User.findByIdAndUpdate(userId, {
-        $inc: { [field]: contactLimit },
         $set: {
-          "viewContactNumbers.expricedAt": expiryDate,
+          "viewContactNumbers.expiredAt": expiryDate,
+          [field]: contactLimit,
         },
       });
 
