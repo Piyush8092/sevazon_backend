@@ -1,8 +1,8 @@
 const crypto = require("crypto");
 
-// Razorpay credentials from environment or hardcoded test credentials
-const RAZORPAY_KEY_ID = process.env.RAZORPAY_KEY_ID || "rzp_test_RbcIqeqPdFohCS";
-const RAZORPAY_KEY_SECRET = process.env.RAZORPAY_KEY_SECRET || "aOj1BahCzslUp1f55C3ayuAO";
+// Razorpay credentials
+const RAZORPAY_KEY_ID = process.env.RAZORPAY_KEY_ID;
+const RAZORPAY_KEY_SECRET = process.env.RAZORPAY_KEY_SECRET;
 
 /**
  * Create a Razorpay order
