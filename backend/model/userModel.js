@@ -268,6 +268,16 @@ const userSchema = new mongoose.Schema(
       default: null,
     },
 
+    isOnline: {
+      type: Boolean,
+      default: false,
+    },
+
+    lastSeen: {
+      type: Date,
+      default: null,
+    },
+
     AnyServiceCreate: {
       type: Boolean,
       default: false,

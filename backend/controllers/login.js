@@ -64,6 +64,8 @@ const LoginRout = async (req, res) => {
     existingUser.token = token;
     //afetr login strore last login time and date
     existingUser.LastLoginTime = new Date();
+    existingUser.isOnline = true;
+    existingUser.lastSeen = new Date();
 
     // Handle FCM token if provided in request body
     const { fcmToken, deviceId, deviceType } = payload;

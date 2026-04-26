@@ -162,6 +162,7 @@ const { getRecommendations } = require("../controllers/userActivity/getRecommend
 const { updateLocalService } = require("../controllers/localServices/updateLocalService");
 const { getAuthUserDetail } = require("../controllers/user/getAuthUserDetail");
 const { fixMatrimonyProfileFlag } = require("../controllers/user/fixMatrimonyProfileFlag");
+const { updateUserStatus } = require("../controllers/user/updateUserStatus");
 const { GetSubServiceList } = require("../controllers/CreateAllServices/GetSubServiceList");
 const {
   getPendingCustomSubCategoryRequests,
@@ -530,6 +531,7 @@ router.delete("/user/remove-fcm-token", authGuard, removeFcmToken);
 router.get("/user/fcm-status/:userId", authGuard, getFcmStatus);
 router.post("/user/report-device", reportDevice);
 router.post("/user/decreaseUserViewContactNumbers/:type", authGuard, decreaseUserViewContactNumbers);
+router.put("/user/update-status", authGuard, updateUserStatus);
 
 // User Report and Block Management
 router.post("/report-user", authGuard, reportUser);
