@@ -689,9 +689,9 @@ router.get("/get-specific-apply-job/:apply_id", getSpecificApplyJob);
 //get all application of job creater and admin view
 router.get("/get-all-apply-job-admin-view/:job_id", authGuard, getspecificJobApplyAdminView);
 
-// router.get('/applier-view',authGuard,getApplyedJob);
-// router.get('/job-creator-view',authGuard,getApplyedJobCreterView);
-// router.delete('/delete-job-application/:apply_id',authGuard,deleteApplyJob);
+router.get('/applier-view',authGuard,getApplyedJob);
+router.get('/job-creator-view',authGuard,getApplyedJobCreterView);
+router.delete('/delete-job-application/:apply_id',authGuard,deleteApplyJob);
 
 // job creater view
 router.get("/get-all-accepted-applications", authGuard, getAcceptedApplications);
