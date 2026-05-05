@@ -31,7 +31,7 @@ const leadSchema = new mongoose.Schema({
     type: String,
     default: "",
   },
-});
+}, { timestamps: true });
 
 const leadModel = mongoose.model("leadModel", leadSchema);
 

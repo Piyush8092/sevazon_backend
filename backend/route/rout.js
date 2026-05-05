@@ -472,6 +472,7 @@ const { getUserAllPostNames } = require("../controllers/JobPost/getUserAllPostNa
 const { decreaseUserViewContactNumbers } = require("../controllers/user/decreaseUserViewContactNumbers");
 const { updateMatrimonyInParts } = require("../controllers/MatrimonyPost/updateMatrimonyInParts");
 const { updateReportStatus } = require("../controllers/user/updateReportStatus");
+const { getAllLeadsAdmin } = require("../controllers/leads/getAllLeadsAdmin");
 
 cookie();
 router.get("/", (req, res) => {
@@ -926,6 +927,8 @@ router.delete("/delete-specific-lead/:id", authGuard, deleteLead);
 router.get("/get-query-lead", getQueryLead);
 router.get("/get-lead-creator-view", authGuard, getLeadCreaterView);
 router.get("/get-all-job-admin-view/:user_id", authGuard, AdminLeadView);
+// get all leads admin view
+router.get("/get-all-leads-admin-view", authGuard, getAllLeadsAdmin);
 
 // FAQ route
 router.post("/create-faq", authGuard, createFaq);
