@@ -21,7 +21,7 @@ const getAllLeadsAdmin = async (req, res) => {
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit)
-      .populate("userId", "name email pincode district");
+      .populate("userId", "name email phone pincode district");
 
     res.status(200).json({
       success: true,
