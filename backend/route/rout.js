@@ -473,6 +473,7 @@ const { decreaseUserViewContactNumbers } = require("../controllers/user/decrease
 const { updateMatrimonyInParts } = require("../controllers/MatrimonyPost/updateMatrimonyInParts");
 const { updateReportStatus } = require("../controllers/user/updateReportStatus");
 const { getAllLeadsAdmin } = require("../controllers/leads/getAllLeadsAdmin");
+const { canCreateAllService } = require("../controllers/AllServicesRegistration/canCreateAllService");
 
 cookie();
 router.get("/", (req, res) => {
@@ -641,6 +642,7 @@ router.put("/update-specific-service-important-link/:id", authGuard, updateImpor
 router.put("/update-specific-service-time-slot/:id", authGuard, updateTimeSlot);
 //seND notification to service post user
 router.get("/send-notification-to-service-poster", authGuard, sendNotificationToServicePoster);
+router.get("/can-create-all-service", authGuard, canCreateAllService);
 
 // for report and block
 //api is => http://localhost:3000/api/update-specific-service-report-block/profileId  body pass=>  {"report":"This is a test report","block":true}

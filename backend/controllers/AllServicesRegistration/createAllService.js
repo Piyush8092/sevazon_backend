@@ -12,6 +12,18 @@ const CreateAllServices = async (req, res) => {
     let payload = req.body;
     let customRequestResult = null;
 
+    // validate profile limit
+    const profileCount = await createServiceModel.countDocuments({ userId: req.user._id });
+
+    if (profileCount >= 4) {
+      return res.status(400).json({
+        message: "You can only create up to 4 profiles",
+        status: 400,
+        success: false,
+        error: true,
+      });
+    }
+
     // --- Basic required fields (common for both profiles) ---
     if (
       !payload.profileType ||
