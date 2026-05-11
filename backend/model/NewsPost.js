@@ -122,6 +122,12 @@ let NewsSchame = new mongoose.Schema(
       type: String,
       required: [true, "Location/State is required"],
     },
+    district: {
+      type: String,
+    },
+    block: {
+      type: String,
+    },
     emojiReactions: [
       {
         emoji: {
