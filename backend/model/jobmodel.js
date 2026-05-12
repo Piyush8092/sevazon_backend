@@ -10,6 +10,8 @@ const jobSchema = new mongoose.Schema(
     profileId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "ProfileModel",
+      default: null,
+      set: (value) => (value === "" ? null : value),
     },
     title: {
       type: String,
