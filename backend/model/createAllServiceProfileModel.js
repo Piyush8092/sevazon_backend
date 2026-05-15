@@ -74,10 +74,20 @@ const profileSchema = new mongoose.Schema(
       type: Number,
       default: null,
     },
-
     longitude: {
       type: Number,
       default: null,
+    },
+    location: {
+      type: {
+        type: String,
+        enum: ["Point"],
+        default: "Point",
+      },
+      coordinates: {
+        type: [Number],
+        default: [0, 0],
+      },
     },
 
     // Category Information
@@ -359,11 +369,18 @@ const profileSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-// Pre-save middleware to handle conditional validation
+// Pre-save middleware to handle conditional validation and location
 profileSchema.pre("save", function (next) {
-  // Additional validation logic can be added here if needed
+  if (this.latitude !== null && this.longitude !== null) {
+    this.location = {
+      type: "Point",
+      coordinates: [this.longitude, this.latitude],
+    };
+  }
   next();
 });
+
+profileSchema.index({ location: "2dsphere" });
 
 const ProfileModel = mongoose.model("ProfileModel", profileSchema);
 

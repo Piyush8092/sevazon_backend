@@ -102,6 +102,17 @@ const PropertySchema = new mongoose.Schema(
       type: Number,
       default: null,
     },
+    location: {
+      type: {
+        type: String,
+        enum: ["Point"],
+        default: "Point",
+      },
+      coordinates: {
+        type: [Number],
+        default: [0, 0],
+      },
+    },
 
     // Contact Preferences
     allowCallInApp: {
@@ -176,6 +187,18 @@ const PropertySchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+PropertySchema.pre("save", function (next) {
+  if (this.latitude !== null && this.longitude !== null) {
+    this.location = {
+      type: "Point",
+      coordinates: [this.longitude, this.latitude],
+    };
+  }
+  next();
+});
+
+PropertySchema.index({ location: "2dsphere" });
 
 const PropertyModel = mongoose.model("PropertyModel", PropertySchema);
 

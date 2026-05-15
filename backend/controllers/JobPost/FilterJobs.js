@@ -42,6 +42,11 @@ const FilterJobs = async (req, res) => {
       // Sorting
       sortBy = "createdAt",
       sortOrder = "desc",
+
+      // Near Me (Distance-based sorting)
+      latitude,
+      longitude,
+      maxDistance = 50000, // Default 50km
     } = req.query;
 
     // Build dynamic filter object
@@ -138,15 +143,70 @@ const FilterJobs = async (req, res) => {
     sortObj[sortBy] = sortOrder === "asc" ? 1 : -1;
 
     // Execute query with filters, pagination, and sorting
-    const result = await jobModel
-      .find(filter)
-      .populate("userId", "name email phone profileImage postFeatures")
-      .sort(sortObj)
-      .skip(skip)
-      .limit(limitNum);
+    let result;
+    let total;
 
-    // Get total count for pagination
-    const total = await jobModel.countDocuments(filter);
+    if (latitude && longitude) {
+      const lat = parseFloat(latitude);
+      const lng = parseFloat(longitude);
+      const dist = parseInt(maxDistance);
+
+      const pipeline = [
+        {
+          $geoNear: {
+            near: { type: "Point", coordinates: [lng, lat] },
+            distanceField: "distance",
+            maxDistance: dist,
+            query: filter,
+            spherical: true,
+          },
+        },
+        { $sort: { distance: 1 } },
+        { $skip: skip },
+        { $limit: limitNum },
+        {
+          $lookup: {
+            from: "users",
+            localField: "userId",
+            foreignField: "_id",
+            as: "userId",
+          },
+        },
+        { $unwind: "$userId" },
+        {
+          $project: {
+            "userId.password": 0,
+            "userId.otp": 0,
+          },
+        },
+      ];
+
+      result = await jobModel.aggregate(pipeline);
+      
+      // For total count when using $geoNear
+      const countPipeline = [
+        {
+          $geoNear: {
+            near: { type: "Point", coordinates: [lng, lat] },
+            distanceField: "distance",
+            maxDistance: dist,
+            query: filter,
+            spherical: true,
+          },
+        },
+        { $count: "total" }
+      ];
+      const countResult = await jobModel.aggregate(countPipeline);
+      total = countResult.length > 0 ? countResult[0].total : 0;
+    } else {
+      result = await jobModel
+        .find(filter)
+        .populate("userId", "name email phone profileImage postFeatures")
+        .sort(sortObj)
+        .skip(skip)
+        .limit(limitNum);
+      total = await jobModel.countDocuments(filter);
+    }
     const totalPages = Math.ceil(total / limitNum);
 
     // Response

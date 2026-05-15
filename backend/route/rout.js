@@ -79,6 +79,7 @@ const { getSpecificqueryProperty } = require("../controllers/Property/getSpecifi
 const { updateProperty } = require("../controllers/Property/updateProperty");
 const { deleteProperty } = require("../controllers/Property/deleteProperty");
 const { queryProperty } = require("../controllers/Property/queryProperty");
+const { FilterProperty } = require("../controllers/Property/FilterProperty");
 
 const {
   createOffer,
@@ -795,6 +796,7 @@ router.get("/get-bookmark-property", authGuard, getBookmarkProperty);
 
 // api is => http://localhost:3000/api/get-query-property?query=Bengaluru
 router.get("/get-query-property", optionalAuth, queryProperty);
+router.get("/filter-property", optionalAuth, FilterProperty);
 router.get("/get-property-editor-view", authGuard, PropertyEditorView);
 router.get("/get-specific-property-admin-view/:id", authGuard, specificPropertyAdminView);
 

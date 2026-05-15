@@ -59,10 +59,20 @@ const jobSchema = new mongoose.Schema(
       type: Number,
       default: null,
     },
-
     longitude: {
       type: Number,
       default: null,
+    },
+    location: {
+      type: {
+        type: String,
+        enum: ["Point"],
+        default: "Point",
+      },
+      coordinates: {
+        type: [Number],
+        default: [0, 0],
+      },
     },
     description: {
       type: String,
@@ -182,6 +192,18 @@ const jobSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+jobSchema.pre("save", function (next) {
+  if (this.latitude !== null && this.longitude !== null) {
+    this.location = {
+      type: "Point",
+      coordinates: [this.longitude, this.latitude],
+    };
+  }
+  next();
+});
+
+jobSchema.index({ location: "2dsphere" });
 
 const jobModel = mongoose.model("jobModel", jobSchema);
 

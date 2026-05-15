@@ -30,6 +30,11 @@ const FilterServices = async (req, res) => {
 
       sortBy = "createdAt",
       sortOrder = "desc",
+
+      // Near Me
+      latitude,
+      longitude,
+      maxDistance = 50000,
     } = req.query;
 
     // ===============================
@@ -90,10 +95,23 @@ const FilterServices = async (req, res) => {
     // ===============================
     // 3️⃣ AGGREGATION WITH PRIORITY SORT ✅ (NEW)
     // ===============================
-    const result = await createServiceModel.aggregate([
-      { $match: filter },
+    const pipeline = [];
 
-      {
+    if (latitude && longitude) {
+      const lat = parseFloat(latitude);
+      const lng = parseFloat(longitude);
+      const dist = parseInt(maxDistance);
+
+      pipeline.push({
+        $geoNear: {
+          near: { type: "Point", coordinates: [lng, lat] },
+          distanceField: "distance",
+          maxDistance: dist,
+          query: filter,
+          spherical: true,
+        },
+      });
+      pipeline.push({
         $addFields: {
           servicePriority: {
             $switch: {
@@ -106,33 +124,82 @@ const FilterServices = async (req, res) => {
             },
           },
         },
-      },
-
-      {
+      });
+      pipeline.push({
+        $sort: {
+          distance: 1,
+          servicePriority: 1,
+          [sortBy]: sortDirection,
+        },
+      });
+    } else {
+      pipeline.push({ $match: filter });
+      pipeline.push({
+        $addFields: {
+          servicePriority: {
+            $switch: {
+              branches: [
+                { case: { $eq: ["$serviceType", "premium"] }, then: 1 },
+                { case: { $eq: ["$serviceType", "featured"] }, then: 2 },
+                { case: { $eq: ["$serviceType", null] }, then: 3 },
+              ],
+              default: 4,
+            },
+          },
+        },
+      });
+      pipeline.push({
         $sort: {
           servicePriority: 1,
           [sortBy]: sortDirection,
         },
-      },
+      });
+    }
 
-      { $skip: skip },
-      { $limit: limitNum },
-
-      {
-        $lookup: {
-          from: "users",
-          localField: "userId",
-          foreignField: "_id",
-          as: "userId",
-        },
+    pipeline.push({ $skip: skip });
+    pipeline.push({ $limit: limitNum });
+    pipeline.push({
+      $lookup: {
+        from: "users",
+        localField: "userId",
+        foreignField: "_id",
+        as: "userId",
       },
-      { $unwind: "$userId" },
-    ]);
+    });
+    pipeline.push({ $unwind: "$userId" });
+    pipeline.push({
+      $project: {
+        "userId.password": 0,
+        "userId.otp": 0,
+      },
+    });
+
+    const result = await createServiceModel.aggregate(pipeline);
 
     // ===============================
     // 4️⃣ COUNT FOR PAGINATION (SAME)
     // ===============================
-    const total = await createServiceModel.countDocuments(filter);
+    let total;
+    if (latitude && longitude) {
+      const lat = parseFloat(latitude);
+      const lng = parseFloat(longitude);
+      const dist = parseInt(maxDistance);
+      const countResult = await createServiceModel.aggregate([
+        {
+          $geoNear: {
+            near: { type: "Point", coordinates: [lng, lat] },
+            distanceField: "distance",
+            maxDistance: dist,
+            query: filter,
+            spherical: true,
+          },
+        },
+        { $count: "total" },
+      ]);
+      total = countResult.length > 0 ? countResult[0].total : 0;
+    } else {
+      total = await createServiceModel.countDocuments(filter);
+    }
     const totalPages = Math.ceil(total / limitNum);
 
     // ===============================

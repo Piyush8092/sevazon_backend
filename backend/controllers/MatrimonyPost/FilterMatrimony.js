@@ -57,6 +57,11 @@ const FilterMatrimony = async (req, res) => {
       // Sorting
       sortBy = "createdAt",
       sortOrder = "desc",
+
+      // Near Me
+      latitude,
+      longitude,
+      maxDistance = 50000,
     } = req.query;
 
     // Build dynamic filter object
@@ -209,15 +214,69 @@ const FilterMatrimony = async (req, res) => {
     sortObj[sortBy] = sortOrder === "asc" ? 1 : -1;
 
     // Execute query with filters, pagination, and sorting
-    const result = await MatrimonyModel.find(filter)
-      .sort(sortObj)
-      .skip(skip)
-      .limit(limitNum)
-      .populate("applyMatrimony.applyUserId", "_id name email phone")
-      .populate("userId", "name email phone profileImage postFeatures");
+    let result;
+    let total;
 
-    // Get total count for pagination
-    const total = await MatrimonyModel.countDocuments(filter);
+    if (latitude && longitude) {
+      const lat = parseFloat(latitude);
+      const lng = parseFloat(longitude);
+      const dist = parseInt(maxDistance);
+
+      const pipeline = [
+        {
+          $geoNear: {
+            near: { type: "Point", coordinates: [lng, lat] },
+            distanceField: "distance",
+            maxDistance: dist,
+            query: filter,
+            spherical: true,
+          },
+        },
+        { $sort: { distance: 1 } },
+        { $skip: skip },
+        { $limit: limitNum },
+        {
+          $lookup: {
+            from: "users",
+            localField: "userId",
+            foreignField: "_id",
+            as: "userId",
+          },
+        },
+        { $unwind: "$userId" },
+        {
+          $project: {
+            "userId.password": 0,
+            "userId.otp": 0,
+          },
+        },
+      ];
+
+      result = await MatrimonyModel.aggregate(pipeline);
+      
+      const countPipeline = [
+        {
+          $geoNear: {
+            near: { type: "Point", coordinates: [lng, lat] },
+            distanceField: "distance",
+            maxDistance: dist,
+            query: filter,
+            spherical: true,
+          },
+        },
+        { $count: "total" }
+      ];
+      const countResult = await MatrimonyModel.aggregate(countPipeline);
+      total = countResult.length > 0 ? countResult[0].total : 0;
+    } else {
+      result = await MatrimonyModel.find(filter)
+        .sort(sortObj)
+        .skip(skip)
+        .limit(limitNum)
+        .populate("applyMatrimony.applyUserId", "_id name email phone")
+        .populate("userId", "name email phone profileImage postFeatures");
+      total = await MatrimonyModel.countDocuments(filter);
+    }
     const totalPages = Math.ceil(total / limitNum);
 
     // Response

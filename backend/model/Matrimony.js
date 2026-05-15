@@ -190,6 +190,17 @@ const MatrimonySchema = new mongoose.Schema(
       type: Number,
       default: null,
     },
+    location: {
+      type: {
+        type: String,
+        enum: ["Point"],
+        default: "Point",
+      },
+      coordinates: {
+        type: [Number],
+        default: [0, 0],
+      },
+    },
     locationURL: {
       type: String,
     },
@@ -303,6 +314,18 @@ const MatrimonySchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+MatrimonySchema.pre("save", function (next) {
+  if (this.latitude !== null && this.longitude !== null) {
+    this.location = {
+      type: "Point",
+      coordinates: [this.longitude, this.latitude],
+    };
+  }
+  next();
+});
+
+MatrimonySchema.index({ location: "2dsphere" });
 
 const MatrimonyModel = mongoose.model("MatrimonyModel", MatrimonySchema);
 

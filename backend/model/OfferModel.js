@@ -56,6 +56,17 @@ const offerSchema = new mongoose.Schema(
       type: Number,
       default: null,
     },
+    location: {
+      type: {
+        type: String,
+        enum: ["Point"],
+        default: "Point",
+      },
+      coordinates: {
+        type: [Number],
+        default: [0, 0],
+      },
+    },
     allowCallInApp: {
       type: Boolean,
       default: false,
@@ -132,6 +143,18 @@ const offerSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+offerSchema.pre("save", function (next) {
+  if (this.latitude !== null && this.longitude !== null) {
+    this.location = {
+      type: "Point",
+      coordinates: [this.longitude, this.latitude],
+    };
+  }
+  next();
+});
+
+offerSchema.index({ location: "2dsphere" });
 
 const offer = mongoose.model("offer", offerSchema);
 

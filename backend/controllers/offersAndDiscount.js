@@ -530,6 +530,11 @@ const FilterOffer = async (req, res) => {
       // Sorting
       sortBy = "createdAt",
       sortOrder = "desc",
+
+      // Near Me
+      latitude,
+      longitude,
+      maxDistance = 50000,
     } = req.query;
 
     // Build dynamic filter object
@@ -579,13 +584,70 @@ const FilterOffer = async (req, res) => {
     const sortObj = {};
     sortObj[sortBy] = sortOrder === "asc" ? 1 : -1;
 
-    const result = await offer
-      .find(filter)
-      .populate("userId", "name email phone profileImage postFeatures")
-      .sort(sortObj)
-      .skip(skip)
-      .limit(limitNum);
-    const total = await offer.countDocuments(filter);
+    // Execute query with filters, pagination, and sorting
+    let result;
+    let total;
+
+    if (latitude && longitude) {
+      const lat = parseFloat(latitude);
+      const lng = parseFloat(longitude);
+      const dist = parseInt(maxDistance);
+
+      const pipeline = [
+        {
+          $geoNear: {
+            near: { type: "Point", coordinates: [lng, lat] },
+            distanceField: "distance",
+            maxDistance: dist,
+            query: filter,
+            spherical: true,
+          },
+        },
+        { $sort: { distance: 1 } },
+        { $skip: skip },
+        { $limit: limitNum },
+        {
+          $lookup: {
+            from: "users",
+            localField: "userId",
+            foreignField: "_id",
+            as: "userId",
+          },
+        },
+        { $unwind: "$userId" },
+        {
+          $project: {
+            "userId.password": 0,
+            "userId.otp": 0,
+          },
+        },
+      ];
+
+      result = await offer.aggregate(pipeline);
+      
+      const countPipeline = [
+        {
+          $geoNear: {
+            near: { type: "Point", coordinates: [lng, lat] },
+            distanceField: "distance",
+            maxDistance: dist,
+            query: filter,
+            spherical: true,
+          },
+        },
+        { $count: "total" }
+      ];
+      const countResult = await offer.aggregate(countPipeline);
+      total = countResult.length > 0 ? countResult[0].total : 0;
+    } else {
+      result = await offer
+        .find(filter)
+        .populate("userId", "name email phone profileImage postFeatures")
+        .sort(sortObj)
+        .skip(skip)
+        .limit(limitNum);
+      total = await offer.countDocuments(filter);
+    }
     const totalPages = Math.ceil(total / limitNum);
 
     res.json({
