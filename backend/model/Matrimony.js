@@ -182,6 +182,17 @@ const MatrimonySchema = new mongoose.Schema(
       type: [String],
       required: [true, "State is required"],
     },
+    latitude: {
+      type: Number,
+      default: null,
+    },
+    longitude: {
+      type: Number,
+      default: null,
+    },
+    locationURL: {
+      type: String,
+    },
     moreAboutYourself: {
       type: String,
       maxlength: [500, "Description cannot exceed 500 characters"],

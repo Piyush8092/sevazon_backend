@@ -109,6 +109,13 @@ const CreateAdd = async (req, res) => {
       }
     }
 
+    // Set validTill date on the server to ensure consistency
+    // If durationDays is provided in the payload, use it, otherwise default to 30
+    const duration = parseInt(payload.durationDays) || 30;
+    const now = new Date();
+    payload.validTill = new Date(now.getTime() + duration * 24 * 60 * 60 * 1000);
+    payload.durationDays = duration;
+
     const newAd = new adModel(payload);
     const result = await newAd.save();
     let user = await userModel.findById(req.user._id);
@@ -238,7 +245,12 @@ const getAllAdUser = async (req, res) => {
     const skip = (page - 1) * limit;
 
     // Build query filter
-    let queryFilter = { status: "Approved", isActive: true };
+    let now = new Date();
+    let queryFilter = { 
+      status: "Approved", 
+      isActive: true,
+      validTill: { $gt: now } // Only show ads that haven't expired
+    };
     if (placementPage) {
       queryFilter.placementPages = placementPage;
     }

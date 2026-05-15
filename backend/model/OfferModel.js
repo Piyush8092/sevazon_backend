@@ -48,6 +48,14 @@ const offerSchema = new mongoose.Schema(
     locationURL: {
       type: String,
     },
+    latitude: {
+      type: Number,
+      default: null,
+    },
+    longitude: {
+      type: Number,
+      default: null,
+    },
     allowCallInApp: {
       type: Boolean,
       default: false,

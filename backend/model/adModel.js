@@ -70,6 +70,10 @@ const adSchema = new mongoose.Schema(
       type: Date,
       // required: [true, 'Valid till date is required'],
     },
+    durationDays: {
+      type: Number,
+      default: 30,
+    },
     location: {
       type: String,
       // required: [true, 'Location is required'],

@@ -94,6 +94,14 @@ const PropertySchema = new mongoose.Schema(
     locationUrl: {
       type: String,
     },
+    latitude: {
+      type: Number,
+      default: null,
+    },
+    longitude: {
+      type: Number,
+      default: null,
+    },
 
     // Contact Preferences
     allowCallInApp: {
