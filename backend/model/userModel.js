@@ -96,19 +96,19 @@ const userSchema = new mongoose.Schema(
 
     jobPostLimit: {
       type: Number,
-      default: 10,
+      default: 3,
       min: 0,
     },
 
     propertyPostLimit: {
       type: Number,
-      default: 10,
+      default: 3,
       min: 0,
     },
 
     offerPostLimit: {
       type: Number,
-      default: 10,
+      default: 3,
       min: 0,
     },
 
